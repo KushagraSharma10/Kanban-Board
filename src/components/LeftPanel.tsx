@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const LeftPanelDiv = styled.div`
+const PanelContainer = styled.div`
   width: 100%;
   background-color: #181c24;
   padding: 2rem;
@@ -39,7 +39,7 @@ const ContentSubText = styled.p`
 
 const LeftPanel = () => {
   return (
-    <LeftPanelDiv>
+    <PanelContainer>
       <Icon
         viewBox="0 0 24 24"
         fill="none"
@@ -60,7 +60,7 @@ const LeftPanel = () => {
           unique—accomplish it all here.
         </ContentSubText>
       </Content>
-    </LeftPanelDiv>
+    </PanelContainer>
   );
 };
 
