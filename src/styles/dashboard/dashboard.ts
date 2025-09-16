@@ -6,10 +6,6 @@ export const Main = styled.div`
   color: white;
 `;
 
-export const Header = styled.header`
-  padding: 2vw;
-  border-bottom: 1px solid #28394e;
-`;
 
 export const Board = styled.div`
   display: flex;

@@ -11,9 +11,18 @@ export const colors = {
   buttonPrimary: "#0096ff",
   buttonGoogleBg: "#1a1f27",
   buttonGoogleText: "#fff",
+  background: "#0b0f14",
+  sidebarBackground: "#161a21",
+  boardBackground: "#1a1f27",
+  textPrimary: "#e6edf3",
+  textSecondary: "#9ca3af",
+  accent: "#0096ff",
+  searchBackground: "#222c38ff",
 };
 
 export const spacing = {
+  padding: "1rem",
+  margin: "1rem",
   paddingMain: "2rem 1rem",
   paddingMainMd: "2rem 4rem",
   paddingMainLg: "4rem 10.8rem",

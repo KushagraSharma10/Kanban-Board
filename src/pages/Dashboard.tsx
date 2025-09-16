@@ -1,9 +1,10 @@
 import { useState } from "react";
 import BoardCard from "../components/dashboard/BoardCard";
 import {
-  Board, BoardArea, CreateBoard, Header, Main, Sidebar, Cards,
+  Board, BoardArea, CreateBoard, Main, Cards,
 } from "../styles/dashboard/dashboard";
 import CreateBoardModal from "../components/dashboard/CreateBoardModal";
+import Header from "../components/dashboard/Header";
 
 export default function Dashboard() {
   const [boards, setBoards] = useState([
@@ -18,9 +19,8 @@ export default function Dashboard() {
 
   return (
     <Main>
-      <Header>header</Header>
+      <Header setModalOpen={setModalOpen} />
       <Board>
-        <Sidebar />
         <BoardArea>
           <h1>Marketing</h1>
           <Cards>
