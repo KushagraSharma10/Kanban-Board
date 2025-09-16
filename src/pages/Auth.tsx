@@ -1,6 +1,6 @@
 import { useState } from "react";
-import LeftPanel from "../components/LeftPanel";
-import AuthFormFields from "../components/AuthFormFields";
+import LeftPanel from "../components/auth/LeftPanel";
+import AuthFormFields from "../components/auth/AuthFormFields";
 import { LOGIN_MODE, SIGNUP_MODE} from "../constants/AuthConstants";
 import type { Field, FormFields, Props } from "../types/auth";
 import { checkUser, getUsers, saveUser, type UserData } from "../utils/local-storage";
