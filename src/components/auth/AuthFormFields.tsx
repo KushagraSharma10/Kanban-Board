@@ -1,6 +1,6 @@
-import type { Field, FormFields } from "../types/auth";
-import { FieldLabel, Field as FieldContainer } from "../styles/auth/auth-form";
-import { AuthInput } from "../styles/auth/auth-input";
+import type { Field, FormFields } from "../../types/auth";
+import { FieldLabel, Field as FieldContainer } from "../../styles/auth/auth-form";
+import { AuthInput } from "../../styles/auth/auth-input";
 
 
 
