@@ -10,7 +10,7 @@ import { AuthLink} from "../styles/auth/auth-link";
 import { AuthButton } from "../styles/auth/auth-button";
 import { useNavigate } from "react-router";
 import { validateEmail } from "../utils/validation";
-import { registerUser, validateUser } from "../utils/auth";
+import { registerUser, validateUser } from "../services/auth";
 
 export default function Auth({ mode }: Props) {
   const isLogin = mode === LOGIN_MODE;

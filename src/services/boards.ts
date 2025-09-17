@@ -1,5 +1,5 @@
-import { loadFromStorage, saveToStorage } from "./storage";
-import type { BoardItem } from "../types/auth.ts";
+import { loadFromStorage, saveToStorage } from "../utils/storage.ts";
+import type { BoardItem } from "../types/auth.tsx";
 
 const BOARDS_STORAGE_KEY = "kanban.boards";
 

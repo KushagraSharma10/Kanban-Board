@@ -1,6 +1,6 @@
 // src/utils/auth.ts
 import bcrypt from "bcryptjs";
-import { loadFromStorage, saveToStorage } from "./storage";
+import { loadFromStorage, saveToStorage } from "../utils/storage";
 import type { UserData } from "../types/auth";
 
 const USERS_STORAGE_KEY = "users";
