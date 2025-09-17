@@ -1,11 +1,11 @@
 import styled from "styled-components";
-import { colors, spacing } from "../theme";
+import { colors} from "../theme";
 
 export const HeaderContainer = styled.div`
   display: flex;
   align-items: center;
-  padding: ${spacing.padding};
-  color: ${colors.textLight};
+  padding: 1rem;
+  color: ${colors.brightGray};
   justify-content: space-between;
   border-bottom: 1px solid #28394e;
   flex-wrap: wrap;
@@ -49,14 +49,14 @@ export const Logo = styled.div`
 
 export const SearchInput = styled.input`
   max-width: 60%;
-  margin-left: ${spacing.margin};
+  margin-left: 1rem;
   padding: 0.5rem;
   border-radius: 0.5rem;
   border: none;
   outline: none;
   width: 21.875rem;
-  color: ${colors.textLight};
-  background-color: ${colors.searchBackground};
+  color: ${colors.brightGray};
+  background-color: ${colors.darkBlue3};
 
   @media (max-width: 768px) {
     margin-left: 0;
@@ -75,7 +75,7 @@ export const Profile= styled.div`
   export const CreateButton = styled.button`
   margin-left: auto;
   padding: 0.5rem 1rem;
-  background-color: ${colors.buttonPrimary};
+  background-color: ${colors.blue};
   color: #000;
   border: none;
   border-radius: 0.5rem;
@@ -88,7 +88,7 @@ export const Profile= styled.div`
   `;
   
   export const UserAvatar = styled.img`
-  margin-left: ${spacing.margin};
+  margin-left: 1rem;
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 50%;

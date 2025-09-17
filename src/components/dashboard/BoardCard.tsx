@@ -12,7 +12,7 @@ import {
   TypeName,
 } from "../../styles/dashboard/board-card";
 
-type Props = {
+type cardProp = {
   name: string;
   color: string;
   type: string;
@@ -20,7 +20,7 @@ type Props = {
   onDelete?: () => void;
 };
 
-const BoardCard = ({ name, color, type, onEdit, onDelete }: Props) => {
+const BoardCard = ({ name, color, type, onEdit, onDelete }: cardProp) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (

@@ -1,2 +1,2 @@
-export const LOGIN_MODE = "login";
-export const SIGNUP_MODE = "signup";
+export const LOGIN_MODE = "Login";
+export const SIGNUP_MODE = "Sign Up";

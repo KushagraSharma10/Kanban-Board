@@ -2,11 +2,7 @@ import { useEffect, useState } from "react";
 import { nanoid } from "nanoid";
 import BoardCard from "../components/dashboard/BoardCard";
 import {
-  Board as BoardWrap,
-  BoardArea,
-  CreateBoard,
-  Main,
-  Cards,
+  Board as BoardWrap,BoardArea, CreateBoard, Main, Cards,
 } from "../styles/dashboard/dashboard";
 import CreateBoardModal from "../components/dashboard/CreateBoardModal";
 import Header from "../components/dashboard/Header";
