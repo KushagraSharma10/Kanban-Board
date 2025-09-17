@@ -1,47 +1,60 @@
-import styled from "styled-components";
-
-export const Card = styled.div`
-  width: 18vw;
-  min-height: 15vw;
-  border-radius: 1.5rem;
-  overflow: hidden;
-  background-color: #151d27;
-  cursor:pointer;
-`;
-
-export const Color = styled.div`
-  width: 100%;
-  height: 7vw;
-`;
-
-export const BoardContent = styled.div`
-  padding: 1rem 1.1rem;
-`;
-
-export const BoardName = styled.h2`
-  font-size: 1.2rem;
-  font-weight: 600;
-`;
-
-export const TagName = styled.p`
-  font-size: 0.9rem;
-  color: rgb(80, 79, 79);
-`;
+import { useState } from "react";
+import { BoardContent, BoardDetails, BoardName, Card, ColorDiv, ContentClip, OptionsMenu, ThreeDots, TypeName } from "../../styles/dashboard/board-card";
 
 type Props = {
   name: string;
   color: string;
   type: string;
+  onEdit?: () => void;
+  onDelete?: () => void;
 };
 
-const BoardCard = ({ name, color, type }: Props) => {
+const BoardCard = ({ name, color, type, onEdit, onDelete }: Props) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
-    <Card>
-      <Color style={{backgroundColor: `${color}`}} />
-      <BoardContent>
-        <BoardName>{name}</BoardName>
-        <TagName>{type}</TagName>
-      </BoardContent>
+    <Card onClick={() => setMenuOpen(false)}>
+      <ContentClip>
+        <ColorDiv style={{ backgroundColor: color }} />
+        <BoardContent>
+          <BoardDetails>
+            <BoardName>{name}</BoardName>
+            <TypeName>{type}</TypeName>
+          </BoardDetails>
+
+          <div style={{ position: "relative" }}>
+            <ThreeDots
+              size={20}
+              onClick={(e) => {
+                e.stopPropagation();
+                setMenuOpen((prev) => !prev);
+              }}
+              style={{ cursor: "pointer" }}
+            />
+          </div>
+        </BoardContent>
+      </ContentClip>
+
+      {menuOpen && (
+        <OptionsMenu onClick={(e) => e.stopPropagation()}>
+          <button
+            onClick={() => {
+              setMenuOpen(false);
+              onEdit?.();
+            }}
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => {
+              setMenuOpen(false);
+              if (confirm("Delete this board?")) onDelete?.();
+            }}
+          >
+            Delete
+          </button>
+        </OptionsMenu>
+      )}
     </Card>
   );
 };
