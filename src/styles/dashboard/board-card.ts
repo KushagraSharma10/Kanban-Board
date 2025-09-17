@@ -35,17 +35,6 @@ export const Card = styled.div`
   }
 `;
 
-
-// export const Card = styled.div`
-//   width: 18vw;
-//   border-radius: 1.5rem;             
-//   background-color: #151d27;
-//   cursor: pointer;
-//   position: relative;            
-
-  
-// `;
-
 export const ContentClip = styled.div`
   border-radius: inherit;         
   overflow: hidden;               

@@ -2,7 +2,7 @@ import Dashboard from "./pages/Dashboard"
 
 const App = () => {
   return (
-    <div className="App">
+    <div className="app">
       <Dashboard />
     </div>
   )

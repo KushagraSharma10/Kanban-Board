@@ -1,6 +1,5 @@
 import { CreateButton, HeaderBottom, HeaderContainer, HeaderTop, Logo, Profile, SearchInput, UserAvatar } from "../../styles/dashboard/header";
 
-
  type Props = {
   setModalOpen: (open: boolean) => void;
 };

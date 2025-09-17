@@ -1,17 +1,16 @@
 import styled from "styled-components";
-import { spacing } from "../theme";
 
 export const AuthForm = styled.form`
   display: flex;
   flex-direction: column;
-  gap: ${spacing.gapForm};
-  margin-top: ${spacing.marginTopForm};
+  gap: 1rem;
+  margin-top: 2rem;
 `;
 
 export const Field = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${spacing.gapField};
+  gap: 0.7rem;
 `;
 
 export const FieldLabel = styled.label`

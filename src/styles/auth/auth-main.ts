@@ -1,19 +1,19 @@
 import styled from "styled-components";
-import { colors, spacing } from "../theme";
+import { colors} from "../theme";
 
 export const AuthMain = styled.div`
   width: 100%;
   min-height: 100vh;
-  background-color: ${colors.backgroundDark};
-  color: ${colors.textLight};
-  padding: ${spacing.paddingMain};
+  background-color: ${colors.darkBlue1};
+  color: ${colors.brightGray};
+  padding: 2rem 1rem;
 
   @media (min-width: 768px) {
-    padding: ${spacing.paddingMainMd};
+    padding: 2rem 4rem;
   }
 
   @media (min-width: 1280px) {
-    padding: ${spacing.paddingMainLg};
+    padding: 4rem 10.8rem;
   }
 `;
 
@@ -21,20 +21,66 @@ export const AuthWrapper = styled.div`
   overflow: hidden;
   width: 100%;
   display: flex;
-  background-color: ${colors.backgroundSecondary};
+  background-color: ${colors.darkBlue2};
   border-radius: 1rem;
 `;
 
 export const AuthContent = styled.div`
   width: 100%;
-  padding: ${spacing.paddingContent};
-  background-color: ${colors.backgroundSecondary};
+  padding: 3rem;
+  background-color: ${colors.darkBlue2};
 
   @media (max-width: 426px) {
-    padding: ${spacing.paddingContentMd};
+    padding: 1.5rem;
   }
 
   @media (max-width: 376px) {
-    padding: ${spacing.paddingContentSm};
+    padding: 1rem;
   }
+`;
+
+export const AuthBrand = styled.h1`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+`;
+
+export const AuthHeading = styled.h2`
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+`;
+
+export const AuthSubText = styled.p`
+  color: ${colors.lightGray};
+`;
+
+export const AuthDivider = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 2rem 0;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: ${colors.lightGray};
+`;
+
+export const AuthLine = styled.div`
+  width: 100%;
+  height: 1px;
+  background-color: ${colors.balticSeaGray};
+`;
+
+export const AuthFooter = styled.p`
+  font-size: 0.9rem;
+  color: ${colors.grayishBlue};
+  text-align: center;
+  margin-top: 2rem;
+`;
+
+export const AuthRowRight = styled.p`
+  text-align: right;
+  margin-top: 1rem;
 `;

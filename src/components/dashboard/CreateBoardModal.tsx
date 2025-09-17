@@ -1,20 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Actions,
-  CloseBtn,
-  ColorCircle,
-  ColorInput,
-  ColorOptions,
-  Dialog,
-  Form,
-  HeaderRow,
-  Input,
-  Label,
-  Overlay,
-  Primary,
-  Secondary,
-  Select,
-  Title,
+import { Actions, CloseBtn, ColorCircle, ColorInput, ColorOptions, Dialog, Form, HeaderRow, Input, Label, Overlay, Primary, Secondary, Select, Title,
 } from "../../styles/dashboard/create-board";
 import { Field } from "../../styles/auth/auth-form";
 import type { BoardItem } from "../../types/auth";
@@ -28,7 +13,7 @@ const DEFAULT_COLORS = [
   "#14B8A6",
 ];
 
-type Props = {
+type boardModalProp = {
   open: boolean;
   mode?: "create" | "edit";
   board?: BoardItem;
@@ -47,7 +32,7 @@ export default function CreateBoardModal({
   mode = "create",
   board,
   onUpdate,
-}: Props) {
+}: boardModalProp) {
   const [form, setForm] = useState({
     name: "",
     type: "",
