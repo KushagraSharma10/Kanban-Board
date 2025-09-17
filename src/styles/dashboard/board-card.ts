@@ -9,11 +9,10 @@ export const ThreeDots = styled(BsThreeDotsVertical)`
 
 export const Card = styled.div`
   width: 20vw;
-  min-height: 15vw;
   border-radius: 1.5rem;
-  overflow: hidden;
   background-color: #151d27;
   cursor:pointer;
+  position: relative;
 
   &:hover ${ThreeDots} {
     opacity: 1;
@@ -30,8 +29,8 @@ export const Card = styled.div`
   }
 
   @media (max-width: 480px) {
-    width: 2vw;
-    min-height: 50vw;
+    width: 100%;
+    min-height: 46vw;
   }
 `;
 
@@ -48,6 +47,15 @@ export const BoardDetails = styled.div`
 export const ColorDiv = styled.div`
   width: 100%;
   height: 7vw;
+
+   @media (max-width: 768px) {
+    height: 15vw
+  }
+
+   @media (max-width: 480px) {
+    width: 100%;
+    min-height: 20vw;
+  }
 
 `;
 
@@ -78,7 +86,7 @@ export const OptionsMenu = styled.div`
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
   overflow: hidden;
   z-index: 999;                  
-  min-width: 120px;
+  min-width: 6vw;
   display: flex;
   flex-direction: column;
 
@@ -95,4 +103,12 @@ export const OptionsMenu = styled.div`
       background-color: #374151;
     }
   }
+`;
+
+
+export const Backdrop = styled.div`
+  position: fixed;
+  inset: 0;
+  background: transparent;   
+  z-index: 998;              
 `;

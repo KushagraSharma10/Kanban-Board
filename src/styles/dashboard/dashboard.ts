@@ -42,8 +42,8 @@ export const CreateBoard = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 15vw;
-  height: 15vw;
+  width: 19vw;
+  height: 14vw;
   border-radius: 1.5rem;
   border: 3px dotted #28394e;
   font-size: 1.2rem;

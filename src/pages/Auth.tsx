@@ -3,7 +3,6 @@ import LeftPanel from "../components/auth/LeftPanel";
 import AuthFormFields from "../components/auth/AuthFormFields";
 import { LOGIN_MODE, SIGNUP_MODE} from "../constants/AuthConstants";
 import type { Field, FormFields, Props } from "../types/auth";
-import { checkUser, saveUser} from "../utils/local-storage";
 import { AuthContent, AuthMain, AuthWrapper } from "../styles/auth/auth-main";
 import { AuthBrand, AuthDivider, AuthFooter, AuthHeading, AuthLine, AuthSubText } from "../styles/auth/auth-main";
 import { AuthForm } from "../styles/auth/auth-form";
@@ -11,6 +10,7 @@ import { AuthLink} from "../styles/auth/auth-link";
 import { AuthButton } from "../styles/auth/auth-button";
 import { useNavigate } from "react-router";
 import { validateEmail } from "../utils/validation";
+import { registerUser, validateUser } from "../utils/auth";
 
 export default function Auth({ mode }: Props) {
   const isLogin = mode === LOGIN_MODE;
@@ -38,13 +38,13 @@ export default function Auth({ mode }: Props) {
     }
 
   if (isLogin) {
-    if (checkUser(form.email, form.password)) {
+    if (validateUser(form.email, form.password)) {
       navigate("/dashboard");
     } else {
       alert("Invalid credentials or please signup first");
     }
   } else {
-    saveUser(form.name, form.email, form.password);
+    registerUser(form.name, form.email, form.password);
     alert("Signup successful! Please login.");
     navigate("/");
   }

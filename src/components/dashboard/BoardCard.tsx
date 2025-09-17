@@ -1,5 +1,16 @@
 import { useState } from "react";
-import { BoardContent, BoardDetails, BoardName, Card, ColorDiv, ContentClip, OptionsMenu, ThreeDots, TypeName } from "../../styles/dashboard/board-card";
+import {
+  Backdrop,
+  BoardContent,
+  BoardDetails,
+  BoardName,
+  Card,
+  ColorDiv,
+  ContentClip,
+  OptionsMenu,
+  ThreeDots,
+  TypeName,
+} from "../../styles/dashboard/board-card";
 
 type cardProp = {
   name: string;
@@ -36,24 +47,27 @@ const BoardCard = ({ name, color, type, onEdit, onDelete }: cardProp) => {
       </ContentClip>
 
       {menuOpen && (
-        <OptionsMenu onClick={(e) => e.stopPropagation()}>
-          <button
-            onClick={() => {
-              setMenuOpen(false);
-              onEdit?.();
-            }}
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => {
-              setMenuOpen(false);
-              if (confirm("Delete this board?")) onDelete?.();
-            }}
-          >
-            Delete
-          </button>
-        </OptionsMenu>
+        <>
+          <Backdrop onClick={() => setMenuOpen(false)} />
+          <OptionsMenu>
+            <button
+              onClick={() => {
+                setMenuOpen(false);
+                onEdit?.();
+              }}
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => {
+                setMenuOpen(false);
+                onDelete?.();
+              }}
+            >
+              Delete
+            </button>
+          </OptionsMenu>
+        </>
       )}
     </Card>
   );

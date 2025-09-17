@@ -7,17 +7,18 @@ import {
 import CreateBoardModal from "../components/dashboard/CreateBoardModal";
 import Header from "../components/dashboard/Header";
 import type { BoardItem } from "../types/auth";
-import { loadBoards, saveBoards } from "../utils/local-storage";
+import { getAllBoards, saveAllBoards } from "../utils/boards";
 
 export default function Dashboard() {
-  const [boards, setBoards] = useState<BoardItem[]>(() => loadBoards());
+  const [boards, setBoards] = useState<BoardItem[]>(() => getAllBoards());
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [selectedBoard, setSelectedBoard] = useState<BoardItem | null>(null);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
-    saveBoards(boards);
+    saveAllBoards(boards);
   }, [boards]);
 
   const handleCreateBoard = (data: {
@@ -41,6 +42,12 @@ export default function Dashboard() {
     setBoards((prev) => prev.filter((board) => board.id !== id));
   };
 
+  const filteredBoards = boards.filter(
+    (b) =>
+      b.name.toLowerCase().includes(search.toLowerCase()) ||
+      b.type.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <Main>
       <Header
@@ -49,6 +56,8 @@ export default function Dashboard() {
           setSelectedBoard(null);
           setModalOpen(open);
         }}
+        search={search}
+        onSearchChange={setSearch}
       />
 
       <BoardWrap>
@@ -56,18 +65,19 @@ export default function Dashboard() {
           <h1>All Boards</h1>
           {boards.length === 0 ? (
             <div
-              style={{
-                padding: "2rem",
-                textAlign: "center",
-                color: "#9aa4af",
-                fontSize: "1.1rem",
-              }}
+              style={{ padding: "2rem", textAlign: "center", color: "#9aa4af" }}
             >
               No boards right now. Create one to get started!
             </div>
+          ) : filteredBoards.length === 0 ? (
+            <div
+              style={{ padding: "2rem", textAlign: "center", color: "#9aa4af" }}
+            >
+              No results for "<b>{search}</b>"
+            </div>
           ) : (
             <Cards>
-              {boards.map((board) => (
+              {filteredBoards.map((board) => (
                 <BoardCard
                   key={board.id}
                   name={board.name}

@@ -78,7 +78,7 @@ export default function CreateBoardModal({
             <Label>Board name</Label>
             <Input
               value={form.name}
-              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              onChange={(e) => setForm((field) => ({ ...field, name: e.target.value }))}
               placeholder="e.g. Sprint Planning"
               required
             />
