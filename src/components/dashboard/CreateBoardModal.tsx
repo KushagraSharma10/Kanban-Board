@@ -17,6 +17,7 @@ import {
   Title,
 } from "../../styles/dashboard/create-board";
 import { Field } from "../../styles/auth/auth-form";
+import type { BoardItem } from "../../types/auth";
 
 const DEFAULT_COLORS = [
   "#3B82F6",
@@ -27,11 +28,10 @@ const DEFAULT_COLORS = [
   "#14B8A6",
 ];
 
-type Board = { id: string; name: string; type: string; color: string };
 type Props = {
   open: boolean;
   mode?: "create" | "edit";
-  board?: Board;
+  board?: BoardItem;
   onClose: () => void;
   onCreate: (data: { name: string; type: string; color: string }) => void;
   onUpdate?: (

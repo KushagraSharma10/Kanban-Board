@@ -3,17 +3,18 @@ import LeftPanel from "../components/auth/LeftPanel";
 import AuthFormFields from "../components/auth/AuthFormFields";
 import { LOGIN_MODE, SIGNUP_MODE} from "../constants/AuthConstants";
 import type { Field, FormFields, Props } from "../types/auth";
-import { checkUser, getUsers, saveUser, type UserData } from "../utils/local-storage";
+import { checkUser, saveUser} from "../utils/local-storage";
 import { AuthContent, AuthMain, AuthWrapper } from "../styles/auth/auth-main";
 import { AuthBrand, AuthDivider, AuthFooter, AuthHeading, AuthLine, AuthSubText } from "../styles/auth/auth-others";
 import { AuthForm } from "../styles/auth/auth-form";
 import { AuthLink} from "../styles/auth/auth-link";
 import { AuthButton } from "../styles/auth/auth-button";
-import { validatePassword } from "../utils/validation";
-import bcrypt from "bcryptjs";
+import { useNavigate } from "react-router";
 
 export default function Auth({ mode }: Props) {
   const isLogin = mode === LOGIN_MODE;
+
+  const navigate = useNavigate();
 
   const [form, setForm] = useState<FormFields>({
     name: "",
@@ -26,38 +27,19 @@ export default function Auth({ mode }: Props) {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+ const handleSubmit = (e: React.FormEvent) => {
   e.preventDefault();
 
   if (isLogin) {
-    const isValid = checkUser(form.email, form.password);
-    if (isValid) {
-      console.log("Login successful");
-      alert("Login successful");
+    if (checkUser(form.email, form.password)) {
+      navigate("/dashboard");
     } else {
       alert("Invalid credentials or please signup first");
     }
   } else {
-    const users = getUsers();
-
-    if (users[form.email]) {
-      alert("User already exists, please login.");
-    } 
-    else {
-      const passwordError = validatePassword(form.password);
-      if (passwordError) {
-        alert(passwordError);
-        return;
-      }
-      const hashedPassword = bcrypt.hashSync(form.password, 10);
-      const newUser: UserData = {
-        name: form.name,
-        email: form.email,
-        password: hashedPassword,
-      };
-      saveUser(newUser);
-      alert("Signup successful! Please login.");
-    }
+    saveUser(form.name, form.email, form.password);
+    alert("Signup successful! Please login.");
+    navigate("/");
   }
 };
 

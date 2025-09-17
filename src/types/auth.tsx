@@ -20,3 +20,16 @@ export type Field = {
 export type Props = {
   mode: Mode;
 };
+
+export type BoardItem = {
+  id: string;
+  name: string;
+  type: string;
+  color: string;
+};
+
+export interface UserData {
+  name: string;
+  email: string;
+  password: string;
+}
