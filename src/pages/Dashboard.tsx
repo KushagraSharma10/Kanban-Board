@@ -7,7 +7,7 @@ import {
 import CreateBoardModal from "../components/dashboard/CreateBoardModal";
 import Header from "../components/dashboard/Header";
 import type { BoardItem } from "../types/auth";
-import { getAllBoards, saveAllBoards } from "../utils/boards";
+import { getAllBoards, saveAllBoards } from "../services/boards";
 
 export default function Dashboard() {
   const [boards, setBoards] = useState<BoardItem[]>(() => getAllBoards());
