@@ -1,22 +1,50 @@
 import { BsThreeDotsVertical } from "react-icons/bs";
 import styled from "styled-components";
 
+
 export const ThreeDots = styled(BsThreeDotsVertical)`
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
 `;
 
 export const Card = styled.div`
-  width: 18vw;
-  border-radius: 1.5rem;             
+  width: 20vw;
+  min-height: 15vw;
+  border-radius: 1.5rem;
+  overflow: hidden;
   background-color: #151d27;
-  cursor: pointer;
-  position: relative;            
+  cursor:pointer;
 
   &:hover ${ThreeDots} {
     opacity: 1;
   }
+
+   @media (max-width: 1024px) {
+    width: 30vw;
+    min-height: 20vw;
+  }
+
+  @media (max-width: 768px) {
+    width: 45vw;
+    min-height: 30vw;
+  }
+
+  @media (max-width: 480px) {
+    width: 2vw;
+    min-height: 50vw;
+  }
 `;
+
+
+// export const Card = styled.div`
+//   width: 18vw;
+//   border-radius: 1.5rem;             
+//   background-color: #151d27;
+//   cursor: pointer;
+//   position: relative;            
+
+  
+// `;
 
 export const ContentClip = styled.div`
   border-radius: inherit;         

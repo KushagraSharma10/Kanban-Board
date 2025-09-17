@@ -15,6 +15,6 @@ export const AuthInput = styled.input`
   }
 
   &:focus {
-    border-color: ${colors.borderFocus};
+    border-color: ${colors.buttonPrimary};
   }
 `;

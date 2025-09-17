@@ -20,14 +20,22 @@ export const Sidebar = styled.div`
 export const BoardArea = styled.div`
   flex: 1;
   padding: 2vw;
+    @media (max-width: 768px) {
+    padding: 1.5vw;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1vw;
+  }
 `;
 
 export const Cards = styled.div`
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 2rem;
+  gap: 1.5rem;
   margin-top: 1.5rem;
+  padding: 1rem;
 `;
 
 export const CreateBoard = styled.div`
@@ -40,4 +48,19 @@ export const CreateBoard = styled.div`
   border: 3px dotted #28394e;
   font-size: 1.2rem;
   cursor: pointer;
+
+   @media (max-width: 1024px) {
+    width: 20vw;
+    height: 20vw;
+  }
+
+  @media (max-width: 768px) {
+    width: 30vw;
+    height: 30vw;
+  }
+
+  @media (max-width: 480px) {
+    width: 100%;
+    height: 50vw;
+  }
 `;

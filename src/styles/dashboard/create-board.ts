@@ -19,6 +19,10 @@ export const Dialog = styled.div`
   box-shadow: 0 20px 60px #00000059;
   padding: 1.2rem;
   color: #e6edf3;
+
+  @media (max-width: 768px) {
+    max-width: 80vw;
+  }
 `;
 
 export const HeaderRow = styled.div`
@@ -89,6 +93,16 @@ export const ColorCircle = styled.button`
   height: 2vw;
   border-radius: 1rem;
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    width: 4vw;
+    height: 4vw;
+  }
+
+  @media (max-width: 480px) {
+    width: 6vw;
+    height: 6vw;
+  }
 `;
 
 export const ColorInput = styled.input`
@@ -96,6 +110,16 @@ export const ColorInput = styled.input`
   height: 2.2vw;
   border-radius: 0.3rem;
   border: 1px solid #2a3b4f;
+
+   @media (max-width: 768px) {
+    width: 6vw;
+    height: 3vw;
+  }
+
+  @media (max-width: 480px) {
+    width: 8vw;
+    height: 4vw;
+  }
 `;
 
 export const Actions = styled.div`
