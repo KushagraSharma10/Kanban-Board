@@ -17,7 +17,7 @@ export const AuthHeading = styled.h2`
 `;
 
 export const AuthSubText = styled.p`
-  color: ${colors.textMuted};
+  color: ${colors.textSecondary};
 `;
 
 export const AuthDivider = styled.div`
@@ -26,7 +26,7 @@ export const AuthDivider = styled.div`
   margin: ${spacing.marginTopDivider} 0;
   gap: ${spacing.gapDivider};
   font-size: 0.9rem;
-  color: ${colors.textMuted};
+  color: ${colors.textSecondary};
 `;
 
 export const AuthLine = styled.div`

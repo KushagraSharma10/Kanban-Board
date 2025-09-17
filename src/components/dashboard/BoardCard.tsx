@@ -7,11 +7,50 @@ export const Card = styled.div`
   overflow: hidden;
   background-color: #151d27;
   cursor:pointer;
+
+  // max-width: 250px; 
+  // min-height: 200px;
+  // border-radius: 1.5rem;
+  // overflow: hidden;
+  // background-color: #151d27;
+  // cursor: pointer;
+  // transition: transform 0.2s ease;
+
+  
+   @media (max-width: 1024px) {
+    width: 30vw;
+    min-height: 20vw;
+  }
+
+  @media (max-width: 768px) {
+    width: 40vw;
+    min-height: 25vw;
+  }
+
+  @media (max-width: 480px) {
+    width: 90vw;
+    min-height: 50vw;
+  }
+
+  &:hover {
+    transform: scale(1.05);
+  }
 `;
 
 export const Color = styled.div`
   width: 100%;
   height: 7vw;
+
+   @media (max-width: 768px) {
+
+   height:10vw
+  }
+
+  @media (max-width: 480px) {
+    min-height: 20vw;
+  }
+
+
 `;
 
 export const BoardContent = styled.div`

@@ -7,6 +7,21 @@ export const Card = styled.div`
   overflow: hidden;
   background-color: #151d27;
   cursor:pointer;
+
+   @media (max-width: 1024px) {
+    width: 30vw;
+    min-height: 20vw;
+  }
+
+  @media (max-width: 768px) {
+    width: 45vw;
+    min-height: 30vw;
+  }
+
+  @media (max-width: 480px) {
+    width: 2vw;
+    min-height: 50vw;
+  }
 `;
 
 export const Color = styled.div`
