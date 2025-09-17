@@ -11,14 +11,7 @@ import {
   ThreeDots,
   TypeName,
 } from "../../styles/dashboard/board-card";
-
-type cardProp = {
-  name: string;
-  color: string;
-  type: string;
-  onEdit?: () => void;
-  onDelete?: () => void;
-};
+import type { cardProp } from "../../types/dashboard";
 
 const BoardCard = ({ name, color, type, onEdit, onDelete }: cardProp) => {
   const [menuOpen, setMenuOpen] = useState(false);

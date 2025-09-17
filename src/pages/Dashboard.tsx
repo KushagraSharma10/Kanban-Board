@@ -6,7 +6,7 @@ import {
 } from "../styles/dashboard/dashboard";
 import CreateBoardModal from "../components/dashboard/CreateBoardModal";
 import Header from "../components/dashboard/Header";
-import type { BoardItem } from "../types/auth";
+import type { BoardItem } from "../types/dashboard";
 import { getAllBoards, saveAllBoards } from "../utils/boards";
 
 export default function Dashboard() {

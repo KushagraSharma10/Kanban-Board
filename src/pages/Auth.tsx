@@ -1,8 +1,8 @@
 import { useState } from "react";
 import LeftPanel from "../components/auth/LeftPanel";
 import AuthFormFields from "../components/auth/AuthFormFields";
-import { LOGIN_MODE, SIGNUP_MODE} from "../constants/AuthConstants";
-import type { Field, FormFields, Props } from "../types/auth";
+import { LOGIN_MODE, SIGNUP_MODE} from "../constants/Auth";
+import type { Field, FormFields } from "../types/form";
 import { AuthContent, AuthMain, AuthWrapper } from "../styles/auth/auth-main";
 import { AuthBrand, AuthDivider, AuthFooter, AuthHeading, AuthLine, AuthSubText } from "../styles/auth/auth-main";
 import { AuthForm } from "../styles/auth/auth-form";
@@ -11,8 +11,9 @@ import { AuthButton } from "../styles/auth/auth-button";
 import { useNavigate } from "react-router";
 import { validateEmail } from "../utils/validation";
 import { registerUser, validateUser } from "../utils/auth";
+import type { ModeProp} from "../types/auth";
 
-export default function Auth({ mode }: Props) {
+export default function Auth({ mode }: ModeProp) {
   const isLogin = mode === LOGIN_MODE;
 
   const navigate = useNavigate();
