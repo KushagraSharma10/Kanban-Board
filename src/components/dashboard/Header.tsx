@@ -1,12 +1,7 @@
 import { CreateButton, HeaderBottom, HeaderContainer, HeaderTop, Logo, Profile, SearchInput, UserAvatar } from "../../styles/dashboard/header";
+import type { HeaderProp } from "../../types/header";
 
-type Props = {
-  setModalOpen: (open: boolean) => void;
-  search: string;
-  onSearchChange: (q: string) => void;
-};
-
-export default function Header({ setModalOpen, search, onSearchChange  }: Props) {
+export default function Header({ setModalOpen, search, onSearchChange  }: HeaderProp) {
   return (
     <HeaderContainer>
       <HeaderTop>

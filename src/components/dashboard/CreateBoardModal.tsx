@@ -2,28 +2,8 @@ import { useEffect, useState } from "react";
 import { Actions, CloseBtn, ColorCircle, ColorInput, ColorOptions, Dialog, Form, HeaderRow, Input, Label, Overlay, Primary, Secondary, Select, Title,
 } from "../../styles/dashboard/create-board";
 import { Field } from "../../styles/auth/auth-form";
-import type { BoardItem } from "../../types/auth";
-
-const DEFAULT_COLORS = [
-  "#3B82F6",
-  "#10B981",
-  "#F59E0B",
-  "#EF4444",
-  "#8B5CF6",
-  "#14B8A6",
-];
-
-type boardModalProp = {
-  open: boolean;
-  mode?: "create" | "edit";
-  board?: BoardItem;
-  onClose: () => void;
-  onCreate: (data: { name: string; type: string; color: string }) => void;
-  onUpdate?: (
-    id: string,
-    data: { name: string; type: string; color: string }
-  ) => void;
-};
+import { DEFAULT_COLORS } from "../../constants/Colors";
+import type { boardModalProp } from "../../types/dashboard";
 
 export default function CreateBoardModal({
   open,

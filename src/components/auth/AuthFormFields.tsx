@@ -1,16 +1,9 @@
-import type { Field, FormFields } from "../../types/auth";
+import type { AuthProp } from "../../types/auth";
 import { FieldLabel, Field as FieldContainer } from "../../styles/auth/auth-form";
 import { AuthInput } from "../../styles/auth/auth-input";
 
 
-
-type Props = {
-  fields: Field[];
-  form: FormFields;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-};
-
-export default function AuthFormFields({ fields, form, onChange }: Props) {
+export default function AuthFormFields({ fields, form, onChange }: AuthProp) {
   return (
     <>
       {fields.map((field) => (
