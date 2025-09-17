@@ -1,6 +1,23 @@
-import { useState } from "react";
-import { Actions, CloseBtn, ColorCircle, ColorInput, ColorOptions, Dialog, Form, HeaderRow, Input, Label, Overlay, Primary, Secondary, Select, Title } from "../../styles/dashboard/create-board";
+import { useEffect, useState } from "react";
+import {
+  Actions,
+  CloseBtn,
+  ColorCircle,
+  ColorInput,
+  ColorOptions,
+  Dialog,
+  Form,
+  HeaderRow,
+  Input,
+  Label,
+  Overlay,
+  Primary,
+  Secondary,
+  Select,
+  Title,
+} from "../../styles/dashboard/create-board";
 import { Field } from "../../styles/auth/auth-form";
+import type { BoardItem } from "../../types/auth";
 
 const DEFAULT_COLORS = [
   "#3B82F6",
@@ -13,20 +30,49 @@ const DEFAULT_COLORS = [
 
 type Props = {
   open: boolean;
+  mode?: "create" | "edit";
+  board?: BoardItem;
   onClose: () => void;
   onCreate: (data: { name: string; type: string; color: string }) => void;
+  onUpdate?: (
+    id: string,
+    data: { name: string; type: string; color: string }
+  ) => void;
 };
 
-export default function CreateBoardModal({ open, onClose, onCreate }: Props) {
+export default function CreateBoardModal({
+  open,
+  onClose,
+  onCreate,
+  mode = "create",
+  board,
+  onUpdate,
+}: Props) {
   const [form, setForm] = useState({
     name: "",
     type: "",
     color: DEFAULT_COLORS[0],
   });
 
+   useEffect(() => {
+    if (!open) return;
+    if (mode === "edit" && board) {
+      setForm({ name: board.name, type: board.type, color: board.color });
+    } else {
+      setForm({ name: "", type: "", color: DEFAULT_COLORS[0] });
+    }
+  }, [open, mode, board]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim()) return alert("Please enter a board name");
+
+    if (mode === "edit" && board && onUpdate) {
+      onUpdate(board.id, form);  
+      onClose();
+      return;
+    }
+
     onCreate(form);
     setForm({ name: "", type: "", color: DEFAULT_COLORS[0] });
     onClose();
@@ -38,7 +84,7 @@ export default function CreateBoardModal({ open, onClose, onCreate }: Props) {
     <Overlay onClick={onClose}>
       <Dialog onClick={(e) => e.stopPropagation()}>
         <HeaderRow>
-          <Title>Create Board</Title>
+          <Title>{mode === "edit" ? "Edit Board" : "Create Board"}</Title>
           <CloseBtn onClick={onClose}>×</CloseBtn>
         </HeaderRow>
 
@@ -98,11 +144,10 @@ export default function CreateBoardModal({ open, onClose, onCreate }: Props) {
             <Secondary type="button" onClick={onClose}>
               Cancel
             </Secondary>
-            <Primary type="submit">Create</Primary>
+            <Primary type="submit">{mode === "edit" ? "Save changes" : "Create"}</Primary>
           </Actions>
         </Form>
       </Dialog>
     </Overlay>
   );
 }
-

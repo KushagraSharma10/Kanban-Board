@@ -1,3 +1,6 @@
+import bcrypt from "bcryptjs";
+import type { BoardItem } from "../types/auth";
+
 export interface UserData {
   name: string;
   email: string;
@@ -11,14 +14,37 @@ export const getUsers = (): Record<string, UserData> => {
   return data ? JSON.parse(data) : {};
 };
 
-export const saveUser = (user: UserData): void => {
-  const users = getUsers();
-  users[user.email] = user;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-};
+export function saveUser(name: string, email: string, password: string) {
+  const users = JSON.parse(localStorage.getItem("users") || "{}");
+  const hashed = bcrypt.hashSync(password, 10);
 
-export const checkUser = (email: string, password: string): boolean => {
-  const users = getUsers();
-  if (!users[email]) return false;
-  return users[email].password === password;
-};
+  users[email.toLowerCase()] = { name, email: email.toLowerCase(), password: hashed };
+  localStorage.setItem("users", JSON.stringify(users));
+}
+
+export function checkUser(email: string, password: string): boolean {
+  const users = JSON.parse(localStorage.getItem("users") || "{}");
+  const user = users[email.toLowerCase()];
+  if (!user) return false;
+
+  return bcrypt.compareSync(password, user.password);
+}
+
+const LS_KEY = "kanban.boards";
+
+export function loadBoards(): BoardItem[] {
+  try {
+    const boards = localStorage.getItem(LS_KEY);
+    return boards ? (JSON.parse(boards) as BoardItem[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveBoards(boards: BoardItem[]): void {
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify(boards));
+  } catch (err) {
+    console.error(err)
+  }
+}

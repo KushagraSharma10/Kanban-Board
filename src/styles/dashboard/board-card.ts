@@ -1,4 +1,11 @@
+import { BsThreeDotsVertical } from "react-icons/bs";
 import styled from "styled-components";
+
+
+export const ThreeDots = styled(BsThreeDotsVertical)`
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+`;
 
 export const Card = styled.div`
   width: 20vw;
@@ -7,6 +14,10 @@ export const Card = styled.div`
   overflow: hidden;
   background-color: #151d27;
   cursor:pointer;
+
+  &:hover ${ThreeDots} {
+    opacity: 1;
+  }
 
    @media (max-width: 1024px) {
     width: 30vw;
@@ -24,13 +35,38 @@ export const Card = styled.div`
   }
 `;
 
-export const Color = styled.div`
+
+// export const Card = styled.div`
+//   width: 18vw;
+//   border-radius: 1.5rem;             
+//   background-color: #151d27;
+//   cursor: pointer;
+//   position: relative;            
+
+  
+// `;
+
+export const ContentClip = styled.div`
+  border-radius: inherit;         
+  overflow: hidden;               
+  background: inherit;            
+`;
+
+export const BoardDetails = styled.div`
+  padding: 0rem 0.2rem;
+`;
+
+export const ColorDiv = styled.div`
   width: 100%;
   height: 7vw;
+
 `;
 
 export const BoardContent = styled.div`
-  padding: 1rem 1.1rem;
+  padding: 1.4rem 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;
 
 export const BoardName = styled.h2`
@@ -38,7 +74,36 @@ export const BoardName = styled.h2`
   font-weight: 600;
 `;
 
-export const TagName = styled.p`
+export const TypeName = styled.p`
   font-size: 0.9rem;
-  color: rgb(80, 79, 79);
+  margin-top: 0.2rem;
+  color: rgba(112, 110, 110, 1);
+`;
+
+export const OptionsMenu = styled.div`
+  position: absolute;
+  top: 9rem;
+  right: 1rem;
+  background: #1f2937;
+  border-radius: 0.5rem;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  z-index: 999;                  
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+
+  button {
+    padding: 0.6rem 1rem;
+    background: none;
+    border: none;
+    color: white;
+    text-align: left;
+    font-size: 0.9rem;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #374151;
+    }
+  }
 `;
