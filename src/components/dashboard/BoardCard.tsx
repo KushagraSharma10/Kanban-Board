@@ -2,14 +2,13 @@ import { useState } from "react";
 import {
   Backdrop,
   BoardContent,
-  BoardDetails,
-  BoardName,
+
   Card,
   ColorDiv,
   ContentClip,
+  DotWrap,
   OptionsMenu,
   ThreeDots,
-  TypeName,
 } from "../../styles/dashboard/board-card";
 import type { cardProp } from "../../types/dashboard";
 
@@ -19,14 +18,14 @@ const BoardCard = ({ name, color, type, onEdit, onDelete }: cardProp) => {
   return (
     <Card onClick={() => setMenuOpen(false)}>
       <ContentClip>
-        <ColorDiv style={{ backgroundColor: color }} />
+        <ColorDiv $bg={color} />
         <BoardContent>
-          <BoardDetails>
-            <BoardName>{name}</BoardName>
-            <TypeName>{type}</TypeName>
-          </BoardDetails>
+          <div className="details">
+            <h2>{name}</h2>
+            <p>{type}</p>
+          </div>
 
-          <div style={{ position: "relative" }}>
+          <DotWrap>
             <ThreeDots
               size={20}
               onClick={(e) => {
@@ -35,10 +34,9 @@ const BoardCard = ({ name, color, type, onEdit, onDelete }: cardProp) => {
               }}
               style={{ cursor: "pointer" }}
             />
-          </div>
+          </DotWrap>
         </BoardContent>
       </ContentClip>
-
       {menuOpen && (
         <>
           <Backdrop onClick={() => setMenuOpen(false)} />

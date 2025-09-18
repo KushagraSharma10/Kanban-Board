@@ -38,6 +38,11 @@ export const NoBoards = styled.div`
   color: #9aa4af;
   font-size: 1.1rem;
 `;
+
+export const Query = styled.b`
+  font-weight: 700;
+`;
+
 export const CreateBoard = styled.div`
   display: flex;
   align-items: center;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Actions, CloseBtn, ColorCircle, ColorInput, ColorOptions, Dialog, Form, HeaderRow, Input, Label, Overlay, Primary, Secondary, Select, Title,
+import { Actions,  ColorCircle, ColorInput, ColorOptions, Dialog, Form, HeaderRow, Overlay, Primary, Secondary,
 } from "../../styles/dashboard/create-board";
-import { Field } from "../../styles/auth/auth-form";
+import { Field } from "../../styles/dashboard/create-board";
 import { DEFAULT_COLORS } from "../../constants/Colors";
 import type { boardModalProp } from "../../types/dashboard";
 
@@ -49,14 +49,14 @@ export default function CreateBoardModal({
     <Overlay onClick={onClose}>
       <Dialog onClick={(e) => e.stopPropagation()}>
         <HeaderRow>
-          <Title>{mode === "edit" ? "Edit Board" : "Create Board"}</Title>
-          <CloseBtn onClick={onClose}>×</CloseBtn>
+          <h2>{mode === "edit" ? "Edit Board" : "Create Board"}</h2>
+          <button onClick={onClose}>×</button>
         </HeaderRow>
 
         <Form onSubmit={handleSubmit}>
           <Field>
-            <Label>Board name</Label>
-            <Input
+            <h2>Board name</h2>
+            <input
               value={form.name}
               onChange={(e) => setForm((field) => ({ ...field, name: e.target.value }))}
               placeholder="e.g. Sprint Planning"
@@ -65,8 +65,8 @@ export default function CreateBoardModal({
           </Field>
 
           <Field>
-            <Label>Type</Label>
-            <Select
+            <h2>Type</h2>
+            <select
               value={form.type}
               onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
             >
@@ -77,24 +77,19 @@ export default function CreateBoardModal({
               <option>PM</option>
               <option>Ops</option>
               <option>General</option>
-            </Select>
+            </select>
           </Field>
 
           <Field>
-            <Label>Color</Label>
+            <h2>Color</h2>
             <ColorOptions>
               {DEFAULT_COLORS.map((colorOption) => (
                 <ColorCircle
                   key={colorOption}
                   onClick={() => setForm({ ...form, color: colorOption })}
                   type="button"
-                  style={{
-                    backgroundColor: colorOption,
-                    border:
-                      form.color === colorOption
-                        ? "2px solid #fff"
-                        : "2px solid #2a3b4f",
-                  }}
+                  $bg={colorOption}
+                  $active={form.color === colorOption}
                 />
               ))}
               <ColorInput
