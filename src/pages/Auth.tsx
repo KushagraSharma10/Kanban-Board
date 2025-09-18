@@ -4,7 +4,7 @@ import AuthFormFields from "../components/auth/AuthFormFields";
 import { LOGIN_MODE, SIGNUP_MODE} from "../constants/Auth";
 import type { Field, FormFields } from "../types/form";
 import { AuthContent, AuthMain, AuthWrapper } from "../styles/auth/auth-main";
-import { AuthBrand, AuthDivider, AuthFooter, AuthHeading, AuthLine, AuthSubText } from "../styles/auth/auth-main";
+import { AuthBrand, AuthDivider, AuthFooter, AuthLine } from "../styles/auth/auth-main";
 import { AuthForm } from "../styles/auth/auth-form";
 import { AuthLink} from "../styles/auth/auth-link";
 import { AuthButton } from "../styles/auth/auth-button";
@@ -13,7 +13,7 @@ import { validateEmail } from "../utils/validation";
 import { registerUser, validateUser } from "../services/auth";
 import type { ModeProp} from "../types/auth";
 
-export default function Auth({ mode }: ModeProp) {
+ const Auth = ({ mode }: ModeProp) => {
   const isLogin = mode === LOGIN_MODE;
 
   const navigate = useNavigate();
@@ -32,20 +32,32 @@ export default function Auth({ mode }: ModeProp) {
  const handleSubmit = (e: React.FormEvent) => {
   e.preventDefault();
 
-    const emailError = validateEmail(form.email);
-    if (emailError) {
-      alert(emailError);
-      return; 
-    }
+  const name = form.name.trim();
+  const email = form.email.trim();
+  const password = form.password;
+
+  const emailError = validateEmail(email);
+  if (emailError) {
+    alert(emailError);
+    return;
+  }
 
   if (isLogin) {
-    if (validateUser(form.email, form.password)) {
+    if (validateUser(email, password)) {
       navigate("/dashboard");
     } else {
       alert("Invalid credentials or please signup first");
     }
   } else {
-    registerUser(form.name, form.email, form.password);
+    if (!name) {
+      alert("Please enter your name");
+      return;
+    }
+    const ok = registerUser(name, email, password);
+    if (!ok) {
+      alert("An account with this email already exists.");
+      return;
+    }
     alert("Signup successful! Please login.");
     navigate("/");
   }
@@ -90,12 +102,12 @@ export default function Auth({ mode }: ModeProp) {
             <img src="/kanban.svg" alt="Kanban Logo" width={30} height={30} />
             Kanban Board
           </AuthBrand>
-          <AuthHeading>{isLogin ? "Welcome Back" : "Create your account"}</AuthHeading>
-          <AuthSubText>
+          <h2>{isLogin ? "Welcome Back" : "Create your account"}</h2>
+          <p>
             {isLogin
               ? "Please enter your details to sign in."
               : "Start managing your work in one place."}
-          </AuthSubText>
+          </p>
           <AuthForm onSubmit={handleSubmit}>
             <AuthFormFields fields={fields} form={form} onChange={handleChange} />
             <AuthButton type="submit">{isLogin ? LOGIN_MODE : SIGNUP_MODE}</AuthButton>
@@ -121,3 +133,4 @@ export default function Auth({ mode }: ModeProp) {
     </AuthMain>
   );
 }
+export default Auth;

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { colors} from "../theme";
+import { colors } from "../theme";
 
 export const AuthMain = styled.div`
   width: 100%;
@@ -37,6 +37,16 @@ export const AuthContent = styled.div`
   @media (max-width: 376px) {
     padding: 1rem;
   }
+
+  h2 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+  }
+
+  p {
+    color: ${colors.lightGray};
+  }
 `;
 
 export const AuthBrand = styled.h1`
@@ -46,16 +56,6 @@ export const AuthBrand = styled.h1`
   font-size: 1.8rem;
   font-weight: 600;
   margin-bottom: 2rem;
-`;
-
-export const AuthHeading = styled.h2`
-  font-size: 1.6rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-`;
-
-export const AuthSubText = styled.p`
-  color: ${colors.lightGray};
 `;
 
 export const AuthDivider = styled.div`

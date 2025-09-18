@@ -3,13 +3,15 @@ import { nanoid } from "nanoid";
 import BoardCard from "../components/dashboard/BoardCard";
 import {
   Board as BoardWrap,BoardArea, CreateBoard, Main, Cards,
+  NoBoards,
+  Query,
 } from "../styles/dashboard/dashboard";
 import CreateBoardModal from "../components/dashboard/CreateBoardModal";
 import Header from "../components/dashboard/Header";
 import type { BoardItem } from "../types/dashboard";
 import { getAllBoards, saveAllBoards } from "../services/boards";
 
-export default function Dashboard() {
+const Dashboard = () => {
   const [boards, setBoards] = useState<BoardItem[]>(() => getAllBoards());
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -43,9 +45,9 @@ export default function Dashboard() {
   };
 
   const filteredBoards = boards.filter(
-    (b) =>
-      b.name.toLowerCase().includes(search.toLowerCase()) ||
-      b.type.toLowerCase().includes(search.toLowerCase())
+    (board) =>
+      board.name.toLowerCase().includes(search.toLowerCase()) ||
+      board.type.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -62,19 +64,13 @@ export default function Dashboard() {
 
       <BoardWrap>
         <BoardArea>
-          <h1>All Boards</h1>
-          {boards.length === 0 ? (
-            <div
-              style={{ padding: "2rem", textAlign: "center", color: "#9aa4af" }}
-            >
-              No boards right now. Create one to get started!
-            </div>
+          <h1>My Boards</h1>
+           {boards.length === 0 ? (
+            <NoBoards>No boards right now. Create one to get started!</NoBoards>
           ) : filteredBoards.length === 0 ? (
-            <div
-              style={{ padding: "2rem", textAlign: "center", color: "#9aa4af" }}
-            >
-              No results for "<b>{search}</b>"
-            </div>
+            <NoBoards>
+              No results for "<Query>{search}</Query>"
+            </NoBoards>
           ) : (
             <Cards>
               {filteredBoards.map((board) => (
@@ -117,3 +113,5 @@ export default function Dashboard() {
     </Main>
   );
 }
+
+export default Dashboard;

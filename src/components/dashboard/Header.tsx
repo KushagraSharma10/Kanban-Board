@@ -1,4 +1,4 @@
-import { CreateButton, HeaderBottom, HeaderContainer, HeaderTop, Logo, Profile, SearchInput, UserAvatar } from "../../styles/dashboard/header";
+import { HeaderBottom, HeaderContainer, HeaderTop, Logo, Profile, SearchInput } from "../../styles/dashboard/header";
 import type { HeaderProp } from "../../types/header";
 
 export default function Header({ setModalOpen, search, onSearchChange  }: HeaderProp) {
@@ -6,7 +6,7 @@ export default function Header({ setModalOpen, search, onSearchChange  }: Header
     <HeaderContainer>
       <HeaderTop>
         <Logo>
-          <img src="./kanban.svg" alt="" width={30} />
+          <img src="./kanban.svg" alt="" />
           KanbanApp
         </Logo>
       </HeaderTop>
@@ -18,10 +18,10 @@ export default function Header({ setModalOpen, search, onSearchChange  }: Header
           onChange={(e) => onSearchChange(e.target.value)}
         />
         <Profile>
-          <CreateButton onClick={() => setModalOpen(true)}>
+          <button onClick={() => setModalOpen(true)}>
             + Create
-          </CreateButton>
-          <UserAvatar
+          </button>
+          <img
             src="https://tse3.mm.bing.net/th/id/OIP.JlqeUVLU3SK_9LI_Fxvs3wHaHa?r=0&w=1024&h=1024&rs=1&pid=ImgDetMain&o=7&rm=3"
             alt="User"
           />

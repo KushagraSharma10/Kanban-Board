@@ -30,20 +30,21 @@ export const HeaderRow = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.7rem;
-`;
 
-export const Title = styled.h3`
-  font-size: 1.25rem;
-  font-weight: 700;
-`;
-export const CloseBtn = styled.button`
-  background-color: transparent;
-  border: none;
-  font-size: 1.6rem;
-  color: #9fb1cc;
-  cursor: pointer;
-  &:hover {
-    color: #fff;
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  button {
+    background-color: transparent;
+    border: none;
+    font-size: 1.6rem;
+    color: #9fb1cc;
+    cursor: pointer;
+    &:hover {
+      color: #fff;
+    }
   }
 `;
 
@@ -54,31 +55,22 @@ export const Form = styled.form`
 export const Field = styled.div`
   display: grid;
   gap: 0.5rem;
-`;
-export const Label = styled.label`
-  font-size: 0.9rem;
-  color: #c7d2e1;
-`;
 
-export const Input = styled.input`
-  background-color: #0b121a;
-  border: 1px solid #2a3b4f;
-  border-radius: 10px;
-  padding: 0.6rem 0.7rem;
-  color: #e6edf3;
-  &:focus {
-    border-color: #3b82f6;
+  h2 {
+    font-size: 0.9rem;
+    color: #c7d2e1;
   }
-`;
 
-export const Select = styled.select`
-  background-color: #0b121a;
-  border: 1px solid #2a3b4f;
-  border-radius: 10px;
-  padding: 0.6rem 0.7rem;
-  color: #e6edf3;
-  &:focus {
-    border-color: #3b82f6;
+  input,
+  select {
+    background-color: #0b121a;
+    border: 1px solid #2a3b4f;
+    border-radius: 10px;
+    padding: 0.6rem 0.7rem;
+    color: #e6edf3;
+    &:focus {
+      border-color: #3b82f6;
+    }
   }
 `;
 
@@ -88,11 +80,15 @@ export const ColorOptions = styled.div`
   align-items: center;
 `;
 
-export const ColorCircle = styled.button`
+export const ColorCircle = styled.button<{ $bg: string; $active?: boolean }>`
   width: 2vw;
   height: 2vw;
   border-radius: 1rem;
   cursor: pointer;
+
+  background-color: ${({ $bg }) => $bg};
+  border: ${({ $active }) =>
+    $active ? "2px solid #fff" : "2px solid #2a3b4f"};
 
   @media (max-width: 768px) {
     width: 4vw;
@@ -111,7 +107,7 @@ export const ColorInput = styled.input`
   border-radius: 0.3rem;
   border: 1px solid #2a3b4f;
 
-   @media (max-width: 768px) {
+  @media (max-width: 768px) {
     width: 6vw;
     height: 3vw;
   }

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { colors} from "../theme";
+import { colors } from "../theme";
 
 export const HeaderContainer = styled.div`
   display: flex;
@@ -22,7 +22,7 @@ export const HeaderBottom = styled.div`
   align-items: center;
   gap: 0.5rem;
   justify-content: space-between;
-  
+
   @media (max-width: 768px) {
     flex-wrap: wrap;
     width: 100%;
@@ -33,9 +33,9 @@ export const HeaderBottom = styled.div`
     width: 100%;
     justify-content: space-between;
   }
-    @media (max-width: 429px) {
-    flex-wrap: nowrap; 
-    overflow-x: auto;  
+  @media (max-width: 429px) {
+    flex-wrap: nowrap;
+    overflow-x: auto;
   }
 `;
 
@@ -45,6 +45,11 @@ export const Logo = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
+
+  img {
+    width: 2.5vw;
+    display: block;
+  }
 `;
 
 export const SearchInput = styled.input`
@@ -61,37 +66,37 @@ export const SearchInput = styled.input`
   @media (max-width: 768px) {
     margin-left: 0;
   }
-    @media (max-width: 480px) {
+  @media (max-width: 480px) {
     width: 70%;
-    }
+  }
 `;
 
-export const Profile= styled.div`
+export const Profile = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  `;
-  
-  export const CreateButton = styled.button`
-  margin-left: auto;
-  padding: 0.5rem 1rem;
-  background-color: ${colors.blue};
-  color: #000;
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  
-  @media (max-width: 429px) {
-    font-size: 0.7rem;
-    padding: 0.5rem 0.4rem;
+
+  button {
+    margin-left: auto;
+    padding: 0.5rem 1rem;
+    background-color: ${colors.blue};
+    color: #000;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+
+    @media (max-width: 425px) {
+      font-size: 0.7rem;
+      padding: 0.5rem 0.4rem;
+    }
   }
-  `;
-  
-  export const UserAvatar = styled.img`
-  margin-left: 1rem;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  cursor: pointer;
-  background-color: transparent;
+
+  img {
+    margin-left: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    background-color: transparent;
+  }
 `;
