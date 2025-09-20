@@ -12,18 +12,16 @@ import {
 } from "../../styles/dashboard/board-card";
 import type { BoardItem, CardProp } from "../../utils/types/dashboard";
 
-const BoardCard: React.FC<CardProp> = ({
-  name,
-  color,
-  type,
-  onAction
-}: CardProp) => {
+const BoardCard = ({ name, color, type, onEdit, onDelete, onOpen }: cardProp) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
-    const board: BoardItem = { id: "", name, type, color };
+   const handleCardClick = () => {
+    if (menuOpen) return setMenuOpen(false);
+    onOpen?.();                         
+  };
 
   return (
-    <Card onClick={() => setMenuOpen(false)}>
+    <Card onClick={handleCardClick}>
       <ContentClip>
         <ColorDiv $bg={color} />
         <BoardContent>

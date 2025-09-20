@@ -8,7 +8,9 @@ export type CardProp = {
   name: string;
   color: string;
   type: string;
-  onAction: (action: "edit" | "delete", board: BoardItem) => void;
+  onEdit?: () => void;
+  onOpen?: () => void;
+  onDelete?: () => void;
 };
 
 export type BoardModalProp = {

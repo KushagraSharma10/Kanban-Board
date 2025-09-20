@@ -12,12 +12,14 @@ import {
 } from "../styles/dashboard/dashboard";
 import CreateBoardModal from "../components/dashboard/CreateBoardModal";
 import Header from "../components/dashboard/Header";
-import type { BoardItem } from "../utils/types/dashboard";
-import { loadFromStorage, saveToStorage } from "../utils/storage";
-
-const BOARDS_STORAGE_KEY = "kanban.boards";
+import type { BoardItem } from "../types/dashboard";
+import { getAllBoards, saveAllBoards } from "../services/boards";
+import { useNavigate } from "react-router";
 
 const Dashboard = () => {
+
+  const navigate = useNavigate();
+
   const [boards, setBoards] = useState<BoardItem[]>(() => getAllBoards());
 
   const [modalOpen, setModalOpen] = useState<boolean>(false);
@@ -102,7 +104,13 @@ const Dashboard = () => {
                   name={board.name}
                   type={board.type}
                   color={board.color}
-                  onAction={handleCardAction}  
+                  onEdit={() => {
+                    setSelectedBoard(board);
+                    setModalMode("edit");
+                    setModalOpen(true);
+                  }}
+                  onOpen={() => navigate("/board")}
+                  onDelete={() => handleDeleteBoard(board.id)}
                 />
               ))}
 
