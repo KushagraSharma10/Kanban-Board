@@ -12,11 +12,16 @@ import {
 } from "../../styles/dashboard/board-card";
 import type { cardProp } from "../../types/dashboard";
 
-const BoardCard = ({ name, color, type, onEdit, onDelete }: cardProp) => {
+const BoardCard = ({ name, color, type, onEdit, onDelete, onOpen }: cardProp) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
+   const handleCardClick = () => {
+    if (menuOpen) return setMenuOpen(false);
+    onOpen?.();                         
+  };
+
   return (
-    <Card onClick={() => setMenuOpen(false)}>
+    <Card onClick={handleCardClick}>
       <ContentClip>
         <ColorDiv $bg={color} />
         <BoardContent>

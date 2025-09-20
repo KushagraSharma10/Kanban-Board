@@ -9,6 +9,7 @@ export type cardProp = {
   color: string;
   type: string;
   onEdit?: () => void;
+  onOpen?: () => void;
   onDelete?: () => void;
 };
 
