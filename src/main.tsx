@@ -5,6 +5,7 @@ import './index.css'
 import App from './App.tsx'
 import Login from './pages/Login.tsx';
 import Signup from './pages/Signup.tsx';
+import BoardView from './pages/BoardView.tsx';
 
 const router = createBrowserRouter([
   {
@@ -16,8 +17,12 @@ const router = createBrowserRouter([
     element: <App />
   },
   {
-    path: "signup",
+    path: "/signup",
     element : <Signup />
+  },
+  {
+    path: "/board/",
+    element : <BoardView />
   }
 ]);
 

@@ -10,8 +10,12 @@ import CreateBoardModal from "../components/dashboard/CreateBoardModal";
 import Header from "../components/dashboard/Header";
 import type { BoardItem } from "../types/dashboard";
 import { getAllBoards, saveAllBoards } from "../services/boards";
+import { useNavigate } from "react-router";
 
 const Dashboard = () => {
+
+  const navigate = useNavigate();
+
   const [boards, setBoards] = useState<BoardItem[]>(() => getAllBoards());
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -84,6 +88,7 @@ const Dashboard = () => {
                     setModalMode("edit");
                     setModalOpen(true);
                   }}
+                  onOpen={() => navigate("/board")}
                   onDelete={() => handleDeleteBoard(board.id)}
                 />
               ))}
