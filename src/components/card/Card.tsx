@@ -29,7 +29,6 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
 
   return (
     <>
-      {/* Card preview */}
       <div
         onClick={handleCardClick}
         className="bg-white shadow-md rounded-md p-3 mb-2 cursor-pointer hover:bg-gray-50 transition"
@@ -40,7 +39,6 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
         )}
       </div>
 
-      {/* Card modal for editing */}
       {isModalOpen && (
         <CardModal
           card={card}
