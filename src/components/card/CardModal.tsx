@@ -29,7 +29,6 @@ const CardModal: React.FC<CardModalProps> = ({
       return;
     }
 
-    // 3️⃣ Duplicate check (ignore current card)
     if (
       existingCards.some(
         (c) =>
@@ -66,7 +65,6 @@ const CardModal: React.FC<CardModalProps> = ({
       <div className="bg-gray-800 rounded-lg shadow-xl w-96 p-6 relative animate-fadeIn">
         <h2 className="text-xl font-bold mb-4 text-white">Edit Card</h2>
 
-        {/* Title input */}
         <input
           type="text"
           value={title}
@@ -75,7 +73,6 @@ const CardModal: React.FC<CardModalProps> = ({
           className="w-full border border-gray-600 rounded px-3 py-2 mb-3 bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
 
-        {/* Description textarea */}
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -84,7 +81,6 @@ const CardModal: React.FC<CardModalProps> = ({
           rows={3}
         />
 
-        {/* Due date input */}
         <input
           type="date"
           value={dueDate}
@@ -93,7 +89,6 @@ const CardModal: React.FC<CardModalProps> = ({
         />
         {dateError && <p className="text-red-400 text-sm mb-2">{dateError}</p>}
 
-        {/* Actions */}
         <div className="flex justify-end gap-2 mt-4">
           <button
             onClick={handleDelete}
