@@ -35,7 +35,6 @@ const BoardView = () => {
     if (!board) navigate("/dashboard");
     else {
       setCurrentBoard(board);
-      // Load columns from localStorage or default
       const savedColumns = loadColumns(board.id);
       if (savedColumns.length) setColumns(savedColumns);
       else {

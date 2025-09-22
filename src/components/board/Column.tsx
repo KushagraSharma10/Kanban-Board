@@ -25,7 +25,6 @@ export default function Column({ column, onRename, onDelete, boardId }: ColumnPr
   const [newCardTitle, setNewCardTitle] = useState("");
   const [error, setError] = useState("");
 
-  // Load cards for this column
   useEffect(() => {
     const allCards = loadCards();
     const filtered = allCards.filter(
