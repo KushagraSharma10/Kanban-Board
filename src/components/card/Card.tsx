@@ -6,6 +6,8 @@ export interface CardData {
   title: string;
   description?: string;
   dueDate?: string;
+  boardId: string;
+  columnId: string;
 }
 
 interface CardProps {
@@ -29,15 +31,15 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
 
   return (
     <>
-      <div
+        <div
         onClick={handleCardClick}
-        className="bg-white shadow-md rounded-md p-3 mb-2 cursor-pointer hover:bg-gray-50 transition"
-      >
-        <h3 className="font-semibold text-gray-800 truncate">{card.title}</h3>
+        className="bg-gray-800 shadow-md rounded-md p-3 mb-2 cursor-pointer hover:bg-gray-700 transition"
+        >
+        <h3 className="font-semibold text-gray-100 truncate">{card.title}</h3>
         {card.dueDate && (
-          <p className="text-sm text-gray-500 mt-1">Due: {card.dueDate}</p>
+            <p className="text-sm text-gray-400 mt-1">Due: {card.dueDate}</p>
         )}
-      </div>
+        </div>
 
       {isModalOpen && (
         <CardModal
