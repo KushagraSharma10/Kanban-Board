@@ -5,27 +5,15 @@ import { nanoid } from "nanoid";
 import { useNavigate, useParams } from "react-router";
 import { getSession } from "../services/session";
 import { getAllBoards } from "../services/boards";
-
-export type CardItem = {
-  id: string;
-  title: string;
-  description?: string;
-};
+import { loadColumns, saveColumns } from "../utils/storage";
 
 export type ColumnItem = {
   id: string;
   title: string;
-  cards: CardItem[];
 };
 
-const cloumns = [
-  { id: nanoid(), title: "To Do", cards: [] },
-  { id: nanoid(), title: "In Progress", cards: [] },
-  { id: nanoid(), title: "Done", cards: [] },
-];
-
 const BoardView = () => {
-  const [columns, setColumns] = useState<ColumnItem[]>(cloumns);
+  const [columns, setColumns] = useState<ColumnItem[]>([]);
   const [showAdd, setShowAdd] = useState<boolean>(false);
   const [newColName, setNewColName] = useState<string>("");
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -33,6 +21,8 @@ const BoardView = () => {
   const navigate = useNavigate();
   const activeSession = getSession();
   const activeUserId = activeSession?.userId || null;
+
+  const [currentBoard, setCurrentBoard] = useState<{ id: string; userId: string } | null>(null);
 
   useEffect(() => {
     if (!activeUserId) {
@@ -43,42 +33,58 @@ const BoardView = () => {
       (board) => board.id === boardId && board.userId === activeUserId
     );
     if (!board) navigate("/dashboard");
+    else {
+      setCurrentBoard(board);
+      // Load columns from localStorage or default
+      const savedColumns = loadColumns(board.id);
+      if (savedColumns.length) setColumns(savedColumns);
+      else {
+        const defaultCols: ColumnItem[] = [
+          { id: nanoid(), title: "To Do" },
+          { id: nanoid(), title: "In Progress" },
+          { id: nanoid(), title: "Done" },
+        ];
+        setColumns(defaultCols);
+        saveColumns(board.id, defaultCols);
+      }
+    }
   }, [activeUserId, boardId, navigate]);
 
-
   const renameColumn = (id: string, newTitle: string) => {
-    const Title = newTitle.trim();
-    if (!Title) return;
-    setColumns((prev) =>
-      prev.map((column) =>
-        column.id === id ? { ...column, title: Title } : column
-      )
+    const title = newTitle.trim();
+    if (!title) return;
+    const updated = columns.map((column) =>
+      column.id === id ? { ...column, title } : column
     );
+    setColumns(updated);
+    if (currentBoard) saveColumns(currentBoard.id, updated);
   };
 
   const deleteColumn = (id: string) => {
-    setColumns((prev) => prev.filter((column) => column.id !== id));
+    const updated = columns.filter((column) => column.id !== id);
+    setColumns(updated);
+    if (currentBoard) saveColumns(currentBoard.id, updated);
+  };
+
+  const handleCreateColumn = () => {
+    const name = newColName.trim();
+    if (!name) return;
+    const exists = columns.some((c) => c.title.toLowerCase() === name.toLowerCase());
+    if (exists) {
+      alert("Column with this name already exists!");
+      return;
+    }
+    const newColumn = { id: nanoid(), title: name };
+    const updated = [...columns, newColumn];
+    setColumns(updated);
+    setNewColName("");
+    setShowAdd(false);
+    if (currentBoard) saveColumns(currentBoard.id, updated);
   };
 
   useEffect(() => {
     if (showAdd) inputRef.current?.focus();
   }, [showAdd]);
-
-  const handleCreateColumn = () => {
-    const name = newColName.trim();
-    if (!name) return;
-    const exists = columns.some(
-      (c) => c.title.toLowerCase() === name.toLowerCase()
-    );
-    if (exists) {
-      alert("Column with this name already exists!");
-      return;
-    }
-
-    setColumns((prev) => [...prev, { id: nanoid(), title: name, cards: [] }]);
-    setNewColName("");
-    setShowAdd(false);
-  };
 
   const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter") handleCreateColumn();
@@ -107,6 +113,7 @@ const BoardView = () => {
             <Column
               key={column.id}
               column={column}
+              boardId={currentBoard?.id ?? ""}
               onRename={renameColumn}
               onDelete={deleteColumn}
             />
@@ -124,7 +131,6 @@ const BoardView = () => {
                   className="w-full rounded-md text-sm border border-[#2d2e31] px-3 py-2 outline-none"
                   placeholder="Column name"
                 />
-
                 <div className="mt-2 flex items-center">
                   <button
                     onClick={handleCreateColumn}
