@@ -10,8 +10,9 @@ import { AuthLink} from "../styles/auth/auth-link";
 import { AuthButton } from "../styles/auth/auth-button";
 import { useNavigate } from "react-router";
 import { validateEmail } from "../utils/validation";
-import { registerUser, validateUser } from "../services/auth";
+import { authenticateUser, registerUser } from "../services/auth";
 import type { ModeProp} from "../types/auth";
+import { createSession } from "../services/session";
 
  const Auth = ({ mode }: ModeProp) => {
   const isLogin = mode === LOGIN_MODE;
@@ -29,39 +30,41 @@ import type { ModeProp} from "../types/auth";
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
- const handleSubmit = (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
 
-  const name = form.name.trim();
-  const email = form.email.trim();
-  const password = form.password;
+    const enteredName = form.name.trim();
+    const enteredEmail = form.email.trim();
+    const enteredPassword = form.password;
 
-  const emailError = validateEmail(email);
-  if (emailError) {
-    alert(emailError);
-    return;
-  }
+    const emailValidationMessage = validateEmail(enteredEmail);
+    if (emailValidationMessage) {
+      alert(emailValidationMessage);
+      return;
+    }
 
-  if (isLogin) {
-    if (validateUser(email, password)) {
-      navigate("/dashboard");
+    if (isLogin) {
+      const authenticatedUser = authenticateUser(enteredEmail, enteredPassword);
+      if (authenticatedUser) {
+        createSession(authenticatedUser.id);
+        navigate("/dashboard");
+      } else {
+        alert("Invalid credentials or please sign up first.");
+      }
     } else {
-      alert("Invalid credentials or please signup first");
+      if (!enteredName) {
+        alert("Please enter your name");
+        return;
+      }
+      const isRegistered = registerUser(enteredName, enteredEmail, enteredPassword);
+      if (!isRegistered) {
+        alert("An account with this email already exists.");
+        return;
+      }
+      alert("Signup successful! Please login.");
+      navigate("/");
     }
-  } else {
-    if (!name) {
-      alert("Please enter your name");
-      return;
-    }
-    const ok = registerUser(name, email, password);
-    if (!ok) {
-      alert("An account with this email already exists.");
-      return;
-    }
-    alert("Signup successful! Please login.");
-    navigate("/");
-  }
-};
+  };
 
   const fields: Field[] = [
     ...(!isLogin

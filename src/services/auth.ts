@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { loadFromStorage, saveToStorage } from "../utils/storage";
 import type { UserData } from "../interface/userData";
+import { nanoid } from "nanoid";
 
 const USERS_STORAGE_KEY = "users";
 
@@ -9,8 +10,11 @@ function normalizeEmail(email: string) {
 }
 
 export function getAllUsers(): UserData[] {
-  const data = loadFromStorage(USERS_STORAGE_KEY, []);
-  return Array.isArray(data) ? (data as UserData[]) : [];
+  const storedUsers = loadFromStorage(USERS_STORAGE_KEY, []);
+  if (!Array.isArray(storedUsers)) {
+    return [];
+  }
+  return storedUsers as UserData[];
 }
 
 function saveAllUsers(users: UserData[]) {
@@ -18,25 +22,31 @@ function saveAllUsers(users: UserData[]) {
 }
 
 export function registerUser(name: string, email: string, password: string): boolean {
-  const users = getAllUsers();
+  const allUsers = getAllUsers();
   const normalizedEmail = normalizeEmail(email);
 
-  if (users.some((user) => user.email === normalizedEmail)) {
-    return false;
-  }
+  const userExists = allUsers.some((user) => user.email === normalizedEmail);
+  if (userExists) return false;
 
   const hashedPassword = bcrypt.hashSync(password, 10);
-  users.push({ name, email: normalizedEmail, password: hashedPassword });
-  saveAllUsers(users);
+  const newUser: UserData = {
+    id: nanoid(),
+    name: name.trim(),
+    email: normalizedEmail,
+    password: hashedPassword,
+  };
+
+  saveAllUsers([...allUsers, newUser]);
   return true;
 }
 
-export function validateUser(email: string, password: string): boolean {
-  const users = getAllUsers();
+export function authenticateUser(email: string, password: string): UserData | null {
+  const allUsers = getAllUsers();
   const normalizedEmail = normalizeEmail(email);
 
-  const existingUser = users.find((user) => user.email === normalizedEmail);
-  if (!existingUser) return false;
+  const matchedUser = allUsers.find((user) => user.email === normalizedEmail);
+  if (!matchedUser) return null;
 
-  return bcrypt.compareSync(password, existingUser.password);
+  const isPasswordValid = bcrypt.compareSync(password, matchedUser.password);
+  return isPasswordValid ? matchedUser : null;
 }
