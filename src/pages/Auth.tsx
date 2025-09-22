@@ -8,14 +8,10 @@ import { AuthForm } from "../styles/auth/auth-form";
 import { AuthLink} from "../styles/auth/auth-link";
 import { AuthButton } from "../styles/auth/auth-button";
 import { useNavigate } from "react-router";
-import { normalizeEmail, validateEmail} from "../utils/validation";
-import type { ModeProp } from "../utils/types/auth";
-import type { UserData } from "../utils/interface/userData";
-import { loadFromStorage, saveToStorage } from "../utils/storage";
-import bcrypt from "bcryptjs";
-
-
-const USERS_STORAGE_KEY = "users";
+import { validateEmail } from "../utils/validation";
+import { authenticateUser, registerUser } from "../services/auth";
+import type { ModeProp} from "../types/auth";
+import { createSession } from "../services/session";
 
  const Auth = ({ mode}: ModeProp) => {
   const isLogin = mode === "Login";
@@ -66,46 +62,41 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [name]: value }));
 };
 
- const handleSubmit = (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
 
-  try {
-    const name = form.name.trim();
-    const email = form.email.trim();
-    const password = form.password;
+    const enteredName = form.name.trim();
+    const enteredEmail = form.email.trim();
+    const enteredPassword = form.password;
 
-    const emailError = validateEmail(email);
-    if (emailError) {
-      throw new Error(emailError);
+    const emailValidationMessage = validateEmail(enteredEmail);
+    if (emailValidationMessage) {
+      alert(emailValidationMessage);
+      return;
     }
 
     if (isLogin) {
-      if (validateUser(email, password)) {
+      const authenticatedUser = authenticateUser(enteredEmail, enteredPassword);
+      if (authenticatedUser) {
+        createSession(authenticatedUser.id);
         navigate("/dashboard");
       } else {
-        throw new Error("Invalid credentials or please signup first");
+        alert("Invalid credentials or please sign up first.");
       }
     } else {
-      if (!name) {
-        throw new Error("Please enter your name");
+      if (!enteredName) {
+        alert("Please enter your name");
+        return;
       }
-
-      const isRegistered = registerUser(name, email, password);
+      const isRegistered = registerUser(enteredName, enteredEmail, enteredPassword);
       if (!isRegistered) {
-        throw new Error("An account with this email already exists.");
+        alert("An account with this email already exists.");
+        return;
       }
-
-      alert("Signup successful! Please login."); 
+      alert("Signup successful! Please login.");
       navigate("/");
     }
-  } catch (err) {
-    if (typeof err === "object" && err !== null && "message" in err) {
-      alert((err as { message: string }).message); 
-    } else {
-      alert("Unexpected error occurred");
-    }
-  }
-};
+  };
 
   const fields: Field[] = [
     ...(!isLogin

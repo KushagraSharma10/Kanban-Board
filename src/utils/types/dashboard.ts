@@ -1,10 +1,12 @@
 export type BoardItem = {
   id: string;
+  userId: string;
   name: string;
   type: string;
   color: string;
 };
-export type CardProp = {
+
+export type cardProp = {
   name: string;
   color: string;
   type: string;
