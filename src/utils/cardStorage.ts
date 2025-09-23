@@ -1,4 +1,4 @@
-import type { CardData } from "../components/card/Card";
+import type { CardData } from "../interface/card";
 
 const STORAGE_KEY = "cards";
 

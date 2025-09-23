@@ -1,6 +1,6 @@
-import { Content, ContentHeading, ContentSubText, Icon, PanelContainer } from "../../styles/auth/leftPanel";
+import { Content, ContentHeading, ContentSubText, Icon, PanelContainer } from "../../styles/auth/auth-sidebar";
 
-const LeftPanel = () => {
+const AuthSidebar = () => {
   return (
     <PanelContainer>
       <Icon
@@ -27,4 +27,4 @@ const LeftPanel = () => {
   );
 };
 
-export default LeftPanel;
+export default AuthSidebar;

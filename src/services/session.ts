@@ -1,6 +1,6 @@
 import { loadFromStorage, saveToStorage } from "../utils/storage";
 import { getAllUsers } from "./auth";
-import type { UserData } from "../interface/userData";
+import type { UserData } from "../interface/user-data";
 
 const SESSION_STORAGE_KEY = "kanban.session";
 

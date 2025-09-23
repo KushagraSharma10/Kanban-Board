@@ -6,11 +6,7 @@ import { useNavigate, useParams } from "react-router";
 import { getSession } from "../services/session";
 import { getAllBoards } from "../services/boards";
 import { loadColumns, saveColumns } from "../utils/storage";
-
-export type ColumnItem = {
-  id: string;
-  title: string;
-};
+import type { ColumnItem } from "../types/board-view";
 
 const BoardView = () => {
   const [columns, setColumns] = useState<ColumnItem[]>([]);

@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Actions,  ColorCircle, ColorInput, ColorOptions, Dialog, Form, HeaderRow, Overlay, Primary, Secondary,
 } from "../../styles/dashboard/create-board";
 import { Field } from "../../styles/dashboard/create-board";
-import { DEFAULT_COLORS } from "../../constants/Colors";
 import type { boardModalProp } from "../../types/dashboard";
+import { DEFAULT_COLORS } from "../../constants/Colors";
 
 export default function CreateBoardModal({
   open,

@@ -1,23 +1,6 @@
 import React, { useState } from "react";
-import CardModal from "./CardModal";
-
-export interface CardData {
-  id: string;
-  title: string;
-  description?: string;
-  dueDate?: string;
-  boardId: string;
-  columnId: string;
-  assignees?: string[];
-  label?: "none" | "low" | "moderate" | "high" | "urgent";
-}
-
-interface CardProps {
-  card: CardData;
-  onUpdate: (updatedCard: CardData) => void;
-  onDelete: (id: string) => void;
-  existingCards?: CardData[];
-}
+import CardModal from "./CreateCard";
+import type { CardData, CardProps } from "../../interface/card";
 
 const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
