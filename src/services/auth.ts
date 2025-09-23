@@ -1,12 +1,9 @@
 import bcrypt from "bcryptjs";
 import { loadFromStorage, saveToStorage } from "../utils/storage";
 import type { UserData } from "../interface/userData";
+import { normalizeEmail } from "../utils/validation";
 
 const USERS_STORAGE_KEY = "users";
-
-function normalizeEmail(email: string) {
-  return email.trim().toLowerCase();
-}
 
 export function getAllUsers(): UserData[] {
   const data = loadFromStorage(USERS_STORAGE_KEY, []);

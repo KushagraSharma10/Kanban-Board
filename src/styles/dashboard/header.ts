@@ -10,14 +10,14 @@ export const HeaderContainer = styled.div`
   border-bottom: 1px solid #28394e;
   flex-wrap: wrap;
 `;
-export const HeaderTop = styled.div`
+export const HeaderLeft = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   padding-bottom: 1rem;
 `;
 
-export const HeaderBottom = styled.div`
+export const HeaderRight = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;

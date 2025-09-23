@@ -1,16 +1,16 @@
-import { HeaderBottom, HeaderContainer, HeaderTop, Logo, Profile, SearchInput } from "../../styles/dashboard/header";
+import { HeaderRight, HeaderContainer, HeaderLeft, Logo, Profile, SearchInput } from "../../styles/dashboard/header";
 import type { HeaderProp } from "../../types/header";
 
 export default function Header({ setModalOpen, search, onSearchChange  }: HeaderProp) {
   return (
     <HeaderContainer>
-      <HeaderTop>
+      <HeaderLeft>
         <Logo>
           <img src="./kanban.svg" alt="" />
           KanbanApp
         </Logo>
-      </HeaderTop>
-      <HeaderBottom>
+      </HeaderLeft>
+      <HeaderRight>
          <SearchInput
           type="text"
           placeholder="Search boards..."
@@ -26,7 +26,7 @@ export default function Header({ setModalOpen, search, onSearchChange  }: Header
             alt="User"
           />
         </Profile>
-      </HeaderBottom>
+      </HeaderRight>
     </HeaderContainer>
   );
 }

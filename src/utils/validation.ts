@@ -33,3 +33,8 @@ export function validateEmail(email: string): string | null {
 
   return null;
 }
+
+
+export function normalizeEmail(email: string) {
+  return email.trim().toLowerCase();
+}
