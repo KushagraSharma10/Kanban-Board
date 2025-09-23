@@ -4,7 +4,7 @@ import {
   Board as BoardWrapper, BoardArea, CreateBoard, Main, Cards,
   NoBoards, Query,
 } from "../styles/dashboard/dashboard";
-import CreateBoardModal from "../components/dashboard/CreateBoardModal";
+import CreateBoardModal from "../components/dashboard/CreateBoard";
 import Header from "../components/dashboard/Header";
 import type { BoardItem } from "../types/dashboard";
 import {

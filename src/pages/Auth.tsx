@@ -1,7 +1,8 @@
 import { useState } from "react";
 import LeftPanel from "../components/auth/AuthSidebar";
 import AuthFormFields from "../components/auth/AuthFormFields";
-import type { Field, FormFields } from "../utils/types/form";
+import { LOGIN_MODE, SIGNUP_MODE} from "../constants/auth";
+import type { Field, FormFields } from "../types/form";
 import { AuthContent, AuthMain, AuthWrapper } from "../styles/auth/auth-main";
 import { AuthBrand, AuthDivider, AuthFooter, AuthLine } from "../styles/auth/auth-main";
 import { AuthForm } from "../styles/auth/auth-form";

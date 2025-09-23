@@ -4,6 +4,7 @@ import Column from "../components/board/Column";
 import { useNavigate, useParams } from "react-router";
 import { getSession } from "../services/session";
 import { getAllBoards } from "../services/boards";
+import { loadColumns, saveColumns } from "../utils/storage";
 import {
   ensureDefaultColumns,
   addColumn,
