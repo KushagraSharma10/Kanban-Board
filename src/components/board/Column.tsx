@@ -1,19 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import type { ColumnItem } from "../../pages/BoardView";
-import type { CardData } from "../card/Card";
 import Card from "../card/Card";
 import { loadCards, saveCards } from "../../utils/storage";
 import { nanoid } from "nanoid";
+import type { ColumnProps } from "../../types/column";
+import type { CardData } from "../../interface/card";
 
-export type ColumnProps = {
-  column: ColumnItem;
-  onRename: (id: string, newTitle: string) => void;
-  onDelete: (id: string) => void;
-  boardId: string;
-};
-
-const MAX_TITLE_LENGTH = 50;
+const MAX_TITLE_LENGTH = 15;
 
 export default function Column({
   column,
