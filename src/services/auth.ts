@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { loadFromStorage, saveToStorage } from "../utils/storage";
-import type { UserData } from "../interface/userData";
+import type { UserData } from "../interface/user-data";
 import { nanoid } from "nanoid";
 
 const USERS_STORAGE_KEY = "users";

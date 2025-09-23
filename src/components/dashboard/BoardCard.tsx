@@ -1,14 +1,5 @@
 import { useState } from "react";
-import {
-  Backdrop,
-  BoardContent,
-
-  Card,
-  ColorDiv,
-  ContentClip,
-  DotWrap,
-  OptionsMenu,
-  ThreeDots,
+import { Backdrop, BoardContent, Card, ColorDiv, ContentClip, DotWrap, OptionsMenu, ThreeDots,
 } from "../../styles/dashboard/board-card";
 import type { cardProp } from "../../types/dashboard";
 

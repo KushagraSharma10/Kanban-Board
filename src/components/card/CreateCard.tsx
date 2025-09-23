@@ -1,22 +1,7 @@
 import React, { useState } from "react";
-import type { CardData } from "./Card";
-
-interface CardModalProps {
-  card: CardData;
-  onSave: (card: CardData) => void;
-  onDelete: (id: string) => void;
-  onClose: () => void;
-  existingCards?: CardData[];
-}
-
-const MAX_TITLE_LENGTH = 15;
-const LABEL_OPTIONS: Array<{ value: CardData["label"]; text: string }> = [
-  { value: "none", text: "None" },
-  { value: "low", text: "Low Priority" },
-  { value: "moderate", text: "Moderate Priority" },
-  { value: "high", text: "High Priority" },
-  { value: "urgent", text: "Urgent" },
-];
+import type { CardData } from "../../interface/card";
+import type { CardModalProps } from "../../interface/card-modal";
+import { LABEL_OPTIONS, MAX_TITLE_LENGTH } from "../../constants/card-modal";
 
 const CardModal: React.FC<CardModalProps> = ({
   card,
