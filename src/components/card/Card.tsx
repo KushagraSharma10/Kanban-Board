@@ -8,6 +8,8 @@ export interface CardData {
   dueDate?: string;
   boardId: string;
   columnId: string;
+  assignees?: string[];
+  label?: "none" | "low" | "moderate" | "high" | "urgent";
 }
 
 interface CardProps {
@@ -31,15 +33,45 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
 
   return (
     <>
-        <div
+      <div
         onClick={handleCardClick}
-        className="bg-gray-800 shadow-md rounded-md p-3 mb-2 cursor-pointer hover:bg-gray-700 transition"
-        >
-        <h3 className="font-semibold text-gray-100 truncate">{card.title}</h3>
-        {card.dueDate && (
-            <p className="text-sm text-gray-400 mt-1">Due: {card.dueDate}</p>
+        className="bg-zinc-800 shadow-md rounded-md p-3 mb-2 cursor-pointer hover:bg-zinc-900 transition"
+      >
+        {card.label && card.label !== "none" && (
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-700 text-gray-200">
+            {card.label.toUpperCase()}
+          </span>
         )}
-        </div>
+        <h3 className="font-semibold text-gray-100 truncate">{card.title}</h3>
+        {card.description && (
+          <p className="text-sm text-gray-300 mt-1">
+            {card.description.length > 33
+              ? card.description.slice(0, 33) + "..."
+              : card.description}
+          </p>
+        )}
+        {card.dueDate && (
+          <p className="text-sm text-gray-400 mt-1">Due: {card.dueDate}</p>
+        )}
+        {card.assignees && card.assignees.length > 0 && (
+          <div className="flex gap-1 mt-2">
+            {card.assignees.slice(0, 3).map((name) => (
+              <span
+                key={name}
+                title={name}
+                className="w-6 h-6 rounded-full bg-gray-600 text-white text-[10px] flex items-center justify-center"
+              >
+                {name.trim().charAt(0).toUpperCase()}
+              </span>
+            ))}
+            {card.assignees.length > 3 && (
+              <span className="text-xs text-gray-300">
+                +{card.assignees.length - 3}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
 
       {isModalOpen && (
         <CardModal

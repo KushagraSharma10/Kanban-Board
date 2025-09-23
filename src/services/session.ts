@@ -23,7 +23,7 @@ export function clearSession(): void {
   try {
     localStorage.removeItem(SESSION_STORAGE_KEY);
   } catch (err) {
-    console.log(err);
+        console.log(err)
   }
 }
 
