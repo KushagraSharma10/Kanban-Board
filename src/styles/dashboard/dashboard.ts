@@ -11,12 +11,13 @@ export const Board = styled.div`
 `;
 export const Sidebar = styled.div`
   width: 20vw;
-  border-right: 1px solid #28394e;
+  border-right: 0.0625rem solid #28394e; /* 1px → 0.0625rem */
 `;
 export const BoardArea = styled.div`
   flex: 1;
   padding: 2vw;
-    @media (max-width: 768px) {
+
+  @media (max-width: 768px) {
     padding: 1.5vw;
   }
 
@@ -50,11 +51,11 @@ export const CreateBoard = styled.div`
   width: 19vw;
   height: 14vw;
   border-radius: 1.5rem;
-  border: 3px dotted #28394e;
+  border: 0.1875rem dotted #28394e; /* 3px → 0.1875rem */
   font-size: 1.2rem;
   cursor: pointer;
 
-   @media (max-width: 1024px) {
+  @media (max-width: 1024px) {
     width: 20vw;
     height: 20vw;
   }
