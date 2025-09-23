@@ -4,6 +4,7 @@ import type { ColumnItem } from "../../pages/BoardView";
 import type { CardData } from "../card/Card";
 import Card from "../card/Card";
 import { loadCards, saveCards } from "../../utils/storage";
+import { nanoid } from "nanoid";
 
 export type ColumnProps = {
   column: ColumnItem;
@@ -14,7 +15,12 @@ export type ColumnProps = {
 
 const MAX_TITLE_LENGTH = 50;
 
-export default function Column({ column, onRename, onDelete, boardId }: ColumnProps) {
+export default function Column({
+  column,
+  onRename,
+  onDelete,
+  boardId,
+}: ColumnProps) {
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(column.title);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -28,10 +34,14 @@ export default function Column({ column, onRename, onDelete, boardId }: ColumnPr
   useEffect(() => {
     const allCards = loadCards();
     const filtered = allCards.filter(
-      (c) => c.boardId === boardId && c.columnId === column.id
+      (card) => card.boardId === boardId && card.columnId === column.id
     );
     setCards(filtered);
   }, [boardId, column.id]);
+
+  useEffect(() => {
+    setTitle(column.title);
+  }, [column.title]);
 
   const handleAddCard = () => {
     const trimmedTitle = newCardTitle.trim();
@@ -43,12 +53,14 @@ export default function Column({ column, onRename, onDelete, boardId }: ColumnPr
       setError(`Title cannot exceed ${MAX_TITLE_LENGTH} characters.`);
       return;
     }
-    if (cards.some((c) => c.title.toLowerCase() === trimmedTitle.toLowerCase())) {
+    if (
+      cards.some((c) => c.title.toLowerCase() === trimmedTitle.toLowerCase())
+    ) {
       setError("A card with this title already exists!");
       return;
     }
     const newCard: CardData = {
-      id: `card-${Date.now()}`,
+      id: nanoid(),
       title: trimmedTitle,
       boardId,
       columnId: column.id,
