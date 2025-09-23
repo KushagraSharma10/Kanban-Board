@@ -175,13 +175,13 @@ export default function Column({ column, onRename, onDelete, boardId }: ColumnPr
                 }
               }}
               placeholder="Card title"
-              className="px-2 py-1 rounded bg-gray-700 text-white placeholder-gray-400 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-2 py-1 rounded bg-zinc-900 text-white placeholder-zinc-600 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-zinc-500"
             />
             {error && <p className="text-red-400 text-sm">{error}</p>}
             <div className="flex gap-2">
               <button
                 onClick={handleAddCard}
-                className="px-3 py-1 rounded bg-green-500 text-white hover:bg-green-600 transition"
+                className="px-3 py-1 rounded bg-blue-600 text-sm text-white hover:bg-green-600 transition"
               >
                 Add
               </button>
@@ -191,7 +191,7 @@ export default function Column({ column, onRename, onDelete, boardId }: ColumnPr
                   setError("");
                   setNewCardTitle("");
                 }}
-                className="px-3 py-1 rounded bg-gray-600 text-white hover:bg-gray-700 transition"
+                className="px-3 py-1 rounded bg-gray-600 text-sm text-white hover:bg-gray-700 transition"
               >
                 Cancel
               </button>
