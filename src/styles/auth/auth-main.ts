@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { colors } from "../theme";
+import { breakpoints } from "../../constants/breakpoints";
 
 export const AuthMain = styled.div`
   width: 100%;
@@ -8,11 +9,11 @@ export const AuthMain = styled.div`
   color: ${colors.brightGray};
   padding: 2rem 1rem;
 
-  @media (min-width: 768px) {
+  @media (min-width: ${breakpoints.tablet}) {
     padding: 2rem 4rem;
   }
 
-  @media (min-width: 1280px) {
+  @media (min-width: ${breakpoints.laptopL}) {
     padding: 4rem 10.8rem;
   }
 `;
@@ -30,11 +31,11 @@ export const AuthContent = styled.div`
   padding: 3rem;
   background-color: ${colors.darkBlue2};
 
-  @media (max-width: 426px) {
+  @media (max-width: ${breakpoints.mobileS}) {
     padding: 1.5rem;
   }
 
-  @media (max-width: 376px) {
+  @media (max-width: ${breakpoints.mobileXS}) {
     padding: 1rem;
   }
 

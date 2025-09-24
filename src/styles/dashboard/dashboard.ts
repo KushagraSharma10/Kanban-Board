@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { breakpoints } from "../../constants/breakpoints";
 
 export const Main = styled.div`
   width: 100%;
@@ -17,11 +18,11 @@ export const BoardArea = styled.div`
   flex: 1;
   padding: 2vw;
 
-  @media (max-width: 768px) {
+  @media (max-width: ${breakpoints.tablet}) {
     padding: 1.5vw;
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: ${breakpoints.mobileM}) {
     padding: 1vw;
   }
 `;
@@ -55,17 +56,17 @@ export const CreateBoard = styled.div`
   font-size: 1.2rem;
   cursor: pointer;
 
-  @media (max-width: 1024px) {
+  @media (max-width: ${breakpoints.laptop}) {
     width: 20vw;
     height: 20vw;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: ${breakpoints.tablet}) {
     width: 30vw;
     height: 30vw;
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: ${breakpoints.mobileM}) {
     width: 100%;
     height: 50vw;
   }

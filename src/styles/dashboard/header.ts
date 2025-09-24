@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { colors } from "../theme";
+import { breakpoints } from "../../constants/breakpoints";
 
 export const HeaderContainer = styled.div`
   display: flex;
@@ -23,17 +24,17 @@ export const HeaderRight = styled.div`
   gap: 0.5rem;
   justify-content: space-between;
 
-  @media (max-width: 768px) {
+  @media (max-width: ${breakpoints.tablet}) {
     flex-wrap: wrap;
     width: 100%;
     justify-content: space-between;
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: ${breakpoints.mobileM}) {
     width: 100%;
     justify-content: space-between;
   }
-  @media (max-width: 429px) {
+  @media (max-width: ${breakpoints.mobileS}) {
     flex-wrap: nowrap;
     overflow-x: auto;
   }
@@ -63,10 +64,10 @@ export const SearchInput = styled.input`
   color: ${colors.brightGray};
   background-color: ${colors.darkBlue3};
 
-  @media (max-width: 768px) {
+  @media (max-width: ${breakpoints.tablet}) {
     margin-left: 0;
   }
-  @media (max-width: 480px) {
+  @media (max-width: ${breakpoints.mobileM}) {
     width: 70%;
   }
 `;
@@ -85,7 +86,7 @@ export const Profile = styled.div`
     border-radius: 0.5rem;
     cursor: pointer;
 
-    @media (max-width: 425px) {
+    @media (max-width: ${breakpoints.mobileS}) {
       font-size: 0.7rem;
       padding: 0.5rem 0.4rem;
     }

@@ -1,3 +1,6 @@
+import bcrypt from "bcryptjs";
+import { getAllUsers } from "../services/auth";
+
 export function validatePassword(password: string): string | null {
   const minLength = 8;
   const uppercasePattern = /[A-Z]/;
@@ -37,4 +40,15 @@ export function validateEmail(email: string): string | null {
 
 export function normalizeEmail(email: string) {
   return email.trim().toLowerCase();
+}
+
+
+export function validateUser(email: string, password: string): boolean {
+  const users = getAllUsers();
+  const normalizedEmail = normalizeEmail(email);
+
+  const existingUser = users.find((user) => user.email === normalizedEmail);
+  if (!existingUser) return false;
+
+  return bcrypt.compareSync(password, existingUser.password);
 }

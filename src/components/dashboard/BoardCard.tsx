@@ -10,9 +10,10 @@ import {
   OptionsMenu,
   ThreeDots,
 } from "../../styles/dashboard/board-card";
-import type { cardProp } from "../../types/dashboard";
+import type { CardProp } from "../../types/dashboard";
+import { MENU_OPTIONS } from "../../constants/board-card";
 
-const BoardCard = ({ name, color, type, onEdit, onDelete }: cardProp) => {
+const BoardCard = ({ name, color, type, onEdit, onDelete }: CardProp) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -41,23 +42,19 @@ const BoardCard = ({ name, color, type, onEdit, onDelete }: cardProp) => {
         <>
           <Backdrop onClick={() => setMenuOpen(false)} />
           <OptionsMenu>
-            <button
-              onClick={() => {
-                setMenuOpen(false);
-                onEdit?.();
-              }}
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => {
-                setMenuOpen(false);
-                onDelete?.();
-              }}
-            >
-              Delete
-            </button>
-          </OptionsMenu>
+  {MENU_OPTIONS.map((options) => (
+    <button
+      key={options.label}
+      onClick={() => {
+        setMenuOpen(false);
+        if (options.label === "Edit") options.action(onEdit);
+        if (options.label === "Delete") options.action(onDelete);
+      }}
+    >
+      {options.label}
+    </button>
+  ))}
+</OptionsMenu>
         </>
       )}
     </Card>

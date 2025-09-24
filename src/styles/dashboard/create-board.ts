@@ -1,4 +1,6 @@
 import styled from "styled-components";
+import { colors } from "../theme";
+import { breakpoints } from "../../constants/breakpoints";
 
 export const Overlay = styled.div`
   position: fixed;
@@ -20,7 +22,7 @@ export const Dialog = styled.div`
   padding: 1.2rem;
   color: #e6edf3;
 
-  @media (max-width: 768px) {
+  @media (max-width: ${breakpoints.tablet}) {
     max-width: 80vw;
   }
 `;
@@ -58,18 +60,18 @@ export const Field = styled.div`
 
   h2 {
     font-size: 0.9rem;
-    color: #c7d2e1;
+    color: ${colors.iceBlue};
   }
 
   input,
   select {
-    background-color: #0b121a;
-    border: 1px solid #2a3b4f;
+    background-color: ${colors.blackPearl};
+    border: 1px solid ${colors.bluishBlack};
     border-radius: 10px;
     padding: 0.6rem 0.7rem;
-    color: #e6edf3;
+    color: ${colors.brightGray};
     &:focus {
-      border-color: #3b82f6;
+      border-color: ${colors.brightBlue};
     }
   }
 `;
@@ -88,14 +90,14 @@ export const ColorCircle = styled.button<{ $bg: string; $active?: boolean }>`
 
   background-color: ${({ $bg }) => $bg};
   border: ${({ $active }) =>
-    $active ? "2px solid #fff" : "2px solid #2a3b4f"};
+    $active ? "2px solid #fff" : `2px solid ${colors.bluishBlack}`};
 
-  @media (max-width: 768px) {
+  @media (max-width: ${breakpoints.tablet}) {
     width: 4vw;
     height: 4vw;
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: ${breakpoints.mobileM}) {
     width: 6vw;
     height: 6vw;
   }
@@ -105,14 +107,14 @@ export const ColorInput = styled.input`
   width: 4vw;
   height: 2.2vw;
   border-radius: 0.3rem;
-  border: 1px solid #2a3b4f;
+  border: 1px solid ${colors.bluishBlack};
 
-  @media (max-width: 768px) {
+  @media (max-width: ${breakpoints.tablet}) {
     width: 6vw;
     height: 3vw;
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: ${breakpoints.mobileM}) {
     width: 8vw;
     height: 4vw;
   }
@@ -124,7 +126,7 @@ export const Actions = styled.div`
   gap: 0.6rem;
 `;
 export const Primary = styled.button`
-  background-color: #3b82f6;
+  background-color: ${colors.brightBlue};
   border: none;
   color: #000;
   font-weight: 700;
@@ -133,9 +135,9 @@ export const Primary = styled.button`
   cursor: pointer;
 `;
 export const Secondary = styled.button`
-  background-color: #0b121a;
-  border: 1px solid #2a3b4f;
-  color: #c7d2e1;
+  background-color: ${colors.blackPearl};
+  border: 1px solid ${colors.bluishBlack};
+  color: ${colors.iceBlue};
   padding: 0.5rem 0.9rem;
   border-radius: 0.5rem;
   cursor: pointer;
