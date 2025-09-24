@@ -1,5 +1,5 @@
 import { useState } from "react";
-import LeftPanel from "../components/auth/LeftPanel";
+import LeftPanel from "../components/auth/AuthSidebar";
 import AuthFormFields from "../components/auth/AuthFormFields";
 import type { Field, FormFields } from "../types/form";
 import { AuthContent, AuthMain, AuthWrapper } from "../styles/auth/auth-main";
@@ -8,14 +8,17 @@ import { AuthForm } from "../styles/auth/auth-form";
 import { AuthLink} from "../styles/auth/auth-link";
 import { AuthButton } from "../styles/auth/auth-button";
 import { useNavigate } from "react-router";
-import { validateEmail, validateUser } from "../utils/validation";
-import { registerUser } from "../services/auth";
+import { normalizeEmail, validateEmail, validateUser } from "../utils/validation";
 import type { ModeProp } from "../types/auth";
+import type { UserData } from "../interface/userData";
+import { loadFromStorage, saveToStorage } from "../utils/storage";
+import bcrypt from "bcryptjs";
 
+
+const USERS_STORAGE_KEY = "users";
 
  const Auth = ({ mode}: ModeProp) => {
   const isLogin = mode === "Login";
-
   const navigate = useNavigate();
 
   const [form, setForm] = useState<FormFields>({
@@ -23,43 +26,73 @@ import type { ModeProp } from "../types/auth";
     email: "",
     password: "",
   });
+  
+function getAllUsers(): UserData[] {
+  const data = loadFromStorage(USERS_STORAGE_KEY, []);
+  return Array.isArray(data) ? (data as UserData[]) : [];
+}
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+function saveAllUsers(users: UserData[]) {
+  saveToStorage(USERS_STORAGE_KEY, users);
+}
+
+function registerUser(name: string, email: string, password: string): boolean {
+  const users = getAllUsers();
+  const normalizedEmail = normalizeEmail(email);
+
+  if (users.some((u) => u.email === normalizedEmail)) {
+    return false;
+  }
+
+  const hashed = bcrypt.hashSync(password, 10);
+  users.push({ name, email: normalizedEmail, password: hashed });
+  saveAllUsers(users);
+  return true;
+}
+
+const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-  };
+};
 
  const handleSubmit = (e: React.FormEvent) => {
   e.preventDefault();
 
-  const name = form.name.trim();
-  const email = form.email.trim();
-  const password = form.password;
+  try {
+    const name = form.name.trim();
+    const email = form.email.trim();
+    const password = form.password;
 
-  const emailError = validateEmail(email);
-  if (emailError) {
-    alert(emailError);
-    return;
-  }
+    const emailError = validateEmail(email);
+    if (emailError) {
+      throw new Error(emailError);
+    }
 
-  if (isLogin) {
-    if (validateUser(email, password)) {
-      navigate("/dashboard");
+    if (isLogin) {
+      if (validateUser(email, password)) {
+        navigate("/dashboard");
+      } else {
+        throw new Error("Invalid credentials or please signup first");
+      }
     } else {
-      alert("Invalid credentials or please signup first");
+      if (!name) {
+        throw new Error("Please enter your name");
+      }
+
+      const ok = registerUser(name, email, password);
+      if (!ok) {
+        throw new Error("An account with this email already exists.");
+      }
+
+      alert("Signup successful! Please login."); 
+      navigate("/");
     }
-  } else {
-    if (!name) {
-      alert("Please enter your name");
-      return;
+  } catch (err) {
+    if (typeof err === "object" && err !== null && "message" in err) {
+      alert((err as { message: string }).message); 
+    } else {
+      alert("Unexpected error occurred");
     }
-    const ok = registerUser(name, email, password);
-    if (!ok) {
-      alert("An account with this email already exists.");
-      return;
-    }
-    alert("Signup successful! Please login.");
-    navigate("/");
   }
 };
 

@@ -1,16 +1,18 @@
 import { BsThreeDotsVertical } from "react-icons/bs";
 import styled from "styled-components";
 import { breakpoints } from "../../constants/breakpoints";
+import { theme } from "../theme";
 
 export const ThreeDots = styled(BsThreeDotsVertical)`
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
+  cursor: pointer;
 `;
 
 export const Card = styled.div`
   width: 20vw;
   border-radius: 1.5rem;
-  background-color: #151d27;
+  background-color: ${theme.colors.darkBlue2};
   cursor: pointer;
   position: relative;
 
@@ -70,7 +72,7 @@ export const BoardContent = styled.div`
   p {
     font-size: 0.9rem;
     margin-top: 0.2rem;
-    color: #706e6e;
+    color: ${theme.colors.lightGray};
   }
 
   .details {
@@ -82,18 +84,22 @@ export const DotWrap = styled.div`
   position: relative;
 `
 
+export const OptionWrapper = styled.div`
+  position:relative;
+`
+
 export const OptionsMenu = styled.div`
   position: absolute;
-  top: 9rem;
-  right: 1rem;
-  background: #1f2937;
-  border-radius: 0.5rem;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+  top: -2.5rem;
+  right: 1.6rem;
+  background-color: ${theme.colors.darkBlue3};
+  border: 1px solid ${theme.colors.balticSeaGray};
   overflow: hidden;
   z-index: 999;
   min-width: 6vw;
   display: flex;
   flex-direction: column;
+  border-radius:.2rem;
 
   button {
     padding: 0.6rem 1rem;
@@ -113,6 +119,6 @@ export const OptionsMenu = styled.div`
 export const Backdrop = styled.div`
   position: fixed;
   inset: 0;
-  background: transparent;
+  background-color: transparent;
   z-index: 998;
 `;

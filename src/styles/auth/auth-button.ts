@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import { colors } from "../theme";
+import { theme } from "../theme";
 
 export const AuthButton = styled.button`
-  border: 1px solid ${colors.blue};
-  background-color: ${colors.blue};
+  border: 1px solid ${theme.colors.blue};
+  background-color: ${theme.colors.blue};
   color: #000;
   padding: 0.9rem;
   border-radius: 0.5rem;
@@ -12,6 +12,6 @@ export const AuthButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background-color: ${colors.blue};
+    background-color: ${theme.colors.blue};
   }
 `;

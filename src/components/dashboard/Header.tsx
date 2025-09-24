@@ -1,7 +1,7 @@
 import { HeaderRight, HeaderContainer, HeaderLeft, Logo, Profile, SearchInput } from "../../styles/dashboard/header";
 import type { HeaderProp } from "../../types/header";
 
-export default function Header({ setModalOpen, search, onSearchChange  }: HeaderProp) {
+const Header:React.FC<HeaderProp> = ({ setModalOpen, search, onSearchChange  }: HeaderProp) => {
   return (
     <HeaderContainer>
       <HeaderLeft>
@@ -26,3 +26,5 @@ export default function Header({ setModalOpen, search, onSearchChange  }: Header
     </HeaderContainer>
   );
 }
+
+export default Header;
