@@ -1,20 +1,29 @@
 import { useState } from "react";
 import LeftPanel from "../components/auth/AuthSidebar";
 import AuthFormFields from "../components/auth/AuthFormFields";
-import { LOGIN_MODE, SIGNUP_MODE} from "../constants/auth";
+import { LOGIN_MODE, SIGNUP_MODE } from "../constants/auth";
 import type { Field, FormFields } from "../types/form";
 import { AuthContent, AuthMain, AuthWrapper } from "../styles/auth/auth-main";
-import { AuthBrand, AuthDivider, AuthFooter, AuthLine } from "../styles/auth/auth-main";
+import {
+  AuthBrand,
+  AuthDivider,
+  AuthFooter,
+  AuthLine,
+} from "../styles/auth/auth-main";
 import { AuthForm } from "../styles/auth/auth-form";
-import { AuthLink} from "../styles/auth/auth-link";
+import { AuthLink } from "../styles/auth/auth-link";
 import { AuthButton } from "../styles/auth/auth-button";
 import { useNavigate } from "react-router";
 import { validateEmail } from "../utils/validation";
-import { authenticateUser, registerUser } from "../services/auth";
-import type { ModeProp} from "../types/auth";
-import { createSession } from "../services/session";
+import type { ModeProp } from "../types/auth";
+import { loadFromStorage, saveToStorage } from "../utils/storage";
+import bcrypt from "bcryptjs";
+import { nanoid } from "nanoid";
 
- const Auth = ({ mode }: ModeProp) => {
+const USERS_STORAGE_KEY = "users";
+const SESSION_STORAGE_KEY = "kanban.session";
+
+const Auth :React.FC<ModeProp> = ({ mode }: ModeProp) => {
   const isLogin = mode === LOGIN_MODE;
 
   const navigate = useNavigate();
@@ -56,7 +65,11 @@ import { createSession } from "../services/session";
         alert("Please enter your name");
         return;
       }
-      const isRegistered = registerUser(enteredName, enteredEmail, enteredPassword);
+      const isRegistered = registerUser(
+        enteredName,
+        enteredEmail,
+        enteredPassword
+      );
       if (!isRegistered) {
         alert("An account with this email already exists.");
         return;
@@ -65,6 +78,63 @@ import { createSession } from "../services/session";
       navigate("/");
     }
   };
+
+  type UserDataLocal = {
+    id: string;
+    name: string;
+    email: string;
+    password: string;
+  };
+
+  function normalizeEmail(email: string) {
+    return email.trim().toLowerCase();
+  }
+
+  function getAllUsers(): UserDataLocal[] {
+    const stored = loadFromStorage(USERS_STORAGE_KEY, []);
+    return Array.isArray(stored) ? (stored as UserDataLocal[]) : [];
+  }
+
+  function saveAllUsers(users: UserDataLocal[]) {
+    saveToStorage(USERS_STORAGE_KEY, users);
+  }
+
+  function registerUser(
+    name: string,
+    email: string,
+    password: string
+  ): boolean {
+    const allUsers = getAllUsers();
+    const normalizedEmail = normalizeEmail(email);
+    if (allUsers.some((u) => u.email === normalizedEmail)) return false;
+
+    const hashed = bcrypt.hashSync(password, 10);
+    const newUser: UserDataLocal = {
+      id: nanoid(),
+      name: name.trim(),
+      email: normalizedEmail,
+      password: hashed,
+    };
+    saveAllUsers([newUser, ...allUsers]);
+    return true;
+  }
+
+  function authenticateUser(
+    email: string,
+    password: string
+  ): UserDataLocal | null {
+    const allUsers = getAllUsers();
+    const normalizedEmail = normalizeEmail(email);
+    const matched = allUsers.find((user) => user.email === normalizedEmail);
+    if (!matched) return null;
+    const checkPassword = bcrypt.compareSync(password, matched.password);
+    return checkPassword ? matched : null;
+  }
+
+  function createSession(userId: string): void {
+    const session = { userId, createdAt: Date.now() };
+    saveToStorage(SESSION_STORAGE_KEY, session);
+  }
 
   const fields: Field[] = [
     ...(!isLogin
@@ -112,8 +182,14 @@ import { createSession } from "../services/session";
               : "Start managing your work in one place."}
           </p>
           <AuthForm onSubmit={handleSubmit}>
-            <AuthFormFields fields={fields} form={form} onChange={handleChange} />
-            <AuthButton type="submit">{isLogin ? LOGIN_MODE : SIGNUP_MODE}</AuthButton>
+            <AuthFormFields
+              fields={fields}
+              form={form}
+              onChange={handleChange}
+            />
+            <AuthButton type="submit">
+              {isLogin ? LOGIN_MODE : SIGNUP_MODE}
+            </AuthButton>
           </AuthForm>
           <AuthDivider>
             <AuthLine />
@@ -123,11 +199,13 @@ import { createSession } from "../services/session";
           <AuthFooter>
             {isLogin ? (
               <>
-                Don’t have an account? <AuthLink href="/signup">Sign Up</AuthLink>
+                Don’t have an account?{" "}
+                <AuthLink href="/signup">Sign Up</AuthLink>
               </>
             ) : (
               <>
-                Already have an account? <AuthLink href="/login">Login</AuthLink>
+                Already have an account?{" "}
+                <AuthLink href="/login">Login</AuthLink>
               </>
             )}
           </AuthFooter>
@@ -135,5 +213,5 @@ import { createSession } from "../services/session";
       </AuthWrapper>
     </AuthMain>
   );
-}
+};
 export default Auth;

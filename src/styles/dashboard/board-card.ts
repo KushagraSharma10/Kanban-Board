@@ -1,5 +1,6 @@
 import { BsThreeDotsVertical } from "react-icons/bs";
 import styled from "styled-components";
+import { colors } from "../theme";
 
 export const ThreeDots = styled(BsThreeDotsVertical)`
   opacity: 0;
@@ -9,7 +10,7 @@ export const ThreeDots = styled(BsThreeDotsVertical)`
 export const Card = styled.div`
   width: 20vw;
   border-radius: 1.5rem;
-  background-color: #151d27;
+  background-color: ${colors.darkBlue2};
   cursor: pointer;
   position: relative;
 
@@ -21,12 +22,10 @@ export const Card = styled.div`
     width: 30vw;
     min-height: 20vw;
   }
-
   @media (max-width: 768px) {
     width: 45vw;
     min-height: 30vw;
   }
-
   @media (max-width: 480px) {
     width: 100%;
     min-height: 46vw;
@@ -39,7 +38,6 @@ export const ContentClip = styled.div`
   background: inherit;
 `;
 
-
 export const ColorDiv = styled.div<{ $bg: string }>`
   width: 100%;
   height: 7vw;
@@ -48,7 +46,6 @@ export const ColorDiv = styled.div<{ $bg: string }>`
   @media (max-width: 768px) {
     height: 15vw;
   }
-
   @media (max-width: 480px) {
     width: 100%;
     min-height: 20vw;
@@ -64,12 +61,13 @@ export const BoardContent = styled.div`
   h2 {
     font-size: 1.2rem;
     font-weight: 600;
+    color: ${colors.brightGray};
   }
 
   p {
     font-size: 0.9rem;
     margin-top: 0.2rem;
-    color: #706e6e;
+    color: ${colors.lightGray};
   }
 
   .details {
@@ -79,13 +77,14 @@ export const BoardContent = styled.div`
 
 export const DotWrap = styled.div`
   position: relative;
-`
+`;
 
 export const OptionsMenu = styled.div`
   position: absolute;
   top: 9rem;
   right: 1rem;
-  background: #1f2937;
+  background: ${colors.darkBlue3};
+  border: 1px solid ${colors.balticSeaGray};
   border-radius: 0.5rem;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
   overflow: hidden;
@@ -98,13 +97,18 @@ export const OptionsMenu = styled.div`
     padding: 0.6rem 1rem;
     background: none;
     border: none;
-    color: white;
+    color: ${colors.brightGray};
     text-align: left;
     font-size: 0.9rem;
     cursor: pointer;
 
     &:hover {
-      background-color: #374151;
+      background-color: rgba(255, 255, 255, 0.04); /* subtle */
+    }
+
+    &:focus-visible {
+      outline: 2px solid ${colors.blue};
+      outline-offset: -2px;
     }
   }
 `;

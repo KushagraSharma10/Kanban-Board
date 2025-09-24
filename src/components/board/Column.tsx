@@ -8,12 +8,12 @@ import type { CardData } from "../../interface/card";
 
 const MAX_TITLE_LENGTH = 15;
 
-export default function Column({
+ const Column: React.FC<ColumnProps> = ({
   column,
   onRename,
   onDelete,
   boardId,
-}: ColumnProps) {
+}: ColumnProps) => {
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(column.title);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -22,7 +22,7 @@ export default function Column({
   const [cards, setCards] = useState<CardData[]>([]);
   const [isAdding, setIsAdding] = useState(false);
   const [newCardTitle, setNewCardTitle] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     const allCards = loadCards();
@@ -35,6 +35,15 @@ export default function Column({
   useEffect(() => {
     setTitle(column.title);
   }, [column.title]);
+
+  useEffect(() => {
+  if (editing) {
+    requestAnimationFrame(() => {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    });
+  }
+}, [editing]);
 
   const handleAddCard = () => {
     const trimmedTitle = newCardTitle.trim();
@@ -89,7 +98,7 @@ export default function Column({
               onRename(column.id, title.trim());
               setEditing(false);
             }}
-            className="text-sm font-medium w-full bg-transparent outline-none border-b border-transparent focus:border-[#2b3647] pb-0.5"
+            className="text-sm font-medium w-full bg-transparent outline-none border-b border-transparent focus:border-[#3a3f44] pb-0.5 text-[#e6edf3] placeholder-[#9e9e9e]"
             placeholder="Column name"
           />
         ) : (
@@ -108,7 +117,7 @@ export default function Column({
             onClick={() => setMenuOpen((s) => !s)}
           />
           {menuOpen && (
-            <div className="absolute right-0 mt-1 w-30 rounded-md bg-[#0f141b] border border-[#263241] shadow-lg z-50 overflow-hidden">
+            <div className="absolute right-0 mt-1 w-30 rounded-md bg-[#222c38] border border-[#3a3f44] shadow-lg z-50 overflow-hidden">
               <button
                 className="w-full text-left px-3 py-2 hover:bg-[#141b26] text-sm"
                 onClick={() => {
@@ -159,7 +168,7 @@ export default function Column({
       <div className="px-1">
         {!isAdding ? (
           <div
-            className="flex items-center gap-1 hover:bg-[#1f2125] hover:cursor-pointer p-3 rounded-md text-sm transition-colors"
+            className="flex items-center gap-1 hover:bg-[#222c38] hover:cursor-pointer p-3 rounded-md text-sm transition-colors"
             onClick={() => setIsAdding(true)}
           >
             <span className="text-lg leading-none">+</span>
@@ -186,7 +195,7 @@ export default function Column({
             <div className="flex gap-2">
               <button
                 onClick={handleAddCard}
-                className="px-3 py-1 rounded bg-blue-600 text-sm text-white hover:bg-green-600 transition"
+                className="px-3 py-1 rounded bg-[#0096ff] text-sm text-black hover:bg-[#6ca0ff] transition"
               >
                 Add
               </button>
@@ -196,7 +205,7 @@ export default function Column({
                   setError("");
                   setNewCardTitle("");
                 }}
-                className="px-3 py-1 rounded bg-gray-600 text-sm text-white hover:bg-gray-700 transition"
+                className="px-3 py-1 rounded bg-[#222c38] text-sm text-[#e6edf3] border border-[#3a3f44] hover:brightness-110 transition"
               >
                 Cancel
               </button>
@@ -207,3 +216,6 @@ export default function Column({
     </div>
   );
 }
+
+
+export default Column;

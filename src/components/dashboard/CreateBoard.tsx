@@ -1,25 +1,41 @@
 import { useEffect, useState } from "react";
-import { Actions,  ColorCircle, ColorInput, ColorOptions, Dialog, Form, HeaderRow, Overlay, Primary, Secondary,
+import {
+  Actions,
+  ColorCircle,
+  ColorInput,
+  ColorOptions,
+  Dialog,
+  Form,
+  HeaderRow,
+  Overlay,
+  Primary,
+  Secondary,
 } from "../../styles/dashboard/create-board";
 import { Field } from "../../styles/dashboard/create-board";
 import type { boardModalProp } from "../../types/dashboard";
 import { DEFAULT_COLORS } from "../../constants/Colors";
 
-export default function CreateBoardModal({
+type FormState = {
+  name: string;
+  type: string;
+  color: string;
+};
+
+const CreateBoard: React.FC<boardModalProp> = ({
   open,
   onClose,
   onCreate,
   mode = "create",
   board,
   onUpdate,
-}: boardModalProp) {
-  const [form, setForm] = useState({
+}: boardModalProp) => {
+  const [form, setForm] = useState<FormState>({
     name: "",
     type: "",
     color: DEFAULT_COLORS[0],
   });
 
-   useEffect(() => {
+  useEffect(() => {
     if (!open) return;
     if (mode === "edit" && board) {
       setForm({ name: board.name, type: board.type, color: board.color });
@@ -33,7 +49,7 @@ export default function CreateBoardModal({
     if (!form.name.trim()) return alert("Please enter a board name");
 
     if (mode === "edit" && board && onUpdate) {
-      onUpdate(board.id, form);  
+      onUpdate(board.id, form);
       onClose();
       return;
     }
@@ -44,6 +60,7 @@ export default function CreateBoardModal({
   };
 
   if (!open) return null;
+  const isFormValid = form.name.trim() !== "" && form.type.trim() !== "";
 
   return (
     <Overlay onClick={onClose}>
@@ -58,7 +75,9 @@ export default function CreateBoardModal({
             <h2>Board name</h2>
             <input
               value={form.name}
-              onChange={(e) => setForm((field) => ({ ...field, name: e.target.value }))}
+              onChange={(e) =>
+                setForm((field) => ({ ...field, name: e.target.value }))
+              }
               placeholder="e.g. Sprint Planning"
               required
             />
@@ -104,10 +123,17 @@ export default function CreateBoardModal({
             <Secondary type="button" onClick={onClose}>
               Cancel
             </Secondary>
-            <Primary type="submit">{mode === "edit" ? "Save changes" : "Create"}</Primary>
+            <Primary 
+            type="submit"
+            disabled = {!isFormValid}
+            >
+              {mode === "edit" ? "Save changes" : "Create"}
+            </Primary>
           </Actions>
         </Form>
       </Dialog>
     </Overlay>
   );
 }
+
+export default CreateBoard;

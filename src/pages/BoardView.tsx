@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { GoPlus } from "react-icons/go";
 import Column from "../components/board/Column";
 import { useNavigate, useParams } from "react-router";
-import { getSession } from "../services/session";
-import { getAllBoards } from "../services/boards";
 import {
   ensureDefaultColumns,
   addColumn,
@@ -12,12 +10,18 @@ import {
   type StoredColumn,
 } from "../utils/columns";
 
-export type ColumnItem = { id: string; title: string };
+import type { ColumnItem } from "../types/board-view";
+import { loadFromStorage } from "../utils/storage";
+
+  const SESSION_STORAGE_KEY = "kanban.session";
+const BOARDS_STORAGE_KEY = "kanban.boards";
+
 
 const BoardView = () => {
+    const [boardName, setBoardName] = useState<string>("");
   const [columns, setColumns] = useState<ColumnItem[]>([]);
-  const [showAdd, setShowAdd] = useState(false);
-  const [newColumnName, setNewColumnName] = useState("");
+  const [showAdd, setShowAdd] = useState<boolean>(false);
+  const [newColumnName, setNewColumnName] = useState<string>("");
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const { id: boardId } = useParams();
@@ -38,6 +42,7 @@ const BoardView = () => {
       return;
     }
 
+    setBoardName(board.name);
     const seeded = ensureDefaultColumns(board.id);
     setColumns(seeded.map(({ id, title }) => ({ id, title })));
   }, [activeUserId, boardId, navigate]);
@@ -66,85 +71,98 @@ const BoardView = () => {
     setColumns(updated.map(({ id, title }) => ({ id, title })));
   };
 
-  return (
-    <div className="w-full min-h-screen text-white bg-[#0b0f14]">
-      <header className="p-6 border-b border-[#222c38] flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Board</h1>
-        <button
-          onClick={() => setShowAdd((prev) => !prev)}
-          className="flex items-center gap-2 px-3 py-2 rounded-md bg-[#1a1f27] hover:bg-[#222834] border border-[#263241]"
-        >
-          <GoPlus className="text-lg" />
-          Add Column
-        </button>
-      </header>
+type SessionDataLocal = { userId: string; createdAt: number };
+type BoardLite = { id: string; userId: string; name: string; type: string; color: string };
 
-      <div className="w-full min-h-[90vh] overflow-auto">
-        <div className="flex gap-4 p-4 min-w-max">
-          {columns.map((column) => (
-            <Column
-              key={column.id}
-              column={column}
-              boardId={boardId ?? ""}
-              onRename={handleRenameColumn}
-              onDelete={handleDeleteColumn}
-            />
-          ))}
+function getSession(): SessionDataLocal | null {
+  const s = loadFromStorage(SESSION_STORAGE_KEY, null);
+  return s ?? null;
+}
 
-          <div className="min-w-[20vw] max-w-[20vw]">
-            {showAdd ? (
-              <div className="rounded-md bg-[#161a21] border border-[#171a1f] p-4">
-                <input
-                  ref={inputRef}
-                  value={newColumnName}
-                  onChange={(e) => setNewColumnName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleCreateColumn();
-                    if (e.key === "Escape") {
-                      setShowAdd(false);
-                      setNewColumnName("");
-                    }
+function getAllBoards(): BoardLite[] {
+  const stored = loadFromStorage(BOARDS_STORAGE_KEY, []);
+  return (Array.isArray(stored) ? stored : []) as BoardLite[];
+}
+
+ return (
+  <div className="w-full min-h-screen text-[#e6edf3] bg-[#0b0f14]">
+    <header className="p-6 border-b border-[#3a3f44] flex items-center justify-between">
+      <h1 className="text-xl font-semibold">{boardName || "Board"}</h1>
+      <button
+        onClick={() => setShowAdd((prev) => !prev)}
+        className="flex items-center gap-2 px-3 py-2 rounded-md bg-[#222c38] hover:brightness-110 border border-[#3a3f44]"
+      >
+        <GoPlus className="text-lg" />
+        Add Column
+      </button>
+    </header>
+
+    <div className="w-full min-h-[90vh] overflow-auto">
+      <div className="flex gap-4 p-4 min-w-max">
+        {columns.map((column) => (
+          <Column
+            key={column.id}
+            column={column}
+            boardId={boardId ?? ""}
+            onRename={handleRenameColumn}
+            onDelete={handleDeleteColumn}
+          />
+        ))}
+
+        <div className="min-w-[20vw] max-w-[20vw]">
+          {showAdd ? (
+            <div className="rounded-md bg-[#161a21] border border-[#3a3f44] p-4">
+              <input
+                ref={inputRef}
+                value={newColumnName}
+                onChange={(e) => setNewColumnName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleCreateColumn();
+                  if (e.key === "Escape") {
+                    setShowAdd(false);
+                    setNewColumnName("");
+                  }
+                }}
+                maxLength={15}
+                className="w-full rounded-md text-sm border border-[#3a3f44] bg-[#222c38] px-3 py-2 outline-none placeholder-[#9e9e9e]"
+                placeholder="Column name"
+              />
+              <div className="mt-2 flex items-center">
+                <button
+                  onClick={handleCreateColumn}
+                  disabled={!newColumnName.trim()}
+                  className="px-3 py-1.5 rounded-md bg-[#0096ff] text-sm text-black hover:bg-[#6ca0ff] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Add
+                </button>
+                <button
+                  onClick={() => {
+                    setShowAdd(false);
+                    setNewColumnName("");
                   }}
-                  maxLength={24}
-                  className="w-full rounded-md text-sm border border-[#2d2e31] px-3 py-2 outline-none"
-                  placeholder="Column name"
-                />
-                <div className="mt-2 flex items-center">
-                  <button
-                    onClick={handleCreateColumn}
-                    disabled={!newColumnName.trim()}
-                    className="px-3 py-1.5 rounded-md bg-[#1a4fff] text-sm hover:bg-[#1745e0] disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Add
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowAdd(false);
-                      setNewColumnName("");
-                    }}
-                    className="ml-auto px-3 py-2 rounded-md hover:bg-[#141b26] border border-transparent"
-                    aria-label="Close"
-                    title="Close"
-                  >
-                    ✕
-                  </button>
-                </div>
+                  className="ml-auto px-3 py-2 rounded-md hover:bg-[#222c38] border border-transparent"
+                  aria-label="Close"
+                  title="Close"
+                >
+                  ✕
+                </button>
               </div>
-            ) : (
-              <button
-                onClick={() => setShowAdd(true)}
-                className="w-full py-3 flex items-center justify-center gap-2 rounded-md border border-dashed border-[#2b3647] bg-[#121824]/60 hover:bg-[#1a1f27] text-sm"
-                title="Add column"
-              >
-                <GoPlus className="text-lg" />
-                Add Column
-              </button>
-            )}
-          </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowAdd(true)}
+              className="w-full py-3 flex items-center justify-center gap-2 rounded-md border border-dashed border-[#3a3f44] bg-[#161a21]/60 hover:bg-[#161a21] text-sm"
+              title="Add column"
+            >
+              <GoPlus className="text-lg" />
+              Add Column
+            </button>
+          )}
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default BoardView;

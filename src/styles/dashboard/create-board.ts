@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { colors } from "../theme";
 
 export const Overlay = styled.div`
   position: fixed;
@@ -14,11 +15,11 @@ export const Dialog = styled.div`
   width: 100%;
   max-width: 40vw;
   border-radius: 1rem;
-  background-color: #0f1622;
-  border: 1px solid #223145;
+  background-color: ${colors.darkBlue2};
+  border: 1px solid ${colors.balticSeaGray};
   box-shadow: 0 20px 60px #00000059;
   padding: 1.2rem;
-  color: #e6edf3;
+  color: ${colors.brightGray};
 
   @media (max-width: 768px) {
     max-width: 80vw;
@@ -34,16 +35,22 @@ export const HeaderRow = styled.div`
   h2 {
     font-size: 1.25rem;
     font-weight: 700;
+    color: ${colors.brightGray};
   }
 
   button {
     background-color: transparent;
     border: none;
     font-size: 1.6rem;
-    color: #9fb1cc;
+    color: ${colors.grayishBlue};
     cursor: pointer;
+
     &:hover {
-      color: #fff;
+      color: ${colors.brightGray};
+    }
+    &:focus-visible {
+      outline: 2px solid ${colors.blue};
+      border-radius: 0.4rem;
     }
   }
 `;
@@ -52,24 +59,32 @@ export const Form = styled.form`
   display: grid;
   gap: 0.9rem;
 `;
+
 export const Field = styled.div`
   display: grid;
   gap: 0.5rem;
 
   h2 {
     font-size: 0.9rem;
-    color: #c7d2e1;
+    color: ${colors.lightGray};
   }
 
   input,
   select {
-    background-color: #0b121a;
-    border: 1px solid #2a3b4f;
+    background-color: ${colors.darkBlue3};
+    border: 1px solid ${colors.balticSeaGray};
     border-radius: 10px;
     padding: 0.6rem 0.7rem;
-    color: #e6edf3;
+    color: ${colors.brightGray};
+
+    &::placeholder {
+      color: ${colors.spanishGray};
+    }
+
     &:focus {
-      border-color: #3b82f6;
+      border-color: ${colors.blue};
+      box-shadow: 0 0 0 3px rgba(0, 150, 255, 0.2);
+      outline: none;
     }
   }
 `;
@@ -85,33 +100,39 @@ export const ColorCircle = styled.button<{ $bg: string; $active?: boolean }>`
   height: 2vw;
   border-radius: 1rem;
   cursor: pointer;
-
   background-color: ${({ $bg }) => $bg};
   border: ${({ $active }) =>
-    $active ? "2px solid #fff" : "2px solid #2a3b4f"};
+    $active
+      ? `2px solid ${colors.brightGray}`
+      : `2px solid ${colors.balticSeaGray}`};
 
   @media (max-width: 768px) {
     width: 4vw;
     height: 4vw;
   }
-
   @media (max-width: 480px) {
     width: 6vw;
     height: 6vw;
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${colors.blue};
+    outline-offset: 2px;
   }
 `;
 
 export const ColorInput = styled.input`
   width: 4vw;
-  height: 2.2vw;
-  border-radius: 0.3rem;
-  border: 1px solid #2a3b4f;
+  height: 3vw;
+  border-radius: .1rem;
+  border: 1px solid ${colors.balticSeaGray};
+  background-color: ${colors.darkBlue3};
+  color: ${colors.brightGray};
 
   @media (max-width: 768px) {
     width: 6vw;
     height: 3vw;
   }
-
   @media (max-width: 480px) {
     width: 8vw;
     height: 4vw;
@@ -123,20 +144,45 @@ export const Actions = styled.div`
   justify-content: flex-end;
   gap: 0.6rem;
 `;
-export const Primary = styled.button`
-  background-color: #3b82f6;
+
+export const Primary = styled.button<{ disabled?: boolean }>`
+  background-color: ${colors.blue};
   border: none;
   color: #000;
   font-weight: 700;
   padding: 0.5rem 0.9rem;
   border-radius: 0.5rem;
   cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    filter: brightness(1.05);
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${colors.brightBlue};
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: none; 
+  }
 `;
+
+
 export const Secondary = styled.button`
-  background-color: #0b121a;
-  border: 1px solid #2a3b4f;
-  color: #c7d2e1;
+  background-color: ${colors.darkBlue3};
+  border: 1px solid ${colors.balticSeaGray};
+  color: ${colors.brightGray};
   padding: 0.5rem 0.9rem;
   border-radius: 0.5rem;
   cursor: pointer;
+
+  &:hover {
+    background-color: #ffffff08;
+  }
+  &:focus-visible {
+    outline: 2px solid ${colors.blue};
+  }
 `;

@@ -1,20 +1,23 @@
 import { useEffect, useState } from "react";
 import BoardCard from "../components/dashboard/BoardCard";
 import {
-  Board as BoardWrapper, BoardArea, CreateBoard, Main, Cards,
-  NoBoards, Query,
+  Board as BoardWrapper,
+  BoardArea,
+  CreateBoard,
+  Main,
+  Cards,
+  NoBoards,
+  Query,
 } from "../styles/dashboard/dashboard";
 import CreateBoardModal from "../components/dashboard/CreateBoard";
 import Header from "../components/dashboard/Header";
 import type { BoardItem } from "../types/dashboard";
-import {
-  getBoardsForUser,
-  addBoardForUser,
-  updateBoardForUser,
-  deleteBoardForUser,
-} from "../services/boards";
-import { getSession } from "../services/session";
 import { useNavigate } from "react-router";
+import { nanoid } from "nanoid";
+import { loadFromStorage, saveToStorage } from "../utils/storage";
+
+const BOARDS_STORAGE_KEY = "kanban.boards";
+const SESSION_STORAGE_KEY = "kanban.session";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -24,8 +27,11 @@ const Dashboard = () => {
 
   const [boardList, setBoardList] = useState<BoardItem[]>([]);
   const [isBoardModalOpen, setIsBoardModalOpen] = useState(false);
-  const [boardModalMode, setBoardModalMode] = useState<"create" | "edit">("create");
-  const [selectedBoardForEdit, setSelectedBoardForEdit] = useState<BoardItem | null>(null);
+  const [boardModalMode, setBoardModalMode] = useState<"create" | "edit">(
+    "create"
+  );
+  const [selectedBoardForEdit, setSelectedBoardForEdit] =
+    useState<BoardItem | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
@@ -37,8 +43,36 @@ const Dashboard = () => {
     setBoardList(userBoards);
   }, [activeUserId, navigate]);
 
-  const handleCreateBoard = (boardData: { name: string; type: string; color: string }) => {
+  const handleCreateBoard = (boardData: {
+    name: string;
+    type: string;
+    color: string;
+  }) => {
     if (!activeUserId) return;
+
+    const newName = boardData.name
+      .trim()
+      .split(" ")
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    if (!newName) {
+      alert("Please enter a board name.");
+      return;
+    }
+
+    const isDup = getBoardsForUser(activeUserId).some(
+      (board) =>
+        board.name.trim().split(" ").filter(Boolean).join(" ").toLowerCase() ===
+        newName
+    );
+
+    if (isDup) {
+      alert("A board with this name already exists.");
+      return;
+    }
+
     const createdBoard = addBoardForUser(activeUserId, boardData);
     setBoardList((previousBoards) => [createdBoard, ...previousBoards]);
   };
@@ -48,10 +82,37 @@ const Dashboard = () => {
     boardData: { name: string; type: string; color: string }
   ) => {
     if (!activeUserId) return;
+
+    const newName = boardData.name
+      .trim()
+      .split(" ")
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    if (!newName) {
+      alert("Please enter a board name.");
+      return;
+    }
+
+    const isDup = getBoardsForUser(activeUserId).some(
+      (board) =>
+        board.id !== boardId &&
+        board.name.trim().split(" ").filter(Boolean).join(" ").toLowerCase() ===
+          newName
+    );
+
+    if (isDup) {
+      alert("A board with this name already exists.");
+      return;
+    }
+
     updateBoardForUser(activeUserId, boardId, boardData);
     setBoardList((previousBoards) =>
       previousBoards.map((existingBoard) =>
-        existingBoard.id === boardId ? { ...existingBoard, ...boardData } : existingBoard
+        existingBoard.id === boardId
+          ? { ...existingBoard, ...boardData }
+          : existingBoard
       )
     );
   };
@@ -63,6 +124,64 @@ const Dashboard = () => {
       previousBoards.filter((existingBoard) => existingBoard.id !== boardId)
     );
   };
+
+  type SessionDataLocal = { userId: string; createdAt: number };
+
+  function getSession(): SessionDataLocal | null {
+    const session = loadFromStorage(SESSION_STORAGE_KEY, null);
+    return session ?? null;
+  }
+
+  function getAllBoards(): BoardItem[] {
+    const stored = loadFromStorage(BOARDS_STORAGE_KEY, []);
+    return (Array.isArray(stored) ? stored : []) as BoardItem[];
+  }
+
+  function saveAllBoards(all: BoardItem[]) {
+    saveToStorage(BOARDS_STORAGE_KEY, all);
+  }
+
+  function getBoardsForUser(userId: string): BoardItem[] {
+    return getAllBoards().filter((board) => board.userId === userId);
+  }
+
+  function addBoardForUser(
+    userId: string,
+    data: { name: string; type: string; color: string }
+  ): BoardItem {
+    const all = getAllBoards();
+    const newBoard: BoardItem = {
+      id: nanoid(),
+      userId,
+      name: data.name.trim(),
+      type: data.type.trim(),
+      color: data.color,
+    };
+    saveAllBoards([newBoard, ...all]);
+    return newBoard;
+  }
+
+  function updateBoardForUser(
+    userId: string,
+    boardId: string,
+    data: { name: string; type: string; color: string }
+  ): void {
+    const all = getAllBoards();
+    const updated = all.map((board) =>
+      board.id === boardId && board.userId === userId
+        ? { ...board, ...data }
+        : board
+    );
+    saveAllBoards(updated);
+  }
+
+  function deleteBoardForUser(userId: string, boardId: string): void {
+    const all = getAllBoards();
+    const remaining = all.filter(
+      (board) => !(board.id === boardId && board.userId === userId)
+    );
+    saveAllBoards(remaining);
+  }
 
   const filteredBoards = boardList.filter(
     (board) =>
@@ -105,7 +224,7 @@ const Dashboard = () => {
                     setBoardModalMode("edit");
                     setIsBoardModalOpen(true);
                   }}
-                  onOpen={() => navigate(`/board/${board.id}`)} 
+                  onOpen={() => navigate(`/board/${board.id}`)}
                   onDelete={() => handleDeleteBoard(board.id)}
                 />
               ))}
