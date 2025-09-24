@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { colors } from "../theme";
+import { theme } from "../theme";
 import { breakpoints } from "../../constants/breakpoints";
 
 export const Overlay = styled.div`
@@ -16,11 +16,11 @@ export const Dialog = styled.div`
   width: 100%;
   max-width: 40vw;
   border-radius: 1rem;
-  background-color: #0f1622;
-  border: 1px solid #223145;
+  background-color: ${theme.colors.darkBlue2};
+  border: 1px solid ${theme.colors.balticSeaGray};
   box-shadow: 0 20px 60px #00000059;
   padding: 1.2rem;
-  color: #e6edf3;
+   color: ${theme.colors.brightGray};
 
   @media (max-width: ${breakpoints.tablet}) {
     max-width: 80vw;
@@ -36,16 +36,17 @@ export const HeaderRow = styled.div`
   h2 {
     font-size: 1.25rem;
     font-weight: 700;
+    color: ${theme.colors.brightGray};
   }
 
   button {
     background-color: transparent;
     border: none;
     font-size: 1.6rem;
-    color: #9fb1cc;
+    color: ${theme.colors.grayishBlue};
     cursor: pointer;
     &:hover {
-      color: #fff;
+      color: ${theme.colors.brightGray};
     }
   }
 `;
@@ -60,18 +61,18 @@ export const Field = styled.div`
 
   h2 {
     font-size: 0.9rem;
-    color: ${colors.iceBlue};
+    color: ${theme.colors.iceBlue};
   }
 
   input,
   select {
-    background-color: ${colors.blackPearl};
-    border: 1px solid ${colors.bluishBlack};
+    background-color: ${theme.colors.blackPearl};
+    border: 1px solid ${theme.colors.bluishBlack};
     border-radius: 10px;
     padding: 0.6rem 0.7rem;
-    color: ${colors.brightGray};
+    color: ${theme.colors.brightGray};
     &:focus {
-      border-color: ${colors.brightBlue};
+      border-color: ${theme.colors.brightBlue};
     }
   }
 `;
@@ -90,7 +91,7 @@ export const ColorCircle = styled.button<{ $bg: string; $active?: boolean }>`
 
   background-color: ${({ $bg }) => $bg};
   border: ${({ $active }) =>
-    $active ? "2px solid #fff" : `2px solid ${colors.bluishBlack}`};
+    $active ? "2px solid #fff" : `2px solid ${theme.colors.bluishBlack}`};
 
   @media (max-width: ${breakpoints.tablet}) {
     width: 4vw;
@@ -107,7 +108,7 @@ export const ColorInput = styled.input`
   width: 4vw;
   height: 2.2vw;
   border-radius: 0.3rem;
-  border: 1px solid ${colors.bluishBlack};
+  border: 1px solid ${theme.colors.bluishBlack};
 
   @media (max-width: ${breakpoints.tablet}) {
     width: 6vw;
@@ -125,20 +126,23 @@ export const Actions = styled.div`
   justify-content: flex-end;
   gap: 0.6rem;
 `;
-export const Primary = styled.button`
-  background-color: ${colors.brightBlue};
-  border: none;
-  color: #000;
+
+export const Button = styled.button`
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
   font-weight: 700;
-  padding: 0.5rem 0.9rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-`;
-export const Secondary = styled.button`
-  background-color: ${colors.blackPearl};
-  border: 1px solid ${colors.bluishBlack};
-  color: ${colors.iceBlue};
-  padding: 0.5rem 0.9rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
+
+  &.primary {
+    background-color: ${theme.colors.blue};
+    border: none;
+    color: #000;
+  }
+
+  &.secondary {
+    background-color: ${theme.colors.darkBlue3};
+    border: 1px solid ${theme.colors.bluishBlack};
+    color: ${theme.colors.iceBlue};
+    font-weight: 400; 
+  }
 `;

@@ -18,6 +18,18 @@ export const PanelContainer = styled.div`
 export const Icon = styled.svg`
   width: 50%;
   color: #3b82f6;
+
+  rect {
+    stroke: currentColor;
+    stroke-width: 2;
+  }
+
+  line {
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
 `;
 
 export const ContentHeading = styled.h1`

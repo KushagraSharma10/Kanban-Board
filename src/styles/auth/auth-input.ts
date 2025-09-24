@@ -1,20 +1,20 @@
 import styled from "styled-components";
-import { colors} from "../theme";
+import { theme } from "../theme";
 
 export const AuthInput = styled.input`
-  border: 1px solid ${colors.balticSeaGray};
+  border: 1px solid ${theme.colors.balticSeaGray};
   outline: none;
-  background-color: ${colors.darkBlue1};
-  color: ${colors.brightGray};
+  background-color: ${theme.colors.darkBlue1};
+  color: ${theme.colors.brightGray};
   padding: 0.8rem 1rem;
   border-radius: 0.5rem;
   font-size: 1rem;
 
   &::placeholder {
-    color: ${colors.spanishGray};
+    color: ${theme.colors.spanishGray};
   }
 
   &:focus {
-    border-color: ${colors.blue};
+    border-color: ${theme.colors.blue};
   }
 `;

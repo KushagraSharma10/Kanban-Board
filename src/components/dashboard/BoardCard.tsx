@@ -2,19 +2,25 @@ import { useState } from "react";
 import {
   Backdrop,
   BoardContent,
-
   Card,
   ColorDiv,
   ContentClip,
   DotWrap,
   OptionsMenu,
+  OptionWrapper,
   ThreeDots,
 } from "../../styles/dashboard/board-card";
-import type { CardProp } from "../../types/dashboard";
-import { MENU_OPTIONS } from "../../constants/board-card";
+import type { BoardItem, CardProp } from "../../types/dashboard";
 
-const BoardCard = ({ name, color, type, onEdit, onDelete }: CardProp) => {
+const BoardCard: React.FC<CardProp> = ({
+  name,
+  color,
+  type,
+  onAction
+}: CardProp) => {
   const [menuOpen, setMenuOpen] = useState(false);
+
+    const board: BoardItem = { id: "", name, type, color };
 
   return (
     <Card onClick={() => setMenuOpen(false)}>
@@ -25,7 +31,6 @@ const BoardCard = ({ name, color, type, onEdit, onDelete }: CardProp) => {
             <h2>{name}</h2>
             <p>{type}</p>
           </div>
-
           <DotWrap>
             <ThreeDots
               size={20}
@@ -33,29 +38,33 @@ const BoardCard = ({ name, color, type, onEdit, onDelete }: CardProp) => {
                 e.stopPropagation();
                 setMenuOpen((prev) => !prev);
               }}
-              style={{ cursor: "pointer" }}
             />
           </DotWrap>
         </BoardContent>
       </ContentClip>
+
       {menuOpen && (
-        <>
+        <OptionWrapper>
           <Backdrop onClick={() => setMenuOpen(false)} />
           <OptionsMenu>
-  {MENU_OPTIONS.map((options) => (
-    <button
-      key={options.label}
-      onClick={() => {
-        setMenuOpen(false);
-        if (options.label === "Edit") options.action(onEdit);
-        if (options.label === "Delete") options.action(onDelete);
-      }}
-    >
-      {options.label}
-    </button>
-  ))}
-</OptionsMenu>
-        </>
+            <button
+              onClick={() => {
+                setMenuOpen(false);
+                onAction("edit", board); 
+              }}
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => {
+                setMenuOpen(false);
+                onAction("delete", board); 
+              }}
+            >
+              Delete
+            </button>
+          </OptionsMenu>
+        </OptionWrapper>
       )}
     </Card>
   );

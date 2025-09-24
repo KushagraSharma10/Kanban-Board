@@ -1,20 +1,28 @@
 import { useEffect, useState } from "react";
 import {
-  Actions, ColorCircle, ColorInput, ColorOptions, Dialog, Form, HeaderRow, Overlay, Primary, Secondary,
+  Actions,
+  Button,
+  ColorCircle,
+  ColorInput,
+  ColorOptions,
+  Dialog,
+  Form,
+  HeaderRow,
+  Overlay,
 } from "../../styles/dashboard/create-board";
 import { Field } from "../../styles/dashboard/create-board";
 import type { BoardModalProp } from "../../types/dashboard";
 import { selectTypes } from "../../constants/board";
 import { DEFAULT_COLORS } from "../../constants/colors";
 
-export default function CreateBoardModal({
+const CreateBoardModal: React.FC<BoardModalProp> = ({
   open,
   onClose,
   onCreate,
   mode = "create",
   board,
   onUpdate,
-}: BoardModalProp) {
+}: BoardModalProp) => {
   const [form, setForm] = useState({
     name: "",
     type: "",
@@ -60,7 +68,9 @@ export default function CreateBoardModal({
             <h2>Board name</h2>
             <input
               value={form.name}
-              onChange={(e) => setForm((field) => ({ ...field, name: e.target.value }))}
+              onChange={(e) =>
+                setForm((field) => ({ ...field, name: e.target.value }))
+              }
               placeholder="e.g. Sprint Planning"
               required
             />
@@ -102,13 +112,17 @@ export default function CreateBoardModal({
           </Field>
 
           <Actions>
-            <Secondary type="button" onClick={onClose}>
+            <Button type="button" className="secondary" onClick={onClose}>
               Cancel
-            </Secondary>
-            <Primary type="submit">{mode === "edit" ? "Save changes" : "Create"}</Primary>
+            </Button>
+            <Button type="submit" className="primary">
+              {mode === "edit" ? "Save changes" : "Create"}
+            </Button>
           </Actions>
         </Form>
       </Dialog>
     </Overlay>
   );
-}
+};
+
+export default CreateBoardModal;

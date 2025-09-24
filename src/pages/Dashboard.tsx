@@ -2,19 +2,25 @@ import { useEffect, useState } from "react";
 import { nanoid } from "nanoid";
 import BoardCard from "../components/dashboard/BoardCard";
 import {
-  Board as BoardWrap,BoardArea, CreateBoard, Main, Cards,
+  Board as BoardWrap,
+  BoardArea,
+  CreateBoard,
+  Main,
+  Cards,
   NoBoards,
   Query,
 } from "../styles/dashboard/dashboard";
 import CreateBoardModal from "../components/dashboard/CreateBoardModal";
 import Header from "../components/dashboard/Header";
 import type { BoardItem } from "../types/dashboard";
-import { getAllBoards, saveAllBoards } from "../services/boards";
+import { loadFromStorage, saveToStorage } from "../utils/storage";
+
+const BOARDS_STORAGE_KEY = "kanban.boards";
 
 const Dashboard = () => {
   const [boards, setBoards] = useState<BoardItem[]>(() => getAllBoards());
 
-  const [modalOpen, setModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [selectedBoard, setSelectedBoard] = useState<BoardItem | null>(null);
   const [search, setSearch] = useState("");
@@ -22,6 +28,19 @@ const Dashboard = () => {
   useEffect(() => {
     saveAllBoards(boards);
   }, [boards]);
+
+  const handleCardAction = (
+  action: "edit" | "delete",
+  board: BoardItem
+) => {
+  if (action === "edit") {
+    setSelectedBoard(board);
+    setModalMode("edit");
+    setModalOpen(true);
+  } else if (action === "delete") {
+    setBoards(prev => prev.filter(board => board.id !== board.id));
+  }
+};
 
   const handleCreateBoard = (data: {
     name: string;
@@ -40,15 +59,19 @@ const Dashboard = () => {
     );
   };
 
-  const handleDeleteBoard = (id: string) => {
-    setBoards((prev) => prev.filter((board) => board.id !== id));
-  };
-
   const filteredBoards = boards.filter(
     (board) =>
       board.name.toLowerCase().includes(search.toLowerCase()) ||
       board.type.toLowerCase().includes(search.toLowerCase())
   );
+
+  function getAllBoards(): BoardItem[] {
+    return loadFromStorage(BOARDS_STORAGE_KEY, []) as BoardItem[];
+  }
+
+  function saveAllBoards(boards: BoardItem[]) {
+    saveToStorage(BOARDS_STORAGE_KEY, boards);
+  }
 
   return (
     <Main>
@@ -65,7 +88,7 @@ const Dashboard = () => {
       <BoardWrap>
         <BoardArea>
           <h1>My Boards</h1>
-           {boards.length === 0 ? (
+          {boards.length === 0 ? (
             <NoBoards>No boards right now. Create one to get started!</NoBoards>
           ) : filteredBoards.length === 0 ? (
             <NoBoards>
@@ -79,12 +102,7 @@ const Dashboard = () => {
                   name={board.name}
                   type={board.type}
                   color={board.color}
-                  onEdit={() => {
-                    setSelectedBoard(board);
-                    setModalMode("edit");
-                    setModalOpen(true);
-                  }}
-                  onDelete={() => handleDeleteBoard(board.id)}
+                  onAction={handleCardAction}  
                 />
               ))}
 
@@ -112,6 +130,6 @@ const Dashboard = () => {
       />
     </Main>
   );
-}
+};
 
 export default Dashboard;

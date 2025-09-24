@@ -1,12 +1,12 @@
 import styled from "styled-components";
-import { colors } from "../theme";
+import { theme } from "../theme";
 import { breakpoints } from "../../constants/breakpoints";
 
 export const HeaderContainer = styled.div`
   display: flex;
   align-items: center;
   padding: 1rem;
-  color: ${colors.brightGray};
+  color: ${theme.colors.brightGray};
   justify-content: space-between;
   border-bottom: 1px solid #28394e;
   flex-wrap: wrap;
@@ -61,8 +61,8 @@ export const SearchInput = styled.input`
   border: none;
   outline: none;
   width: 21.875rem;
-  color: ${colors.brightGray};
-  background-color: ${colors.darkBlue3};
+  color: ${theme.colors.brightGray};
+  background-color: ${theme.colors.darkBlue3};
 
   @media (max-width: ${breakpoints.tablet}) {
     margin-left: 0;
@@ -80,7 +80,7 @@ export const Profile = styled.div`
   button {
     margin-left: auto;
     padding: 0.5rem 1rem;
-    background-color: ${colors.blue};
+    background-color: ${theme.colors.blue};
     color: #000;
     border: none;
     border-radius: 0.5rem;
