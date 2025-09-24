@@ -1,4 +1,4 @@
-import type { AuthProp } from "../../types/auth";
+import type { AuthProp } from "../../utils/types/auth";
 import { FieldLabel, Field as FieldContainer } from "../../styles/auth/auth-form";
 import { AuthInput } from "../../styles/auth/auth-input";
 

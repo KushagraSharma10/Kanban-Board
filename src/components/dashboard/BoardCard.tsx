@@ -10,7 +10,7 @@ import {
   OptionWrapper,
   ThreeDots,
 } from "../../styles/dashboard/board-card";
-import type { BoardItem, CardProp } from "../../types/dashboard";
+import type { BoardItem, CardProp } from "../../utils/types/dashboard";
 
 const BoardCard: React.FC<CardProp> = ({
   name,
