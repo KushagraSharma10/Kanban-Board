@@ -9,4 +9,8 @@ export const colors = {
   balticSeaGray: "#3a3f44",
   blue: "#0096ff",
   lightGray: "#9ca3af",
+  blackPearl: "#0b121a",
+  iceBlue: "#c7d2e1",
+  bluishBlack: "#2a3b4f",
+  
 };

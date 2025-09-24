@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { breakpoints } from "../../constants/breakpoints";
 export const PanelContainer = styled.div`
   width: 100%;
   background-color: #181c24;
@@ -9,7 +10,7 @@ export const PanelContainer = styled.div`
   justify-content: center;
   align-items: center;
 
-  @media (max-width: 768px) {
+  @media (max-width: ${breakpoints.tablet}) {
     display: none;
   }
 `;

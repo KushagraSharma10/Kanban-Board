@@ -28,12 +28,3 @@ export function registerUser(name: string, email: string, password: string): boo
   return true;
 }
 
-export function validateUser(email: string, password: string): boolean {
-  const users = getAllUsers();
-  const normalizedEmail = normalizeEmail(email);
-
-  const existingUser = users.find((user) => user.email === normalizedEmail);
-  if (!existingUser) return false;
-
-  return bcrypt.compareSync(password, existingUser.password);
-}

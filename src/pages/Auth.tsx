@@ -1,7 +1,6 @@
 import { useState } from "react";
 import LeftPanel from "../components/auth/LeftPanel";
 import AuthFormFields from "../components/auth/AuthFormFields";
-import { LOGIN_MODE, SIGNUP_MODE} from "../constants/Auth";
 import type { Field, FormFields } from "../types/form";
 import { AuthContent, AuthMain, AuthWrapper } from "../styles/auth/auth-main";
 import { AuthBrand, AuthDivider, AuthFooter, AuthLine } from "../styles/auth/auth-main";
@@ -9,12 +8,13 @@ import { AuthForm } from "../styles/auth/auth-form";
 import { AuthLink} from "../styles/auth/auth-link";
 import { AuthButton } from "../styles/auth/auth-button";
 import { useNavigate } from "react-router";
-import { validateEmail } from "../utils/validation";
-import { registerUser, validateUser } from "../services/auth";
-import type { ModeProp} from "../types/auth";
+import { validateEmail, validateUser } from "../utils/validation";
+import { registerUser } from "../services/auth";
+import type { ModeProp } from "../types/auth";
 
- const Auth = ({ mode }: ModeProp) => {
-  const isLogin = mode === LOGIN_MODE;
+
+ const Auth = ({ mode}: ModeProp) => {
+  const isLogin = mode === "Login";
 
   const navigate = useNavigate();
 
@@ -110,7 +110,7 @@ import type { ModeProp} from "../types/auth";
           </p>
           <AuthForm onSubmit={handleSubmit}>
             <AuthFormFields fields={fields} form={form} onChange={handleChange} />
-            <AuthButton type="submit">{isLogin ? LOGIN_MODE : SIGNUP_MODE}</AuthButton>
+            <AuthButton type="submit">{isLogin ? "Login" : "Sign Up"}</AuthButton>
           </AuthForm>
           <AuthDivider>
             <AuthLine />

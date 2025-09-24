@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-import {
-  Actions, ColorCircle, ColorInput, ColorOptions, Dialog, Form, HeaderRow, Overlay, Primary, Secondary,
+import { Actions,  ColorCircle, ColorInput, ColorOptions, Dialog, Form, HeaderRow, Overlay, Primary, Secondary,
 } from "../../styles/dashboard/create-board";
 import { Field } from "../../styles/dashboard/create-board";
-import type { BoardModalProp } from "../../types/dashboard";
-import { selectTypes } from "../../constants/board";
-import { DEFAULT_COLORS } from "../../constants/colors";
+import type { boardModalProp } from "../../types/dashboard";
+import { DEFAULT_COLORS } from "../../constants/Colors";
 
 export default function CreateBoardModal({
   open,
@@ -14,14 +12,14 @@ export default function CreateBoardModal({
   mode = "create",
   board,
   onUpdate,
-}: BoardModalProp) {
+}: boardModalProp) {
   const [form, setForm] = useState({
     name: "",
     type: "",
     color: DEFAULT_COLORS[0],
   });
 
-  useEffect(() => {
+   useEffect(() => {
     if (!open) return;
     if (mode === "edit" && board) {
       setForm({ name: board.name, type: board.type, color: board.color });
@@ -35,7 +33,7 @@ export default function CreateBoardModal({
     if (!form.name.trim()) return alert("Please enter a board name");
 
     if (mode === "edit" && board && onUpdate) {
-      onUpdate(board.id, form);
+      onUpdate(board.id, form);  
       onClose();
       return;
     }
@@ -73,11 +71,12 @@ export default function CreateBoardModal({
               onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
             >
               <option value="">Select type</option>
-              {selectTypes.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
+              <option>Engineering</option>
+              <option>Design</option>
+              <option>Marketing</option>
+              <option>PM</option>
+              <option>Ops</option>
+              <option>General</option>
             </select>
           </Field>
 

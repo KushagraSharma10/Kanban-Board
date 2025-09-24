@@ -1,5 +1,6 @@
 import { BsThreeDotsVertical } from "react-icons/bs";
 import styled from "styled-components";
+import { breakpoints } from "../../constants/breakpoints";
 
 export const ThreeDots = styled(BsThreeDotsVertical)`
   opacity: 0;
@@ -17,17 +18,17 @@ export const Card = styled.div`
     opacity: 1;
   }
 
-  @media (max-width: 1024px) {
+  @media (max-width: ${breakpoints.laptop}) {
     width: 30vw;
     min-height: 20vw;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: ${breakpoints.tablet}) {
     width: 45vw;
     min-height: 30vw;
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: ${breakpoints.mobileM}) {
     width: 100%;
     min-height: 46vw;
   }
@@ -45,11 +46,11 @@ export const ColorDiv = styled.div<{ $bg: string }>`
   height: 7vw;
   background-color: ${({ $bg }) => $bg};
 
-  @media (max-width: 768px) {
+  @media (max-width: ${breakpoints.tablet}) {
     height: 15vw;
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: ${breakpoints.mobileM}) {
     width: 100%;
     min-height: 20vw;
   }

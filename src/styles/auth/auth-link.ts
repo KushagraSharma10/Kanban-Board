@@ -7,11 +7,3 @@ export const AuthLink = styled.a`
   cursor: pointer;
   text-decoration: none;
 `;
-
-export const AuxLink = styled.a`
-  font-size: 0.9rem;
-  color: ${colors.brightBlue};
-  text-align: right;
-  cursor: pointer;
-  text-decoration: none;
-`;
