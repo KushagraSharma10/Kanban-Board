@@ -8,7 +8,7 @@ import { AuthForm } from "../styles/auth/auth-form";
 import { AuthLink} from "../styles/auth/auth-link";
 import { AuthButton } from "../styles/auth/auth-button";
 import { useNavigate } from "react-router";
-import { normalizeEmail, validateEmail, validateUser } from "../utils/validation";
+import { normalizeEmail, validateEmail} from "../utils/validation";
 import type { ModeProp } from "../types/auth";
 import type { UserData } from "../interface/userData";
 import { loadFromStorage, saveToStorage } from "../utils/storage";
@@ -27,6 +27,17 @@ const USERS_STORAGE_KEY = "users";
     password: "",
   });
   
+
+  function validateUser(email: string, password: string): boolean {
+    const users = getAllUsers();
+    const normalizedEmail = normalizeEmail(email);
+  
+    const existingUser = users.find((user) => user.email === normalizedEmail);
+    if (!existingUser) return false;
+  
+    return bcrypt.compareSync(password, existingUser.password);
+  }
+
 function getAllUsers(): UserData[] {
   const data = loadFromStorage(USERS_STORAGE_KEY, []);
   return Array.isArray(data) ? (data as UserData[]) : [];

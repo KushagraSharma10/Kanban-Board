@@ -43,11 +43,24 @@ export default [
         "warn",
         { allowConstantExport: true },
       ],
-
       "jsx-a11y/alt-text": "warn",
       "jsx-a11y/anchor-is-valid": "warn",
-
       "no-unused-vars": "warn",
+
+      "no-console": ["warn", { allow: ["warn", "error"] }],
+      "no-debugger": "warn",
+      eqeqeq: ["error", "smart"],
+      curly: ["error", "all"],
+      "prefer-const": "error",
+
+      "react/jsx-no-useless-fragment": "warn",
+      "react/self-closing-comp": "warn",
+      "react/jsx-key": [
+        "error",
+        { checkFragmentShorthand: true, warnOnDuplicates: true },
+      ],
+      "react/no-array-index-key": "warn",
+      "react/prop-types": "off",
     },
   },
 
