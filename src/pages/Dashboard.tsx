@@ -12,7 +12,7 @@ import {
 } from "../styles/dashboard/dashboard";
 import CreateBoardModal from "../components/dashboard/CreateBoardModal";
 import Header from "../components/dashboard/Header";
-import type { BoardItem } from "../types/dashboard";
+import type { BoardItem } from "../utils/types/dashboard";
 import { loadFromStorage, saveToStorage } from "../utils/storage";
 
 const BOARDS_STORAGE_KEY = "kanban.boards";

@@ -1,5 +1,5 @@
 import { HeaderRight, HeaderContainer, HeaderLeft, Logo, Profile, SearchInput } from "../../styles/dashboard/header";
-import type { HeaderProp } from "../../types/header";
+import type { HeaderProp } from "../../utils/types/header";
 
 const Header:React.FC<HeaderProp> = ({ setModalOpen, search, onSearchChange  }: HeaderProp) => {
   return (

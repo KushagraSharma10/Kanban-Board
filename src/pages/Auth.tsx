@@ -1,7 +1,7 @@
 import { useState } from "react";
 import LeftPanel from "../components/auth/AuthSidebar";
 import AuthFormFields from "../components/auth/AuthFormFields";
-import type { Field, FormFields } from "../types/form";
+import type { Field, FormFields } from "../utils/types/form";
 import { AuthContent, AuthMain, AuthWrapper } from "../styles/auth/auth-main";
 import { AuthBrand, AuthDivider, AuthFooter, AuthLine } from "../styles/auth/auth-main";
 import { AuthForm } from "../styles/auth/auth-form";
@@ -9,8 +9,8 @@ import { AuthLink} from "../styles/auth/auth-link";
 import { AuthButton } from "../styles/auth/auth-button";
 import { useNavigate } from "react-router";
 import { normalizeEmail, validateEmail} from "../utils/validation";
-import type { ModeProp } from "../types/auth";
-import type { UserData } from "../interface/userData";
+import type { ModeProp } from "../utils/types/auth";
+import type { UserData } from "../utils/interface/userData";
 import { loadFromStorage, saveToStorage } from "../utils/storage";
 import bcrypt from "bcryptjs";
 

@@ -11,7 +11,7 @@ import {
   Overlay,
 } from "../../styles/dashboard/create-board";
 import { Field } from "../../styles/dashboard/create-board";
-import type { BoardModalProp } from "../../types/dashboard";
+import type { BoardModalProp } from "../../utils/types/dashboard";
 import { selectTypes } from "../../constants/board";
 import { DEFAULT_COLORS } from "../../constants/colors";
 
