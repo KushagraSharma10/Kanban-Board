@@ -3,7 +3,7 @@ import { FieldLabel, Field as FieldContainer } from "../../styles/auth/auth-form
 import { AuthInput } from "../../styles/auth/auth-input";
 
 
-const AuthFormFields : React.FC<AuthProp> = ({ fields, form, onChange }: AuthProp) => {
+const AuthFormFields: React.FC<AuthProp> = ({ fields, form, onChange }: AuthProp) => {
   return (
     <>
       {fields.map((field) => (

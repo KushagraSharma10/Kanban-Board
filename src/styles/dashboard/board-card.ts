@@ -42,7 +42,6 @@ export const ContentClip = styled.div`
   background: inherit;
 `;
 
-
 export const ColorDiv = styled.div<{ $bg: string }>`
   width: 100%;
   height: 7vw;
@@ -67,6 +66,7 @@ export const BoardContent = styled.div`
   h2 {
     font-size: 1.2rem;
     font-weight: 600;
+    color: ${colors.brightGray};
   }
 
   p {
@@ -105,13 +105,18 @@ export const OptionsMenu = styled.div`
     padding: 0.6rem 1rem;
     background: none;
     border: none;
-    color: white;
+    color: ${colors.brightGray};
     text-align: left;
     font-size: 0.9rem;
     cursor: pointer;
 
     &:hover {
-      background-color: #374151;
+      background-color: rgba(255, 255, 255, 0.04); /* subtle */
+    }
+
+    &:focus-visible {
+      outline: 2px solid ${colors.blue};
+      outline-offset: -2px;
     }
   }
 `;

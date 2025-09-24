@@ -45,8 +45,13 @@ export const HeaderRow = styled.div`
     font-size: 1.6rem;
     color: ${theme.colors.grayishBlue};
     cursor: pointer;
+
     &:hover {
       color: ${theme.colors.brightGray};
+    }
+    &:focus-visible {
+      outline: 2px solid ${theme.colors.blue};
+      border-radius: 0.4rem;
     }
   }
 `;
@@ -55,6 +60,7 @@ export const Form = styled.form`
   display: grid;
   gap: 0.9rem;
 `;
+
 export const Field = styled.div`
   display: grid;
   gap: 0.5rem;
@@ -71,8 +77,15 @@ export const Field = styled.div`
     border-radius: 10px;
     padding: 0.6rem 0.7rem;
     color: ${theme.colors.brightGray};
+
+    &::placeholder {
+      color: ${theme.colors.spanishGray};
+    }
+
     &:focus {
-      border-color: ${theme.colors.brightBlue};
+      border-color: ${theme.colors.blue};
+      box-shadow: 0 0 0 3px rgba(0, 150, 255, 0.2);
+      outline: none;
     }
   }
 `;
@@ -88,7 +101,6 @@ export const ColorCircle = styled.button<{ $bg: string; $active?: boolean }>`
   height: 2vw;
   border-radius: 1rem;
   cursor: pointer;
-
   background-color: ${({ $bg }) => $bg};
   border: ${({ $active }) =>
     $active ? "2px solid #fff" : `2px solid ${theme.colors.bluishBlack}`};
@@ -102,13 +114,20 @@ export const ColorCircle = styled.button<{ $bg: string; $active?: boolean }>`
     width: 6vw;
     height: 6vw;
   }
+
+  &:focus-visible {
+    outline: 2px solid ${colors.blue};
+    outline-offset: 2px;
+  }
 `;
 
 export const ColorInput = styled.input`
   width: 4vw;
-  height: 2.2vw;
   border-radius: 0.3rem;
-  border: 1px solid ${theme.colors.bluishBlack};
+  height: 3vw;
+  border: 1px solid ${theme.colors.balticSeaGray};
+  background-color: ${theme.colors.darkBlue3};
+  color: ${theme.colors.brightGray};
 
   @media (max-width: ${breakpoints.tablet}) {
     width: 6vw;
@@ -144,5 +163,18 @@ export const Button = styled.button`
     border: 1px solid ${theme.colors.bluishBlack};
     color: ${theme.colors.iceBlue};
     font-weight: 400; 
+  }
+    &:hover {
+    filter: brightness(1.05);
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${colors.brightBlue};
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: none; 
   }
 `;

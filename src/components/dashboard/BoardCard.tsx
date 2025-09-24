@@ -3,8 +3,8 @@ import { Backdrop, BoardContent, Card, ColorDiv, ContentClip, DotWrap, OptionsMe
 } from "../../styles/dashboard/board-card";
 import type { BoardItem, CardProp } from "../../utils/types/dashboard";
 
-const BoardCard = ({ name, color, type, onEdit, onDelete, onOpen }: cardProp) => {
-  const [menuOpen, setMenuOpen] = useState(false);
+const BoardCard: React.FC<cardProp> = ({ name, color, type, onEdit, onDelete, onOpen }: cardProp) => {
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
 
    const handleCardClick = () => {
     if (menuOpen) return setMenuOpen(false);
