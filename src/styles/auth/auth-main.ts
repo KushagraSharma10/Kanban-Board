@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { theme } from "../theme";
-import { breakpoints } from "../../constants/breakpoints";
+import { breakpoints } from "../../utils/constants/breakpoints";
 
 export const AuthMain = styled.div`
   width: 100%;

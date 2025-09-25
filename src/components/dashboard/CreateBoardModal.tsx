@@ -12,8 +12,8 @@ import {
 } from "../../styles/dashboard/create-board";
 import { Field } from "../../styles/dashboard/create-board";
 import type { BoardModalProp } from "../../utils/types/dashboard";
-import { selectTypes } from "../../constants/board";
-import { DEFAULT_COLORS } from "../../constants/colors";
+import { selectTypes } from "../../utils/constants/board";
+import { DEFAULT_COLORS } from "../../utils/constants/colors";
 
 const CreateBoardModal: React.FC<BoardModalProp> = ({
   open,

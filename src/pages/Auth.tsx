@@ -51,7 +51,7 @@ function registerUser(name: string, email: string, password: string): boolean {
   const users = getAllUsers();
   const normalizedEmail = normalizeEmail(email);
 
-  if (users.some((u) => u.email === normalizedEmail)) {
+  if (users.some((user) => user.email === normalizedEmail)) {
     return false;
   }
 
@@ -90,8 +90,8 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         throw new Error("Please enter your name");
       }
 
-      const ok = registerUser(name, email, password);
-      if (!ok) {
+      const isRegistered = registerUser(name, email, password);
+      if (!isRegistered) {
         throw new Error("An account with this email already exists.");
       }
 
