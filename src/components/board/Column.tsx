@@ -3,12 +3,12 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import Card from "../card/Card";
 import { loadCards, saveCards } from "../../utils/storage";
 import { nanoid } from "nanoid";
-import type { ColumnProps } from "../../types/column";
-import type { CardData } from "../../interface/card";
+import type { ColumnProps } from "../../utils/types/column";
+import type { CardData } from "../../utils/interface/card";
 
 const MAX_TITLE_LENGTH = 15;
 
- const Column: React.FC<ColumnProps> = ({
+const Column: React.FC<ColumnProps> = ({
   column,
   onRename,
   onDelete,
@@ -37,13 +37,13 @@ const MAX_TITLE_LENGTH = 15;
   }, [column.title]);
 
   useEffect(() => {
-  if (editing) {
-    requestAnimationFrame(() => {
-      inputRef.current?.focus();
-      inputRef.current?.select();
-    });
-  }
-}, [editing]);
+    if (editing) {
+      requestAnimationFrame(() => {
+        inputRef.current?.focus();
+        inputRef.current?.select();
+      });
+    }
+  }, [editing]);
 
   const handleAddCard = () => {
     const trimmedTitle = newCardTitle.trim();
@@ -56,7 +56,9 @@ const MAX_TITLE_LENGTH = 15;
       return;
     }
     if (
-      cards.some((c) => c.title.toLowerCase() === trimmedTitle.toLowerCase())
+      cards.some(
+        (card) => card.title.toLowerCase() === trimmedTitle.toLowerCase()
+      )
     ) {
       setError("A card with this title already exists!");
       return;
@@ -146,20 +148,22 @@ const MAX_TITLE_LENGTH = 15;
           <Card
             key={card.id}
             card={card}
-            onUpdate={(updatedCard) => {
+            onUpdate={(updatedCard: CardData) => {
               const allCards = loadCards();
-              const updatedAll = allCards.map((c) =>
-                c.id === updatedCard.id ? updatedCard : c
+              const updatedAll = allCards.map((card) =>
+                card.id === updatedCard.id ? updatedCard : card
               );
               saveCards(updatedAll);
               setCards((prev) =>
-                prev.map((c) => (c.id === updatedCard.id ? updatedCard : c))
+                prev.map((card) =>
+                  card.id === updatedCard.id ? updatedCard : card
+                )
               );
             }}
-            onDelete={(id) => {
-              const allCards = loadCards().filter((c) => c.id !== id);
+            onDelete={(id: CardData["id"]) => {
+              const allCards = loadCards().filter((card) => card.id !== id);
               saveCards(allCards);
-              setCards((prev) => prev.filter((c) => c.id !== id));
+              setCards((prev) => prev.filter((card) => card.id !== id));
             }}
           />
         ))}
@@ -215,7 +219,6 @@ const MAX_TITLE_LENGTH = 15;
       </div>
     </div>
   );
-}
-
+};
 
 export default Column;

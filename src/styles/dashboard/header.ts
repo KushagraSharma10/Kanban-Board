@@ -1,15 +1,15 @@
 import styled from "styled-components";
-import { colors } from "../theme";
+import { theme } from "../theme";
 
 export const HeaderContainer = styled.div`
   display: flex;
   align-items: center;
   padding: .5rem;
-  color: ${colors.brightGray};
+  color: ${theme.colors.brightGray};
   justify-content: space-between;
-  border-bottom: 1px solid ${colors.balticSeaGray};
+  border-bottom: 1px solid ${theme.colors.balticSeaGray};
   flex-wrap: wrap;
-  background-color: ${colors.darkBlue1};
+  background-color: ${theme.colors.darkBlue1};
 `;
 
 export const HeaderTop = styled.div`
@@ -56,17 +56,17 @@ export const SearchInput = styled.input`
   margin-left: 1rem;
   padding: 0.5rem;
   border-radius: 0.5rem;
-  border: 1px solid ${colors.balticSeaGray};
+  border: 1px solid ${theme.colors.balticSeaGray};
   outline: none;
   width: 21.875rem;
-  color: ${colors.brightGray};
-  background-color: ${colors.darkBlue3};
+  color: ${theme.colors.brightGray};
+  background-color: ${theme.colors.darkBlue3};
 
   &::placeholder {
-    color: ${colors.spanishGray};
+    color: ${theme.colors.spanishGray};
   }
   &:focus {
-    border-color: ${colors.blue};
+    border-color: ${theme.colors.blue};
     box-shadow: 0 0 0 3px rgba(0, 150, 255, 0.2);
   }
 
@@ -86,7 +86,7 @@ export const Profile = styled.div`
   button {
     margin-left: auto;
     padding: 0.5rem 1rem;
-    background-color: ${colors.blue};
+    background-color: ${theme.colors.blue};
     color: #000;
     border: none;
     border-radius: 0.5rem;
@@ -96,7 +96,7 @@ export const Profile = styled.div`
       filter: brightness(1.05);
     }
     &:focus-visible {
-      outline: 2px solid ${colors.brightBlue};
+      outline: 2px solid ${theme.colors.brightBlue};
     }
 
     @media (max-width: 425px) {

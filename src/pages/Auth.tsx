@@ -1,8 +1,7 @@
 import { useState } from "react";
 import LeftPanel from "../components/auth/AuthSidebar";
 import AuthFormFields from "../components/auth/AuthFormFields";
-import { LOGIN_MODE, SIGNUP_MODE } from "../constants/auth";
-import type { Field, FormFields } from "../types/form";
+import type { Field, FormFields } from "../utils/types/form";
 import { AuthContent, AuthMain, AuthWrapper } from "../styles/auth/auth-main";
 import {
   AuthBrand,
@@ -15,16 +14,17 @@ import { AuthLink } from "../styles/auth/auth-link";
 import { AuthButton } from "../styles/auth/auth-button";
 import { useNavigate } from "react-router";
 import { validateEmail } from "../utils/validation";
-import type { ModeProp } from "../types/auth";
+import type { ModeProp } from "../utils/types/auth";
 import { loadFromStorage, saveToStorage } from "../utils/storage";
 import bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
+import { AuthMode } from "../utils/constants/auth";
 
 const USERS_STORAGE_KEY = "users";
 const SESSION_STORAGE_KEY = "kanban.session";
 
 const Auth :React.FC<ModeProp> = ({ mode }: ModeProp) => {
-  const isLogin = mode === LOGIN_MODE;
+  const isLogin = mode === AuthMode.Login;
 
   const navigate = useNavigate();
 
@@ -188,7 +188,7 @@ const Auth :React.FC<ModeProp> = ({ mode }: ModeProp) => {
               onChange={handleChange}
             />
             <AuthButton type="submit">
-              {isLogin ? LOGIN_MODE : SIGNUP_MODE}
+              {isLogin ? AuthMode.Login : AuthMode.SignUP}
             </AuthButton>
           </AuthForm>
           <AuthDivider>

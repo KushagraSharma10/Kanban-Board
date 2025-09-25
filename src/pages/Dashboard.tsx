@@ -11,7 +11,7 @@ import {
 } from "../styles/dashboard/dashboard";
 import CreateBoardModal from "../components/dashboard/CreateBoard";
 import Header from "../components/dashboard/Header";
-import type { BoardItem } from "../types/dashboard";
+import type { BoardItem } from "../utils/types/dashboard";
 import { useNavigate } from "react-router";
 import { nanoid } from "nanoid";
 import { loadFromStorage, saveToStorage } from "../utils/storage";

@@ -1,10 +1,11 @@
 import styled from "styled-components";
-import { colors } from "../theme";
+import { theme } from "../theme";
+import { breakpoints } from "../../utils/constants/breakpoints";
 
 export const Main = styled.div`
   width: 100%;
-  background-color: ${colors.darkBlue1};
-  color: ${colors.brightGray};
+  background-color: ${theme.colors.darkBlue1};
+  color: ${theme.colors.brightGray};
 `;
 
 export const Board = styled.div`
@@ -16,10 +17,10 @@ export const BoardArea = styled.div`
   flex: 1;
   padding: 2vw;
 
-  @media (max-width: 768px) {
+  @media (max-width: ${breakpoints.tablet}) {
     padding: 1.5vw;
   }
-  @media (max-width: 480px) {
+  @media (max-width: ${breakpoints.mobileM}) {
     padding: 1vw;
   }
 `;
@@ -36,13 +37,13 @@ export const Cards = styled.div`
 export const NoBoards = styled.div`
   padding: 2rem;
   text-align: center;
-  color: ${colors.lightGray};
+  color: ${theme.colors.lightGray};
   font-size: 1.1rem;
 `;
 
 export const Query = styled.b`
   font-weight: 700;
-  color: ${colors.brightGray};
+  color: ${theme.colors.brightGray};
 `;
 
 export const CreateBoard = styled.div`
@@ -52,19 +53,19 @@ export const CreateBoard = styled.div`
   width: 19vw;
   height: 14vw;
   border-radius: 1.5rem;
-  border: 3px dotted ${colors.balticSeaGray};
+  border: 3px dotted ${theme.colors.balticSeaGray};
   font-size: 1.2rem;
   cursor: pointer;
 
-  @media (max-width: 1024px) {
+  @media (max-width: ${breakpoints.laptop}) {
     width: 20vw;
     height: 20vw;
   }
-  @media (max-width: 768px) {
+  @media (max-width: ${breakpoints.tablet}) {
     width: 30vw;
     height: 30vw;
   }
-  @media (max-width: 480px) {
+  @media (max-width: ${breakpoints.mobileM}) {
     width: 100%;
     height: 50vw;
   }

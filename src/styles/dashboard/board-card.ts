@@ -1,6 +1,7 @@
 import { BsThreeDotsVertical } from "react-icons/bs";
 import styled from "styled-components";
-import { colors } from "../theme";
+import { theme } from "../theme";
+import { breakpoints } from "../../utils/constants/breakpoints";
 
 export const ThreeDots = styled(BsThreeDotsVertical)`
   opacity: 0;
@@ -10,7 +11,7 @@ export const ThreeDots = styled(BsThreeDotsVertical)`
 export const Card = styled.div`
   width: 20vw;
   border-radius: 1.5rem;
-  background-color: ${colors.darkBlue2};
+  background-color: ${theme.colors.darkBlue2};
   cursor: pointer;
   position: relative;
 
@@ -18,15 +19,15 @@ export const Card = styled.div`
     opacity: 1;
   }
 
-  @media (max-width: 1024px) {
+  @media (max-width: ${breakpoints.laptop}) {
     width: 30vw;
     min-height: 20vw;
   }
-  @media (max-width: 768px) {
+  @media (max-width: ${breakpoints.tablet}) {
     width: 45vw;
     min-height: 30vw;
   }
-  @media (max-width: 480px) {
+  @media (max-width: ${breakpoints.mobileM}) {
     width: 100%;
     min-height: 46vw;
   }
@@ -43,10 +44,10 @@ export const ColorDiv = styled.div<{ $bg: string }>`
   height: 7vw;
   background-color: ${({ $bg }) => $bg};
 
-  @media (max-width: 768px) {
+  @media (max-width: ${breakpoints.mobileM}) {
     height: 15vw;
   }
-  @media (max-width: 480px) {
+  @media (max-width: ${breakpoints.mobileM}) {
     width: 100%;
     min-height: 20vw;
   }
@@ -61,13 +62,13 @@ export const BoardContent = styled.div`
   h2 {
     font-size: 1.2rem;
     font-weight: 600;
-    color: ${colors.brightGray};
+    color: ${theme.colors.brightGray};
   }
 
   p {
     font-size: 0.9rem;
     margin-top: 0.2rem;
-    color: ${colors.lightGray};
+    color: ${theme.colors.lightGray};
   }
 
   .details {
@@ -83,10 +84,10 @@ export const OptionsMenu = styled.div`
   position: absolute;
   top: 9rem;
   right: 1rem;
-  background: ${colors.darkBlue3};
-  border: 1px solid ${colors.balticSeaGray};
+  background: ${theme.colors.darkBlue3};
+  border: 1px solid ${theme.colors.balticSeaGray};
   border-radius: 0.5rem;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0px 4px 12px #00000066;
   overflow: hidden;
   z-index: 999;
   min-width: 6vw;
@@ -97,17 +98,17 @@ export const OptionsMenu = styled.div`
     padding: 0.6rem 1rem;
     background: none;
     border: none;
-    color: ${colors.brightGray};
+    color: ${theme.colors.brightGray};
     text-align: left;
     font-size: 0.9rem;
     cursor: pointer;
 
     &:hover {
-      background-color: rgba(255, 255, 255, 0.04); /* subtle */
+      background-color: #FFFFFF0A; 
     }
 
     &:focus-visible {
-      outline: 2px solid ${colors.blue};
+      outline: 2px solid ${theme.colors.blue};
       outline-offset: -2px;
     }
   }

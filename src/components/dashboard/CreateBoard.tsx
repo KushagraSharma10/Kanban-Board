@@ -12,8 +12,8 @@ import {
   Secondary,
 } from "../../styles/dashboard/create-board";
 import { Field } from "../../styles/dashboard/create-board";
-import type { boardModalProp } from "../../types/dashboard";
-import { DEFAULT_COLORS } from "../../constants/Colors";
+import type { boardModalProp } from "../../utils/types/dashboard";
+import { DEFAULT_COLORS } from "../../utils/constants/Colors";
 
 type FormState = {
   name: string;

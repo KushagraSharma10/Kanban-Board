@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Backdrop, BoardContent, Card, ColorDiv, ContentClip, DotWrap, OptionsMenu, ThreeDots,
 } from "../../styles/dashboard/board-card";
-import type { cardProp } from "../../types/dashboard";
+import type { cardProp } from "../../utils/types/dashboard";
 
 const BoardCard: React.FC<cardProp> = ({ name, color, type, onEdit, onDelete, onOpen }: cardProp) => {
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
