@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { breakpoints } from "../../constants/breakpoints";
+import { breakpoints } from "../../utils/constants/breakpoints";
 export const PanelContainer = styled.div`
   width: 100%;
   background-color: #181c24;

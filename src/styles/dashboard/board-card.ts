@@ -1,6 +1,6 @@
 import { BsThreeDotsVertical } from "react-icons/bs";
 import styled from "styled-components";
-import { breakpoints } from "../../constants/breakpoints";
+import { breakpoints } from "../../utils/constants/breakpoints";
 import { theme } from "../theme";
 
 export const ThreeDots = styled(BsThreeDotsVertical)`

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { breakpoints } from "../../constants/breakpoints";
+import { breakpoints } from "../../utils/constants/breakpoints";
 import { theme } from "../theme";
 
 export const Main = styled.div`
@@ -14,7 +14,7 @@ export const Board = styled.div`
 
 export const BoardArea = styled.div`
   flex: 1;
-  padding: 2vw;
+  padding: 1.5rem;
 
   @media (max-width: ${breakpoints.tablet}) {
     padding: 1.5vw;
