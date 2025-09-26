@@ -72,19 +72,19 @@ export function renameColumn(boardId: string, columnId: string, newTitleRaw: str
 
   const current = loadColumnsForBoard(boardId);
   const duplicate = current.some(
-    (c) => c.id !== columnId && c.title.toLowerCase() === newTitle.toLowerCase()
+    (column) => column.id !== columnId && column.title.toLowerCase() === newTitle.toLowerCase()
   );
   if (duplicate) return current;
 
-  const updated = current.map((c) =>
-    c.id === columnId ? { ...c, title: newTitle } : c
+  const updated = current.map((column) =>
+    column.id === columnId ? { ...column, title: newTitle } : column
   );
   saveColumnsForBoard(boardId, updated);
   return updated;
 }
 
 export function deleteColumn(boardId: string, columnId: string): StoredColumn[] {
-  const updated = loadColumnsForBoard(boardId).filter((c) => c.id !== columnId);
+  const updated = loadColumnsForBoard(boardId).filter((column) => column.id !== columnId);
   saveColumnsForBoard(boardId, updated);
   return updated;
 }

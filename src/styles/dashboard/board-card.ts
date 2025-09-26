@@ -6,6 +6,7 @@ import { breakpoints } from "../../utils/constants/breakpoints";
 export const ThreeDots = styled(BsThreeDotsVertical)`
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
+  cursor: pointer;
 `;
 
 export const Card = styled.div`
@@ -44,7 +45,7 @@ export const ColorDiv = styled.div<{ $bg: string }>`
   height: 7vw;
   background-color: ${({ $bg }) => $bg};
 
-  @media (max-width: ${breakpoints.mobileM}) {
+  @media (max-width: ${breakpoints.tablet}) {
     height: 15vw;
   }
   @media (max-width: ${breakpoints.mobileM}) {

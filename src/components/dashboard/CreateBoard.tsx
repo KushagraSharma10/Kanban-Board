@@ -12,8 +12,8 @@ import {
   Secondary,
 } from "../../styles/dashboard/create-board";
 import { Field } from "../../styles/dashboard/create-board";
-import type { boardModalProp } from "../../utils/types/dashboard";
-import { DEFAULT_COLORS } from "../../utils/constants/Colors";
+import type { BoardModalProp } from "../../utils/types/dashboard";
+import { DEFAULT_COLORS } from "../../utils/constants/colors";
 
 type FormState = {
   name: string;
@@ -21,14 +21,14 @@ type FormState = {
   color: string;
 };
 
-const CreateBoard: React.FC<boardModalProp> = ({
+const CreateBoard: React.FC<BoardModalProp> = ({
   open,
   onClose,
   onCreate,
   mode = "create",
   board,
   onUpdate,
-}: boardModalProp) => {
+}: BoardModalProp) => {
   const [form, setForm] = useState<FormState>({
     name: "",
     type: "",
@@ -123,10 +123,7 @@ const CreateBoard: React.FC<boardModalProp> = ({
             <Secondary type="button" onClick={onClose}>
               Cancel
             </Secondary>
-            <Primary 
-            type="submit"
-            disabled = {!isFormValid}
-            >
+            <Primary type="submit" disabled={!isFormValid}>
               {mode === "edit" ? "Save changes" : "Create"}
             </Primary>
           </Actions>
@@ -134,6 +131,6 @@ const CreateBoard: React.FC<boardModalProp> = ({
       </Dialog>
     </Overlay>
   );
-}
+};
 
 export default CreateBoard;

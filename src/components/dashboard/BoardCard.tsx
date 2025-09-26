@@ -1,14 +1,29 @@
 import { useState } from "react";
-import { Backdrop, BoardContent, Card, ColorDiv, ContentClip, DotWrap, OptionsMenu, ThreeDots,
+import {
+  Backdrop,
+  BoardContent,
+  Card,
+  ColorDiv,
+  ContentClip,
+  DotWrap,
+  OptionsMenu,
+  ThreeDots,
 } from "../../styles/dashboard/board-card";
-import type { cardProp } from "../../utils/types/dashboard";
+import type { CardProp } from "../../utils/types/dashboard";
 
-const BoardCard: React.FC<cardProp> = ({ name, color, type, onEdit, onDelete, onOpen }: cardProp) => {
+const BoardCard: React.FC<CardProp> = ({
+  name,
+  color,
+  type,
+  onEdit,
+  onDelete,
+  onOpen,
+}: CardProp) => {
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
 
-   const handleCardClick = () => {
+  const handleCardClick = () => {
     if (menuOpen) return setMenuOpen(false);
-    onOpen?.();                         
+    onOpen?.();
   };
 
   return (
@@ -28,34 +43,33 @@ const BoardCard: React.FC<cardProp> = ({ name, color, type, onEdit, onDelete, on
                 e.stopPropagation();
                 setMenuOpen((prev) => !prev);
               }}
-              style={{ cursor: "pointer" }}
             />
           </DotWrap>
+          {menuOpen && (
+            <>
+              <Backdrop onClick={() => setMenuOpen(false)} />
+              <OptionsMenu>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onEdit?.();
+                  }}
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onDelete?.();
+                  }}
+                >
+                  Delete
+                </button>
+              </OptionsMenu>
+            </>
+          )}
         </BoardContent>
       </ContentClip>
-      {menuOpen && (
-        <>
-          <Backdrop onClick={() => setMenuOpen(false)} />
-          <OptionsMenu>
-            <button
-              onClick={() => {
-                setMenuOpen(false);
-                onEdit?.();
-              }}
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => {
-                setMenuOpen(false);
-                onDelete?.();
-              }}
-            >
-              Delete
-            </button>
-          </OptionsMenu>
-        </>
-      )}
     </Card>
   );
 };

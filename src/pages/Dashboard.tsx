@@ -7,7 +7,7 @@ import {
   Main,
   Cards,
   NoBoards,
-  Query,
+  Search,
 } from "../styles/dashboard/dashboard";
 import CreateBoardModal from "../components/dashboard/CreateBoard";
 import Header from "../components/dashboard/Header";
@@ -26,13 +26,13 @@ const Dashboard = () => {
   const activeUserId = activeSession?.userId || null;
 
   const [boardList, setBoardList] = useState<BoardItem[]>([]);
-  const [isBoardModalOpen, setIsBoardModalOpen] = useState(false);
+  const [isBoardModalOpen, setIsBoardModalOpen] = useState<boolean>(false);
   const [boardModalMode, setBoardModalMode] = useState<"create" | "edit">(
     "create"
   );
   const [selectedBoardForEdit, setSelectedBoardForEdit] =
     useState<BoardItem | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
     if (!activeUserId) {
@@ -209,7 +209,7 @@ const Dashboard = () => {
             <NoBoards>No boards right now. Create one to get started!</NoBoards>
           ) : filteredBoards.length === 0 ? (
             <NoBoards>
-              No results for "<Query>{searchQuery}</Query>"
+              No results for "<Search>{searchQuery}</Search>"
             </NoBoards>
           ) : (
             <Cards>

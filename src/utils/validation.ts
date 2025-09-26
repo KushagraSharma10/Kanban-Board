@@ -26,7 +26,6 @@ export function validatePassword(password: string): string | null {
   }
 }
 
-
 export function validateEmail(email: string): string | null {
   const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -35,4 +34,8 @@ export function validateEmail(email: string): string | null {
   }
 
   return null;
+}
+
+export function normalizeEmail(email: string) {
+  return email.trim().toLowerCase();
 }

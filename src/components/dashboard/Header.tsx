@@ -1,9 +1,8 @@
 import {
-  HeaderBottom,
   HeaderContainer,
-  HeaderTop,
+  HeaderLeft,
+  HeaderRight,
   Logo,
-  Profile,
   SearchInput,
 } from "../../styles/dashboard/header";
 import type { HeaderProp } from "../../utils/types/header";
@@ -11,23 +10,21 @@ import type { HeaderProp } from "../../utils/types/header";
 const Header : React.FC<HeaderProp>= ({ setModalOpen, search, onSearchChange }: HeaderProp) => {
   return (
     <HeaderContainer>
-      <HeaderTop>
+      <HeaderLeft>
         <Logo>
           <img src="./kanban.svg" alt="" />
           KanbanApp
         </Logo>
-      </HeaderTop>
-      <HeaderBottom>
+      </HeaderLeft>
+      <HeaderRight>
         <SearchInput
           type="text"
           placeholder="Search boards..."
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-        />
-        <Profile>
+        />       
           <button onClick={() => setModalOpen(true)}>+ Create Board</button>
-        </Profile>
-      </HeaderBottom>
+      </HeaderRight>
     </HeaderContainer>
   );
 };

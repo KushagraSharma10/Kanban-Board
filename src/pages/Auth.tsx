@@ -1,5 +1,4 @@
 import { useState } from "react";
-import LeftPanel from "../components/auth/AuthSidebar";
 import AuthFormFields from "../components/auth/AuthFormFields";
 import type { Field, FormFields } from "../utils/types/form";
 import { AuthContent, AuthMain, AuthWrapper } from "../styles/auth/auth-main";
@@ -13,17 +12,19 @@ import { AuthForm } from "../styles/auth/auth-form";
 import { AuthLink } from "../styles/auth/auth-link";
 import { AuthButton } from "../styles/auth/auth-button";
 import { useNavigate } from "react-router";
-import { validateEmail } from "../utils/validation";
+import { normalizeEmail, validateEmail } from "../utils/validation";
 import type { ModeProp } from "../utils/types/auth";
 import { loadFromStorage, saveToStorage } from "../utils/storage";
 import bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
 import { AuthMode } from "../utils/constants/auth";
+import AuthSidebar from "../components/auth/AuthSidebar";
+import type { UserData } from "../utils/interface/user-data";
 
 const USERS_STORAGE_KEY = "users";
 const SESSION_STORAGE_KEY = "kanban.session";
 
-const Auth :React.FC<ModeProp> = ({ mode }: ModeProp) => {
+const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
   const isLogin = mode === AuthMode.Login;
 
   const navigate = useNavigate();
@@ -65,64 +66,52 @@ const Auth :React.FC<ModeProp> = ({ mode }: ModeProp) => {
         alert("Please enter your name");
         return;
       }
-      const isRegistered = registerUser(
-        enteredName,
-        enteredEmail,
-        enteredPassword
-      );
-      if (!isRegistered) {
+      if (!canRegisterWithEmail(enteredEmail)) {
         alert("An account with this email already exists.");
         return;
       }
+      createUserAndSave(enteredName, enteredEmail, enteredPassword);
       alert("Signup successful! Please login.");
       navigate("/");
     }
   };
 
-  type UserDataLocal = {
-    id: string;
-    name: string;
-    email: string;
-    password: string;
-  };
-
-  function normalizeEmail(email: string) {
-    return email.trim().toLowerCase();
-  }
-
-  function getAllUsers(): UserDataLocal[] {
+  function getAllUsers(): UserData[] {
     const stored = loadFromStorage(USERS_STORAGE_KEY, []);
-    return Array.isArray(stored) ? (stored as UserDataLocal[]) : [];
+    return Array.isArray(stored) ? (stored as UserData[]) : [];
   }
 
-  function saveAllUsers(users: UserDataLocal[]) {
+  function saveAllUsers(users: UserData[]) {
     saveToStorage(USERS_STORAGE_KEY, users);
   }
 
-  function registerUser(
+  function canRegisterWithEmail(email: string): boolean {
+    const allUsers = getAllUsers();
+    const normalizedEmail = normalizeEmail(email);
+    return !allUsers.some((user) => user.email === normalizedEmail);
+  }
+
+  function createUserAndSave(
     name: string,
     email: string,
     password: string
-  ): boolean {
+  ): UserData {
     const allUsers = getAllUsers();
     const normalizedEmail = normalizeEmail(email);
-    if (allUsers.some((u) => u.email === normalizedEmail)) return false;
-
     const hashed = bcrypt.hashSync(password, 10);
-    const newUser: UserDataLocal = {
+
+    const newUser: UserData = {
       id: nanoid(),
       name: name.trim(),
       email: normalizedEmail,
       password: hashed,
     };
+
     saveAllUsers([newUser, ...allUsers]);
-    return true;
+    return newUser;
   }
 
-  function authenticateUser(
-    email: string,
-    password: string
-  ): UserDataLocal | null {
+  function authenticateUser(email: string, password: string): UserData | null {
     const allUsers = getAllUsers();
     const normalizedEmail = normalizeEmail(email);
     const matched = allUsers.find((user) => user.email === normalizedEmail);
@@ -169,7 +158,7 @@ const Auth :React.FC<ModeProp> = ({ mode }: ModeProp) => {
   return (
     <AuthMain>
       <AuthWrapper>
-        <LeftPanel />
+        <AuthSidebar />
         <AuthContent>
           <AuthBrand>
             <img src="/kanban.svg" alt="Kanban Logo" width={30} height={30} />

@@ -6,7 +6,7 @@ export type BoardItem = {
   color: string;
 };
 
-export type cardProp = {
+export type CardProp = {
   name: string;
   color: string;
   type: string;
@@ -15,7 +15,7 @@ export type cardProp = {
   onDelete?: () => void;
 };
 
-export type boardModalProp = {
+export type BoardModalProp = {
   open: boolean;
   mode?: "create" | "edit";
   board?: BoardItem;

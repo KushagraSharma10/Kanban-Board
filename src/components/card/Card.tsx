@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import CardModal from "./CreateCard";
-import type { CardData, CardProps } from "../../interface/card";
+import type { CardData, CardProps } from "../../utils/interface/card";
 
 const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
