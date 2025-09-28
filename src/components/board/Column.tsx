@@ -3,8 +3,8 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import Card from "../card/Card";
 import { loadCards, saveCards } from "../../utils/storage";
 import { nanoid } from "nanoid";
-import type { ColumnProps } from "../../types/column";
-import type { CardData } from "../../interface/card";
+import type { ColumnProps } from "../../utils/columns";
+import type { CardData } from "../../utils/interface/card";
 
 const MAX_TITLE_LENGTH = 15;
 

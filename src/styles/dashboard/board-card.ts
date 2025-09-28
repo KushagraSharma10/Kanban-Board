@@ -66,7 +66,7 @@ export const BoardContent = styled.div`
   h2 {
     font-size: 1.2rem;
     font-weight: 600;
-    color: ${colors.brightGray};
+    color: ${theme.colors.brightGray};
   }
 
   p {
@@ -105,17 +105,17 @@ export const OptionsMenu = styled.div`
     padding: 0.6rem 1rem;
     background: none;
     border: none;
-    color: ${colors.brightGray};
+    color: ${theme.colors.brightGray};
     text-align: left;
     font-size: 0.9rem;
     cursor: pointer;
 
     &:hover {
-      background-color: rgba(255, 255, 255, 0.04); /* subtle */
+      background-color: rgba(255, 255, 255, 0.04); 
     }
 
     &:focus-visible {
-      outline: 2px solid ${colors.blue};
+      outline: 2px solid ${theme.colors.blue};
       outline-offset: -2px;
     }
   }

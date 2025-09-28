@@ -58,7 +58,7 @@ export const SearchInput = styled.input`
   margin-left: 1rem;
   padding: 0.5rem;
   border-radius: 0.5rem;
-  border: 1px solid ${colors.balticSeaGray};
+  border: 1px solid ${theme.colors.balticSeaGray};
   outline: none;
   width: 21.875rem;
   color: ${theme.colors.brightGray};

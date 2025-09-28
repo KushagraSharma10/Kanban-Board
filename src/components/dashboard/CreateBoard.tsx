@@ -9,8 +9,6 @@ import {
   Form,
   HeaderRow,
   Overlay,
-  Primary,
-  Secondary,
 } from "../../styles/dashboard/create-board";
 import { Field } from "../../styles/dashboard/create-board";
 import type { BoardModalProp } from "../../utils/types/dashboard";

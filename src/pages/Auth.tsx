@@ -1,5 +1,4 @@
 import { useState } from "react";
-import LeftPanel from "../components/auth/AuthSidebar";
 import AuthFormFields from "../components/auth/AuthFormFields";
 import { LOGIN_MODE, SIGNUP_MODE } from "../constants/auth";
 import type { Field, FormFields } from "../types/form";

@@ -38,13 +38,13 @@ export const Cards = styled.div`
 export const NoBoards = styled.div`
   padding: 2rem;
   text-align: center;
-  color: ${colors.lightGray};
+  color: ${theme.colors.lightGray};
   font-size: 1.1rem;
 `;
 
 export const Query = styled.b`
   font-weight: 700;
-  color: ${colors.brightGray};
+  color: ${theme.colors.brightGray};
 `;
 
 export const CreateBoard = styled.div`

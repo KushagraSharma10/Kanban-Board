@@ -116,7 +116,7 @@ export const ColorCircle = styled.button<{ $bg: string; $active?: boolean }>`
   }
 
   &:focus-visible {
-    outline: 2px solid ${colors.blue};
+    outline: 2px solid ${theme.colors.blue};
     outline-offset: 2px;
   }
 `;
@@ -169,7 +169,7 @@ export const Button = styled.button`
   }
 
   &:focus-visible {
-    outline: 2px solid ${colors.brightBlue};
+    outline: 2px solid ${theme.colors.brightBlue};
   }
 
   &:disabled {
