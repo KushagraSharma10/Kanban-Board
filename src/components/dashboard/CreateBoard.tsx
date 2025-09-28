@@ -80,6 +80,7 @@ const CreateBoard: React.FC<BoardModalProp> = ({
               }
               placeholder="e.g. Sprint Planning"
               required
+              maxLength={15}
             />
           </Field>
 
@@ -87,7 +88,7 @@ const CreateBoard: React.FC<BoardModalProp> = ({
             <h2>Type</h2>
             <select
               value={form.type}
-              onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
+              onChange={(e) => setForm((form) => ({ ...form, type: e.target.value }))}
             >
               <option value="">Select type</option>
               <option>Engineering</option>

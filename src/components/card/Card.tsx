@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import CardModal from "./CreateCard";
+import CreateCard from "./CreateCard";
 import type { CardData, CardProps } from "../../utils/interface/card";
 
-const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }: CardProps) => {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const handleCardClick = () => {
     setIsModalOpen(true);
@@ -57,7 +57,7 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
       </div>
 
       {isModalOpen && (
-        <CardModal
+        <CreateCard
           card={card}
           onSave={handleSave}
           onDelete={() => onDelete(card.id)}

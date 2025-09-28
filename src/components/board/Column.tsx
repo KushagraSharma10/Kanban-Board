@@ -14,14 +14,14 @@ const Column: React.FC<ColumnProps> = ({
   onDelete,
   boardId,
 }: ColumnProps) => {
-  const [editing, setEditing] = useState(false);
-  const [title, setTitle] = useState(column.title);
+  const [editing, setEditing] = useState<boolean>(false);
+  const [title, setTitle] = useState<string>(column.title);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [cards, setCards] = useState<CardData[]>([]);
-  const [isAdding, setIsAdding] = useState(false);
-  const [newCardTitle, setNewCardTitle] = useState("");
+  const [isAdding, setIsAdding] = useState<boolean>(false);
+  const [newCardTitle, setNewCardTitle] = useState<string>("");
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
@@ -116,7 +116,7 @@ const Column: React.FC<ColumnProps> = ({
         <div className="relative" ref={menuRef}>
           <BsThreeDotsVertical
             className="hover:cursor-pointer opacity-80"
-            onClick={() => setMenuOpen((s) => !s)}
+            onClick={() => setMenuOpen((open) => !open)}
           />
           {menuOpen && (
             <div className="absolute right-0 mt-1 w-30 rounded-md bg-[#222c38] border border-[#3a3f44] shadow-lg z-50 overflow-hidden">

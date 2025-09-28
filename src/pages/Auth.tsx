@@ -12,17 +12,22 @@ import { AuthForm } from "../styles/auth/auth-form";
 import { AuthLink } from "../styles/auth/auth-link";
 import { AuthButton } from "../styles/auth/auth-button";
 import { useNavigate } from "react-router";
-import { normalizeEmail, validateEmail } from "../utils/validation";
+import {
+  normalizeEmail,
+  validateEmail,
+  validatePassword,
+} from "../utils/validation";
 import type { ModeProp } from "../utils/types/auth";
 import { loadFromStorage, saveToStorage } from "../utils/storage";
 import bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
-import { AuthMode } from "../utils/constants/auth";
+import {
+  AuthMode,
+  SESSION_STORAGE_KEY,
+  USERS_STORAGE_KEY,
+} from "../utils/constants/auth";
 import AuthSidebar from "../components/auth/AuthSidebar";
 import type { UserData } from "../utils/interface/user-data";
-
-const USERS_STORAGE_KEY = "users";
-const SESSION_STORAGE_KEY = "kanban.session";
 
 const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
   const isLogin = mode === AuthMode.Login;
@@ -35,8 +40,8 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
     password: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -66,6 +71,13 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
         alert("Please enter your name");
         return;
       }
+
+      const passwordValidationMessage = validatePassword(enteredPassword);
+      if (passwordValidationMessage) {
+        alert(passwordValidationMessage);
+        return;
+      }
+
       if (!canRegisterWithEmail(enteredEmail)) {
         alert("An account with this email already exists.");
         return;
@@ -76,13 +88,9 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
     }
   };
 
-  function getAllUsers(): UserData[] {
+  function getAllUsers(): UserData[] { 
     const stored = loadFromStorage(USERS_STORAGE_KEY, []);
     return Array.isArray(stored) ? (stored as UserData[]) : [];
-  }
-
-  function saveAllUsers(users: UserData[]) {
-    saveToStorage(USERS_STORAGE_KEY, users);
   }
 
   function canRegisterWithEmail(email: string): boolean {
@@ -107,17 +115,19 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
       password: hashed,
     };
 
-    saveAllUsers([newUser, ...allUsers]);
+    const updatedUsers = [newUser, ...allUsers];
+    saveToStorage(USERS_STORAGE_KEY, updatedUsers);
+
     return newUser;
   }
 
   function authenticateUser(email: string, password: string): UserData | null {
     const allUsers = getAllUsers();
     const normalizedEmail = normalizeEmail(email);
-    const matched = allUsers.find((user) => user.email === normalizedEmail);
-    if (!matched) return null;
-    const checkPassword = bcrypt.compareSync(password, matched.password);
-    return checkPassword ? matched : null;
+    const userFound = allUsers.find((user) => user.email === normalizedEmail);
+    if (!userFound) return null;
+    const isPasswordCorrect = bcrypt.compareSync(password, userFound.password);
+    return isPasswordCorrect ? userFound : null;
   }
 
   function createSession(userId: string): void {
@@ -193,8 +203,7 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
               </>
             ) : (
               <>
-                Already have an account?{" "}
-                <AuthLink href="/login">Login</AuthLink>
+                Already have an account? <AuthLink href="/">Login</AuthLink>
               </>
             )}
           </AuthFooter>

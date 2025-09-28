@@ -73,8 +73,8 @@ const BoardView = () => {
   type SessionDataLocal = { userId: string; createdAt: number };
 
   function getSession(): SessionDataLocal | null {
-    const s = loadFromStorage(SESSION_STORAGE_KEY, null);
-    return s ?? null;
+    const session = loadFromStorage(SESSION_STORAGE_KEY, null);
+    return session ?? null;
   }
 
   function getAllBoards(): BoardItem[] {
@@ -109,7 +109,7 @@ const BoardView = () => {
 
           <div className="min-w-[20vw] max-w-[20vw]">
             {showAdd ? (
-              <div className="rounded-md bg-[#161a21] border border-[#3a3f44] p-4">
+              <div className="rounded-md bg-[#161a21] border border-[#3a3f44] md:p-4 ">
                 <input
                   ref={inputRef}
                   value={newColumnName}
@@ -149,7 +149,7 @@ const BoardView = () => {
             ) : (
               <button
                 onClick={() => setShowAdd(true)}
-                className="w-full py-3 flex items-center justify-center gap-2 rounded-md border border-dashed border-[#3a3f44] bg-[#161a21]/60 hover:bg-[#161a21] text-sm"
+                className="w-fit px-4 md:w-full py-3 flex items-center justify-center gap-2 rounded-md border border-dashed border-[#3a3f44] bg-[#161a21]/60 hover:bg-[#161a21] text-sm"
                 title="Add column"
               >
                 <GoPlus className="text-lg" />

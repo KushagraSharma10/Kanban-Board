@@ -23,11 +23,11 @@ export function saveAllColumns(columns: StoredColumn[]): void {
 }
 
 export function loadColumnsForBoard(boardId: string): StoredColumn[] {
-  return loadAllColumns().filter((c) => c.boardId === boardId);
+  return loadAllColumns().filter((column) => column.boardId === boardId);
 }
 
 export function saveColumnsForBoard(boardId: string, nextColumns: StoredColumn[]): void {
-  const all = loadAllColumns().filter((c) => c.boardId !== boardId);
+  const all = loadAllColumns().filter((column) => column.boardId !== boardId);
   saveAllColumns([...all, ...nextColumns]);
 }
 
@@ -52,7 +52,7 @@ export function addColumn(boardId: string, titleRaw: string): StoredColumn[] {
   if (!title) return loadColumnsForBoard(boardId);
 
   const current = loadColumnsForBoard(boardId);
-  const duplicate = current.some((c) => c.title.toLowerCase() === title.toLowerCase());
+  const duplicate = current.some((column) => column.title.toLowerCase() === title.toLowerCase());
   if (duplicate) return current;
 
   const newCol: StoredColumn = {
