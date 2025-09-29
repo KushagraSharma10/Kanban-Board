@@ -5,6 +5,8 @@ import { useNavigate, useParams } from "react-router";
 import type { ColumnItem } from "../utils/types/board-view";
 import { loadFromStorage, saveToStorage } from "../utils/storage";
 import type { BoardItem } from "../utils/types/dashboard";
+import { saveBoardColumnOrder } from "../utils/order-storage";
+import { getDragData, reorderById, setDragData } from "../utils/drag-and-drop";
 import { nanoid } from "nanoid";
 import { COLUMNS_KEY } from "../utils/constants/column";
 import { BOARDS_STORAGE_KEY } from "../utils/constants/board";
@@ -17,6 +19,8 @@ const BoardView = () => {
   const [showAdd, setShowAdd] = useState<boolean>(false);
   const [newColumnName, setNewColumnName] = useState<string>("");
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const draggingColumnIdRef = useRef<string | null>(null);
 
   const { id: boardId } = useParams();
   const navigate = useNavigate();
@@ -63,6 +67,60 @@ const BoardView = () => {
     const updated = deleteColumn(boardId, columnId);
     setColumns(updated.map(({ id, title }) => ({ id, title })));
   };
+
+  const handleColumnDragStart = (
+    columnId: string,
+    event: React.DragEvent<HTMLDivElement>
+  ) => {
+    draggingColumnIdRef.current = columnId;
+    setDragData(event, { id: columnId });
+  };
+
+  const handleColumnDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+  event.preventDefault();
+  event.stopPropagation();
+  event.dataTransfer.dropEffect = "move";
+};
+
+  const handleColumnDropBefore = (
+  targetColumnId: string,
+  event: React.DragEvent<HTMLDivElement>
+) => {
+  event.preventDefault();
+  event.stopPropagation();
+
+  const payload = getDragData(event);
+  const sourceColumnId = draggingColumnIdRef.current || payload?.id;
+  if (!sourceColumnId || sourceColumnId === targetColumnId) return;
+
+  setColumns((previousColumns) => {
+    const sourceIndex = previousColumns.findIndex((col) => col.id === sourceColumnId);
+    const targetIndex = previousColumns.findIndex((col) => col.id === targetColumnId);
+    if (sourceIndex === -1 || targetIndex === -1) return previousColumns;
+
+    const position: "before" | "after" =
+      sourceIndex < targetIndex ? "after" : "before";
+
+    const nextColumns = reorderById(
+      previousColumns,
+      sourceColumnId,
+      targetColumnId,
+      position
+    );
+
+    if (boardId) {
+      saveBoardColumnOrder(
+        boardId,
+        nextColumns,
+        loadColumnsForBoard,
+        saveColumnsForBoard
+      );
+    }
+    return nextColumns;
+  });
+
+  draggingColumnIdRef.current = null;
+};
 
   function getAllBoards(): BoardItem[] {
     const stored = loadFromStorage(BOARDS_STORAGE_KEY, []);
@@ -180,14 +238,26 @@ const BoardView = () => {
 
       <div className="w-full min-h-[90vh] overflow-auto">
         <div className="flex gap-4 p-4 min-w-max">
-          {columns.map((column) => (
-            <Column
-              key={column.id}
-              column={column}
-              boardId={boardId ?? ""}
-              onRename={handleRenameColumn}
-              onDelete={handleDeleteColumn}
-            />
+          {columns.map((columnItem) => (
+            <div
+              key={columnItem.id}
+              draggable
+              onDragStart={(event) =>
+                handleColumnDragStart(columnItem.id, event)
+              }
+              onDragOver={handleColumnDragOver}
+              onDrop={(event) => handleColumnDropBefore(columnItem.id, event)}
+              onDragEnd={() => (draggingColumnIdRef.current = null)}
+              className="min-w-[70vw] md:min-w-[40vw] lg:min-w-[20vw] rounded-md border border-transparent transition-colors "
+              title="Drag to reorder"
+            >
+              <Column
+                column={columnItem}
+                boardId={boardId ?? ""}
+                onRename={handleRenameColumn}
+                onDelete={handleDeleteColumn}
+              />
+            </div>
           ))}
 
           <div className="min-w-[20vw] max-w-[20vw]">
