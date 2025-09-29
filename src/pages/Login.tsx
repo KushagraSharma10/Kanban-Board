@@ -1,8 +1,8 @@
 import AuthPage from "./Auth";
-import { LOGIN_MODE } from "../constants/auth";
+import { AuthMode } from "../utils/constants/auth";
 
 const Login = () => {
-  return <AuthPage mode={LOGIN_MODE} />;
+  return <AuthPage mode={AuthMode.Login} />;
 };
 
 export default Login;

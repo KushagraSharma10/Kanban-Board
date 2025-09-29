@@ -3,36 +3,36 @@ import BoardCard from "../components/dashboard/BoardCard";
 import {
   Board as BoardWrapper,
   BoardArea,
-  CreateBoard,
+  CreateBoard as CreateBoardDiv,
   Main,
   Cards,
   NoBoards,
-  Query,
+  SearchQuery,
 } from "../styles/dashboard/dashboard";
-import CreateBoardModal from "../components/dashboard/CreateBoard";
+import CreateBoard from "../components/dashboard/CreateBoard";
 import Header from "../components/dashboard/Header";
-import type { BoardItem } from "../types/dashboard";
+import type { BoardForm, BoardItem } from "../utils/types/dashboard";
 import { useNavigate } from "react-router";
 import { nanoid } from "nanoid";
 import { loadFromStorage, saveToStorage } from "../utils/storage";
+import { SESSION_STORAGE_KEY } from "../utils/constants/auth";
 
 const BOARDS_STORAGE_KEY = "kanban.boards";
-const SESSION_STORAGE_KEY = "kanban.session";
 
-const Dashboard = () => {
+const Dashboard: React.FC = () => {
   const navigate = useNavigate();
 
   const activeSession = getSession();
   const activeUserId = activeSession?.userId || null;
 
   const [boardList, setBoardList] = useState<BoardItem[]>([]);
-  const [isBoardModalOpen, setIsBoardModalOpen] = useState(false);
+  const [isBoardModalOpen, setIsBoardModalOpen] = useState<boolean>(false);
   const [boardModalMode, setBoardModalMode] = useState<"create" | "edit">(
     "create"
   );
   const [selectedBoardForEdit, setSelectedBoardForEdit] =
     useState<BoardItem | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
     if (!activeUserId) {
@@ -43,32 +43,21 @@ const Dashboard = () => {
     setBoardList(userBoards);
   }, [activeUserId, navigate]);
 
-  const handleCreateBoard = (boardData: {
-    name: string;
-    type: string;
-    color: string;
-  }) => {
+  const handleCreateBoard = (boardData: BoardForm) => {
     if (!activeUserId) return;
 
-    const newName = boardData.name
-      .trim()
-      .split(" ")
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
+    const newName = normalizeBoardName(boardData.name);
 
     if (!newName) {
       alert("Please enter a board name.");
       return;
     }
 
-    const isDup = getBoardsForUser(activeUserId).some(
-      (board) =>
-        board.name.trim().split(" ").filter(Boolean).join(" ").toLowerCase() ===
-        newName
+    const isDuplicate = getBoardsForUser(activeUserId).some(
+      (board) => normalizeBoardName(board.name) === newName
     );
 
-    if (isDup) {
+    if (isDuplicate) {
       alert("A board with this name already exists.");
       return;
     }
@@ -77,32 +66,28 @@ const Dashboard = () => {
     setBoardList((previousBoards) => [createdBoard, ...previousBoards]);
   };
 
+  const normalizeBoardName = (name: string) =>
+    name.trim().split(" ").filter(Boolean).join(" ").toLowerCase();
+
   const handleUpdateBoard = (
     boardId: string,
-    boardData: { name: string; type: string; color: string }
+    boardData: BoardForm
   ) => {
     if (!activeUserId) return;
 
-    const newName = boardData.name
-      .trim()
-      .split(" ")
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
+    const newName = normalizeBoardName(boardData.name);
 
     if (!newName) {
       alert("Please enter a board name.");
       return;
     }
 
-    const isDup = getBoardsForUser(activeUserId).some(
+    const isDuplicate = getBoardsForUser(activeUserId).some(
       (board) =>
-        board.id !== boardId &&
-        board.name.trim().split(" ").filter(Boolean).join(" ").toLowerCase() ===
-          newName
+        board.id !== boardId && normalizeBoardName(board.name) === newName
     );
 
-    if (isDup) {
+    if (isDuplicate) {
       alert("A board with this name already exists.");
       return;
     }
@@ -125,6 +110,18 @@ const Dashboard = () => {
     );
   };
 
+  const handleHeaderModalOpen = (isOpen: boolean) => {
+    setBoardModalMode("create");
+    setSelectedBoardForEdit(null);
+    setIsBoardModalOpen(isOpen);
+  };
+
+  const handleEditBoard = (board: BoardItem) => {
+    setSelectedBoardForEdit(board);
+    setBoardModalMode("edit");
+    setIsBoardModalOpen(true);
+  };
+
   type SessionDataLocal = { userId: string; createdAt: number };
 
   function getSession(): SessionDataLocal | null {
@@ -145,10 +142,7 @@ const Dashboard = () => {
     return getAllBoards().filter((board) => board.userId === userId);
   }
 
-  function addBoardForUser(
-    userId: string,
-    data: { name: string; type: string; color: string }
-  ): BoardItem {
+  function addBoardForUser(userId: string, data: BoardForm): BoardItem {
     const all = getAllBoards();
     const newBoard: BoardItem = {
       id: nanoid(),
@@ -164,7 +158,7 @@ const Dashboard = () => {
   function updateBoardForUser(
     userId: string,
     boardId: string,
-    data: { name: string; type: string; color: string }
+    data: BoardForm
   ): void {
     const all = getAllBoards();
     const updated = all.map((board) =>
@@ -189,22 +183,16 @@ const Dashboard = () => {
       board.type.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  function getAllBoards(): BoardItem[] {
-    return loadFromStorage(BOARDS_STORAGE_KEY, []) as BoardItem[];
-  }
-
-  function saveAllBoards(boards: BoardItem[]) {
-    saveToStorage(BOARDS_STORAGE_KEY, boards);
-  }
+  const handleCreate = () => {
+    setSelectedBoardForEdit(null);
+    setBoardModalMode("create");
+    setIsBoardModalOpen(true);
+  };
 
   return (
     <Main>
       <Header
-        setModalOpen={(isOpen: boolean) => {
-          setBoardModalMode("create");
-          setSelectedBoardForEdit(null);
-          setIsBoardModalOpen(isOpen);
-        }}
+        setModalOpen={handleHeaderModalOpen}
         search={searchQuery}
         onSearchChange={setSearchQuery}
       />
@@ -213,45 +201,35 @@ const Dashboard = () => {
         <BoardArea>
           <h1>My Boards</h1>
 
-          {boardList.length === 0 ? (
+          {!boardList.length ? (
             <NoBoards>No boards right now. Create one to get started!</NoBoards>
-          ) : filteredBoards.length === 0 ? (
+          ) : !filteredBoards.length ? (
             <NoBoards>
-              No results for "<Query>{searchQuery}</Query>"
+              No results for "<SearchQuery>{searchQuery}</SearchQuery>"
             </NoBoards>
           ) : (
             <Cards>
-              {filteredBoards.map((board) => (
+              {filteredBoards.map((board: BoardItem) => (
                 <BoardCard
                   key={board.id}
                   name={board.name}
                   type={board.type}
                   color={board.color}
-                  onEdit={() => {
-                    setSelectedBoardForEdit(board);
-                    setBoardModalMode("edit");
-                    setIsBoardModalOpen(true);
-                  }}
+                  onEdit={() => handleEditBoard(board)}
                   onOpen={() => navigate(`/board/${board.id}`)}
                   onDelete={() => handleDeleteBoard(board.id)}
                 />
               ))}
 
-              <CreateBoard
-                onClick={() => {
-                  setSelectedBoardForEdit(null);
-                  setBoardModalMode("create");
-                  setIsBoardModalOpen(true);
-                }}
-              >
+              <CreateBoardDiv onClick={handleCreate}>
                 + Create Board
-              </CreateBoard>
+              </CreateBoardDiv>
             </Cards>
           )}
         </BoardArea>
       </BoardWrapper>
 
-      <CreateBoardModal
+      <CreateBoard
         open={isBoardModalOpen}
         mode={boardModalMode}
         board={selectedBoardForEdit ?? undefined}

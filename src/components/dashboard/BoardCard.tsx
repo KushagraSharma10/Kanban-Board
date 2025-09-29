@@ -1,14 +1,30 @@
 import { useState } from "react";
-import { Backdrop, BoardContent, Card, ColorDiv, ContentClip, DotWrap, OptionsMenu, ThreeDots,
+import {
+  Backdrop,
+  BoardContent,
+  Card,
+  ColorDiv,
+  ContentClip,
+  DotWrap,
+  OptionsMenu,
+  ThreeDots,
 } from "../../styles/dashboard/board-card";
-import type { BoardItem, CardProp } from "../../utils/types/dashboard";
+import type { CardProp } from "../../utils/types/dashboard";
 
-const BoardCard: React.FC<cardProp> = ({ name, color, type, onEdit, onDelete, onOpen }: cardProp) => {
+
+const BoardCard: React.FC<CardProp> = ({
+  name,
+  color,
+  type,
+  onEdit,
+  onDelete,
+  onOpen,
+}: CardProp) => {
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
 
-   const handleCardClick = () => {
+  const handleCardClick = () => {
     if (menuOpen) return setMenuOpen(false);
-    onOpen?.();                         
+    onOpen?.();
   };
 
   return (
@@ -33,13 +49,13 @@ const BoardCard: React.FC<cardProp> = ({ name, color, type, onEdit, onDelete, on
       </ContentClip>
 
       {menuOpen && (
-        <OptionWrapper>
+        <>
           <Backdrop onClick={() => setMenuOpen(false)} />
           <OptionsMenu>
             <button
               onClick={() => {
                 setMenuOpen(false);
-                onAction("edit", board); 
+                onEdit?.();
               }}
             >
               Edit
@@ -47,13 +63,13 @@ const BoardCard: React.FC<cardProp> = ({ name, color, type, onEdit, onDelete, on
             <button
               onClick={() => {
                 setMenuOpen(false);
-                onAction("delete", board); 
+                onDelete?.();
               }}
             >
               Delete
             </button>
           </OptionsMenu>
-        </OptionWrapper>
+        </>
       )}
     </Card>
   );

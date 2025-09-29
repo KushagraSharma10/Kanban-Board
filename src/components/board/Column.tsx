@@ -3,25 +3,25 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import Card from "../card/Card";
 import { loadCards, saveCards } from "../../utils/storage";
 import { nanoid } from "nanoid";
-import type { ColumnProps } from "../../utils/columns";
+import type { ColumnProps } from "../../utils/types/column";
 import type { CardData } from "../../utils/interface/card";
 
 const MAX_TITLE_LENGTH = 15;
 
- const Column: React.FC<ColumnProps> = ({
+const Column: React.FC<ColumnProps> = ({
   column,
   onRename,
   onDelete,
   boardId,
 }: ColumnProps) => {
-  const [editing, setEditing] = useState(false);
-  const [title, setTitle] = useState(column.title);
+  const [editing, setEditing] = useState<boolean>(false);
+  const [title, setTitle] = useState<string>(column.title);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [cards, setCards] = useState<CardData[]>([]);
-  const [isAdding, setIsAdding] = useState(false);
-  const [newCardTitle, setNewCardTitle] = useState("");
+  const [isAdding, setIsAdding] = useState<boolean>(false);
+  const [newCardTitle, setNewCardTitle] = useState<string>("");
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
@@ -37,13 +37,13 @@ const MAX_TITLE_LENGTH = 15;
   }, [column.title]);
 
   useEffect(() => {
-  if (editing) {
-    requestAnimationFrame(() => {
-      inputRef.current?.focus();
-      inputRef.current?.select();
-    });
-  }
-}, [editing]);
+    if (editing) {
+      requestAnimationFrame(() => {
+        inputRef.current?.focus();
+        inputRef.current?.select();
+      });
+    }
+  }, [editing]);
 
   const handleAddCard = () => {
     const trimmedTitle = newCardTitle.trim();
@@ -56,7 +56,9 @@ const MAX_TITLE_LENGTH = 15;
       return;
     }
     if (
-      cards.some((c) => c.title.toLowerCase() === trimmedTitle.toLowerCase())
+      cards.some(
+        (card) => card.title.toLowerCase() === trimmedTitle.toLowerCase()
+      )
     ) {
       setError("A card with this title already exists!");
       return;
@@ -114,7 +116,7 @@ const MAX_TITLE_LENGTH = 15;
         <div className="relative" ref={menuRef}>
           <BsThreeDotsVertical
             className="hover:cursor-pointer opacity-80"
-            onClick={() => setMenuOpen((s) => !s)}
+            onClick={() => setMenuOpen((open) => !open)}
           />
           {menuOpen && (
             <div className="absolute right-0 mt-1 w-30 rounded-md bg-[#222c38] border border-[#3a3f44] shadow-lg z-50 overflow-hidden">
@@ -146,20 +148,22 @@ const MAX_TITLE_LENGTH = 15;
           <Card
             key={card.id}
             card={card}
-            onUpdate={(updatedCard) => {
+            onUpdate={(updatedCard: CardData) => {
               const allCards = loadCards();
-              const updatedAll = allCards.map((c) =>
-                c.id === updatedCard.id ? updatedCard : c
+              const updatedAll = allCards.map((card) =>
+                card.id === updatedCard.id ? updatedCard : card
               );
               saveCards(updatedAll);
               setCards((prev) =>
-                prev.map((c) => (c.id === updatedCard.id ? updatedCard : c))
+                prev.map((card) =>
+                  card.id === updatedCard.id ? updatedCard : card
+                )
               );
             }}
-            onDelete={(id) => {
-              const allCards = loadCards().filter((c) => c.id !== id);
+            onDelete={(id: CardData["id"]) => {
+              const allCards = loadCards().filter((card) => card.id !== id);
               saveCards(allCards);
-              setCards((prev) => prev.filter((c) => c.id !== id));
+              setCards((prev) => prev.filter((card) => card.id !== id));
             }}
           />
         ))}
@@ -215,7 +219,6 @@ const MAX_TITLE_LENGTH = 15;
       </div>
     </div>
   );
-}
-
+};
 
 export default Column;

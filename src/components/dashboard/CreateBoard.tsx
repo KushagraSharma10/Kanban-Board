@@ -11,15 +11,9 @@ import {
   Overlay,
 } from "../../styles/dashboard/create-board";
 import { Field } from "../../styles/dashboard/create-board";
-import type { BoardModalProp } from "../../utils/types/dashboard";
+import type { BoardForm, BoardModalProp } from "../../utils/types/dashboard";
 import { selectTypes } from "../../utils/constants/board";
 import { DEFAULT_COLORS } from "../../utils/constants/colors";
-
-type FormState = {
-  name: string;
-  type: string;
-  color: string;
-};
 
 const CreateBoard: React.FC<BoardModalProp> = ({
 
@@ -30,7 +24,7 @@ const CreateBoard: React.FC<BoardModalProp> = ({
   board,
   onUpdate,
 }: BoardModalProp) => {
-  const [form, setForm] = useState<FormState>({
+  const [form, setForm] = useState<BoardForm>({
     name: "",
     type: "",
     color: DEFAULT_COLORS[0],
@@ -81,6 +75,7 @@ const CreateBoard: React.FC<BoardModalProp> = ({
               }
               placeholder="e.g. Sprint Planning"
               required
+              maxLength={15}
             />
           </Field>
 

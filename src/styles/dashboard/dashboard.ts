@@ -42,7 +42,7 @@ export const NoBoards = styled.div`
   font-size: 1.1rem;
 `;
 
-export const Query = styled.b`
+export const SearchQuery = styled.b`
   font-weight: 700;
   color: ${theme.colors.brightGray};
 `;
