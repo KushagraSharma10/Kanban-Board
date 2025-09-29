@@ -1,5 +1,4 @@
-import type { CardData } from "../interface/card";
-import type { ColumnItem } from "../types/board-view";
+import type { CardData } from "./interface/card";
 
 export function loadFromStorage(key: string, defaultValue: unknown) {
   try {
@@ -25,13 +24,4 @@ export const loadCards = (): CardData[] => {
 
 export const saveCards = (cards: CardData[]) => {
   localStorage.setItem("kanban-cards", JSON.stringify(cards));
-};
-
-export const loadColumns = (boardId: string): ColumnItem[] => {
-  const data = localStorage.getItem(`kanban-columns-${boardId}`);
-  return data ? JSON.parse(data) : [];
-};
-
-export const saveColumns = (boardId: string, columns: ColumnItem[]) => {
-  localStorage.setItem(`kanban-columns-${boardId}`, JSON.stringify(columns));
 };

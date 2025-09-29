@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import type { CardData } from "../../utils/interface/card";
 import type { CardModalProps } from "../../utils/interface/card-modal";
-import { LABEL_OPTIONS, MAX_TITLE_LENGTH } from "../../constants/card-modal";
+import { LABEL_OPTIONS, MAX_TITLE_LENGTH } from "../../utils/constants/card-modal";
 import { validateEmail } from "../../utils/validation";
 
 const CardModal: React.FC<CardModalProps> = ({
