@@ -1,5 +1,5 @@
-import type { CardData } from "../interface/card";
-import type { ColumnItem } from "../types/board-view";
+import type { CardData } from "./interface/card";
+import type { ColumnItem } from "./types/board-view";
 
 export function loadFromStorage(key: string, defaultValue: unknown) {
   try {

@@ -11,7 +11,6 @@ import {
 } from "../../styles/dashboard/board-card";
 import type { CardProp } from "../../utils/types/dashboard";
 
-
 const BoardCard: React.FC<CardProp> = ({
   name,
   color,
@@ -26,6 +25,10 @@ const BoardCard: React.FC<CardProp> = ({
     if (menuOpen) return setMenuOpen(false);
     onOpen?.();
   };
+  const menuOptions = [
+    { label: "Edit", action: onEdit },
+    { label: "Delete", action: onDelete },
+  ];
 
   return (
     <Card onClick={handleCardClick}>
@@ -52,22 +55,17 @@ const BoardCard: React.FC<CardProp> = ({
         <>
           <Backdrop onClick={() => setMenuOpen(false)} />
           <OptionsMenu>
-            <button
-              onClick={() => {
-                setMenuOpen(false);
-                onEdit?.();
-              }}
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => {
-                setMenuOpen(false);
-                onDelete?.();
-              }}
-            >
-              Delete
-            </button>
+            {menuOptions.map((option) => (
+              <button
+                key={option.label} 
+                onClick={() => {
+                  setMenuOpen(false);
+                  option.action?.();
+                }}
+              >
+                {option.label}
+              </button>
+            ))}
           </OptionsMenu>
         </>
       )}
