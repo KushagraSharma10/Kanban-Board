@@ -1,6 +1,9 @@
 export type DragPayload = { id: string };
 
-export function setDragData(event: React.DragEvent, payload: DragPayload): void {
+export function setDragData(
+  event: React.DragEvent,
+  payload: DragPayload
+): void {
   event.dataTransfer.effectAllowed = "move";
   event.dataTransfer.setData("text/plain", JSON.stringify(payload));
 }
@@ -15,7 +18,11 @@ export function getDragData(event: React.DragEvent): DragPayload | null {
   }
 }
 
-export function moveItemWithinList<T>(list: T[], fromIndex: number, toIndex: number): T[] {
+export function moveItemWithinList<T>(
+  list: T[],
+  fromIndex: number,
+  toIndex: number
+): T[] {
   if (fromIndex === toIndex) return list;
   const next = [...list];
   const [movedItem] = next.splice(fromIndex, 1);
@@ -41,6 +48,7 @@ export function reorderById<T extends { id: string }>(
   if (targetIndex === -1) return list;
 
   const intendedIndex = position === "before" ? targetIndex : targetIndex + 1;
-  const adjustedIndex = sourceIndex < targetIndex ? intendedIndex - 1 : intendedIndex;
+  const adjustedIndex =
+    sourceIndex < targetIndex ? intendedIndex - 1 : intendedIndex;
   return moveItemWithinList(list, sourceIndex, adjustedIndex);
 }

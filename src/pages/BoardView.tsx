@@ -28,10 +28,6 @@ const BoardView = () => {
   const activeUserId = activeSession?.userId || null;
 
   useEffect(() => {
-    if (!activeUserId) {
-      navigate("/");
-      return;
-    }
     const board = getAllBoards().find(
       (board) => board.id === boardId && board.userId === activeUserId
     );
@@ -77,50 +73,54 @@ const BoardView = () => {
   };
 
   const handleColumnDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-  event.preventDefault();
-  event.stopPropagation();
-  event.dataTransfer.dropEffect = "move";
-};
+    event.preventDefault();
+    event.stopPropagation();
+    event.dataTransfer.dropEffect = "move";
+  };
 
   const handleColumnDropBefore = (
-  targetColumnId: string,
-  event: React.DragEvent<HTMLDivElement>
-) => {
-  event.preventDefault();
-  event.stopPropagation();
+    targetColumnId: string,
+    event: React.DragEvent<HTMLDivElement>
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
 
-  const payload = getDragData(event);
-  const sourceColumnId = draggingColumnIdRef.current || payload?.id;
-  if (!sourceColumnId || sourceColumnId === targetColumnId) return;
+    const payload = getDragData(event);
+    const sourceColumnId = draggingColumnIdRef.current || payload?.id;
+    if (!sourceColumnId || sourceColumnId === targetColumnId) return;
 
-  setColumns((previousColumns) => {
-    const sourceIndex = previousColumns.findIndex((col) => col.id === sourceColumnId);
-    const targetIndex = previousColumns.findIndex((col) => col.id === targetColumnId);
-    if (sourceIndex === -1 || targetIndex === -1) return previousColumns;
-
-    const position: "before" | "after" =
-      sourceIndex < targetIndex ? "after" : "before";
-
-    const nextColumns = reorderById(
-      previousColumns,
-      sourceColumnId,
-      targetColumnId,
-      position
-    );
-
-    if (boardId) {
-      saveBoardColumnOrder(
-        boardId,
-        nextColumns,
-        loadColumnsForBoard,
-        saveColumnsForBoard
+    setColumns((previousColumns) => {
+      const sourceIndex = previousColumns.findIndex(
+        (col) => col.id === sourceColumnId
       );
-    }
-    return nextColumns;
-  });
+      const targetIndex = previousColumns.findIndex(
+        (col) => col.id === targetColumnId
+      );
+      if (sourceIndex === -1 || targetIndex === -1) return previousColumns;
 
-  draggingColumnIdRef.current = null;
-};
+      const position: "before" | "after" =
+        sourceIndex < targetIndex ? "after" : "before";
+
+      const nextColumns = reorderById(
+        previousColumns,
+        sourceColumnId,
+        targetColumnId,
+        position
+      );
+
+      if (boardId) {
+        saveBoardColumnOrder(
+          boardId,
+          nextColumns,
+          loadColumnsForBoard,
+          saveColumnsForBoard
+        );
+      }
+      return nextColumns;
+    });
+
+    draggingColumnIdRef.current = null;
+  };
 
   function getAllBoards(): BoardItem[] {
     const stored = loadFromStorage(BOARDS_STORAGE_KEY, []);

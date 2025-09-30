@@ -6,23 +6,33 @@ import App from "./App.tsx";
 import Login from "./pages/Login.tsx";
 import Signup from "./pages/Signup.tsx";
 import BoardView from "./pages/BoardView.tsx";
+import ProtectedRoute from "./components/ProtectedRoute.tsx";
+import { seedInitialUsers } from "./utils/seed-users.ts";
+
+seedInitialUsers()
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <Login />,
+    path: "/", 
+    element: <App />,
   },
   {
-    path: "/dashboard",
-    element: <App />,
+    path: "/login",
+    element: <Login />,
   },
   {
     path: "/signup",
     element: <Signup />,
   },
+
   {
-    path: "/board/:id",
-    element: <BoardView />,
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: "/board/:id",
+        element: <BoardView />,
+      },
+    ],
   },
 ]);
 

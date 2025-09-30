@@ -19,7 +19,7 @@ import { BOARDS_STORAGE_KEY } from "../utils/constants/board";
 import { getSession } from "../utils/session";
 import { normalizeBoardName } from "../utils/boards";
 import { toast } from "react-toastify";
-
+import LoginPrompt from "../components/LoginPrompt";
 
 const Dashboard: React.FC = () => {
 
@@ -35,15 +35,20 @@ const Dashboard: React.FC = () => {
   const [selectedBoardForEdit, setSelectedBoardForEdit] =
     useState<BoardItem | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [showLogin, setShowLogin] = useState<boolean>(false);
 
   useEffect(() => {
     if (!activeUserId) {
-      navigate("/");
-      return;
+      const timer = setTimeout(() => {
+        setShowLogin(true);
+      }, 2000);
+      return () => clearTimeout(timer); 
+    } else {
+     
+      const userBoards = getBoardsForUser(activeUserId);
+      setBoardList(userBoards);
     }
-    const userBoards = getBoardsForUser(activeUserId);
-    setBoardList(userBoards);
-  }, [activeUserId, navigate]);
+  }, [activeUserId]); 
 
   const handleCreateBoard = (boardData: BoardForm) => {
     if (!activeUserId) return;
@@ -70,10 +75,7 @@ const Dashboard: React.FC = () => {
 
   
 
-  const handleUpdateBoard = (
-    boardId: string,
-    boardData: BoardForm
-  ) => {
+  const handleUpdateBoard = (boardId: string, boardData: BoardForm) => {
     if (!activeUserId) return;
 
     const newName = normalizeBoardName(boardData.name);
@@ -229,6 +231,11 @@ const Dashboard: React.FC = () => {
         onClose={() => setIsBoardModalOpen(false)}
         onCreate={handleCreateBoard}
         onUpdate={handleUpdateBoard}
+      />
+
+      <LoginPrompt
+        isOpen={showLogin}
+        onLoginClick={() => navigate("/login")}
       />
     </Main>
   );
