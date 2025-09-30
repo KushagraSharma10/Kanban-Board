@@ -7,10 +7,10 @@ export function loadFromStorage(key: string, defaultValue: unknown) {
   }
 }
 
-export function saveToStorage(key: string, value: unknown) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch (error) {
-    console.error("Failed to save data:", error);
-  }
-}
+// export function saveToStorage(key: string, value: unknown) {
+//   try {
+//     localStorage.setItem(key, JSON.stringify(value));
+//   } catch (error) {
+//     console.error("Failed to save data:", error);
+//   }
+// }

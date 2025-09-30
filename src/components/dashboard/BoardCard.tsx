@@ -10,17 +10,21 @@ import {
   OptionWrapper,
   ThreeDots,
 } from "../../styles/dashboard/board-card";
-import type { BoardItem, CardProp } from "../../utils/types/dashboard";
+import type { CardProp } from "../../utils/types/dashboard";
 
 const BoardCard: React.FC<CardProp> = ({
   name,
   color,
   type,
-  onAction
+  onEdit,
+  onDelete,
 }: CardProp) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
-    const board: BoardItem = { id: "", name, type, color };
+  const menuOptions = [
+    { label: "Edit", action: onEdit },
+    { label: "Delete", action: onDelete },
+  ];
 
   return (
     <Card onClick={() => setMenuOpen(false)}>
@@ -47,22 +51,17 @@ const BoardCard: React.FC<CardProp> = ({
         <OptionWrapper>
           <Backdrop onClick={() => setMenuOpen(false)} />
           <OptionsMenu>
-            <button
-              onClick={() => {
-                setMenuOpen(false);
-                onAction("edit", board); 
-              }}
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => {
-                setMenuOpen(false);
-                onAction("delete", board); 
-              }}
-            >
-              Delete
-            </button>
+            {menuOptions.map((option) => (
+              <button
+                key={option.label} 
+                onClick={() => {
+                  setMenuOpen(false);
+                  option.action?.();
+                }}
+              >
+                {option.label}
+              </button>
+            ))}
           </OptionsMenu>
         </OptionWrapper>
       )}

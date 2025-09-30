@@ -17,11 +17,11 @@ export const BoardArea = styled.div`
   padding: 1.5rem;
 
   @media (max-width: ${breakpoints.tablet}) {
-    padding: 1.5vw;
+    padding: 1.2rem;
   }
 
   @media (max-width: ${breakpoints.mobileM}) {
-    padding: 1vw;
+    padding: 1rem;
   }
 `;
 export const Cards = styled.div`
@@ -35,7 +35,7 @@ export const Cards = styled.div`
 export const NoBoards = styled.div`
   padding: 2rem;
   text-align: center;
-  color: #9aa4af;
+  color: ${theme.colors.grayishBlue};
   font-size: 1.1rem;
 `;
 
@@ -50,7 +50,7 @@ export const CreateBoard = styled.div`
   width: 19vw;
   height: 14vw;
   border-radius: 1.5rem;
-  border: 0.1875rem dotted #28394e; /* 3px → 0.1875rem */
+  border: 0.1875rem dotted #28394e; 
   font-size: 1.2rem;
   cursor: pointer;
 

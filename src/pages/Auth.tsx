@@ -11,7 +11,7 @@ import { useNavigate } from "react-router";
 import { normalizeEmail, validateEmail} from "../utils/validation";
 import type { ModeProp } from "../utils/types/auth";
 import type { UserData } from "../utils/interface/userData";
-import { loadFromStorage, saveToStorage } from "../utils/storage";
+import { loadFromStorage} from "../utils/storage";
 import bcrypt from "bcryptjs";
 
 
@@ -44,7 +44,7 @@ function getAllUsers(): UserData[] {
 }
 
 function saveAllUsers(users: UserData[]) {
-  saveToStorage(USERS_STORAGE_KEY, users);
+  localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
 }
 
 function registerUser(name: string, email: string, password: string): boolean {
