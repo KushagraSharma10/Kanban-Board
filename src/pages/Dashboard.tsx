@@ -7,13 +7,13 @@ import {
   CreateBoard,
   Main,
   Cards,
-  NoBoards,
+  NoBoards, 
   Query,
 } from "../styles/dashboard/dashboard";
 import CreateBoardModal from "../components/dashboard/CreateBoardModal";
 import Header from "../components/dashboard/Header";
 import type { BoardItem } from "../utils/types/dashboard";
-import { loadFromStorage, saveToStorage } from "../utils/storage";
+import { loadFromStorage} from "../utils/storage";
 
 const BOARDS_STORAGE_KEY = "kanban.boards";
 
@@ -29,18 +29,9 @@ const Dashboard = () => {
     saveAllBoards(boards);
   }, [boards]);
 
-  const handleCardAction = (
-  action: "edit" | "delete",
-  board: BoardItem
-) => {
-  if (action === "edit") {
-    setSelectedBoard(board);
-    setModalMode("edit");
-    setModalOpen(true);
-  } else if (action === "delete") {
-    setBoards(prev => prev.filter(board => board.id !== board.id));
-  }
-};
+  const handleDeleteBoard = (id: string) => {
+    setBoards((prev) => prev.filter((board) => board.id !== id));
+  };
 
   const handleCreateBoard = (data: {
     name: string;
@@ -70,8 +61,14 @@ const Dashboard = () => {
   }
 
   function saveAllBoards(boards: BoardItem[]) {
-    saveToStorage(BOARDS_STORAGE_KEY, boards);
+    localStorage.setItem(BOARDS_STORAGE_KEY, JSON.stringify(boards));
   }
+
+  const handleEditBoard = (board: BoardItem) => {
+    setSelectedBoard(board);
+    setModalMode("edit");
+    setModalOpen(true);
+  };
 
   return (
     <Main>
@@ -102,7 +99,8 @@ const Dashboard = () => {
                   name={board.name}
                   type={board.type}
                   color={board.color}
-                  onAction={handleCardAction}  
+                  onEdit={() => handleEditBoard(board)}
+                  onDelete={() => handleDeleteBoard(board.id)}
                 />
               ))}
 
