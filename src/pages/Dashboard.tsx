@@ -15,9 +15,9 @@ import type { BoardForm, BoardItem } from "../utils/types/dashboard";
 import { useNavigate } from "react-router";
 import { nanoid } from "nanoid";
 import { loadFromStorage, saveToStorage } from "../utils/storage";
-import { SESSION_STORAGE_KEY } from "../utils/constants/auth";
-
-const BOARDS_STORAGE_KEY = "kanban.boards";
+import { getSession } from "../utils/session";
+import { BOARDS_STORAGE_KEY } from "../utils/constants/board";
+import LoginPrompt from "../components/LoginPrompt";
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -33,15 +33,20 @@ const Dashboard: React.FC = () => {
   const [selectedBoardForEdit, setSelectedBoardForEdit] =
     useState<BoardItem | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [showLogin, setShowLogin] = useState<boolean>(false);
 
   useEffect(() => {
     if (!activeUserId) {
-      navigate("/");
-      return;
+      const timer = setTimeout(() => {
+        setShowLogin(true);
+      }, 2000);
+      return () => clearTimeout(timer); 
+    } else {
+     
+      const userBoards = getBoardsForUser(activeUserId);
+      setBoardList(userBoards);
     }
-    const userBoards = getBoardsForUser(activeUserId);
-    setBoardList(userBoards);
-  }, [activeUserId, navigate]);
+  }, [activeUserId]); 
 
   const handleCreateBoard = (boardData: BoardForm) => {
     if (!activeUserId) return;
@@ -69,10 +74,7 @@ const Dashboard: React.FC = () => {
   const normalizeBoardName = (name: string) =>
     name.trim().split(" ").filter(Boolean).join(" ").toLowerCase();
 
-  const handleUpdateBoard = (
-    boardId: string,
-    boardData: BoardForm
-  ) => {
+  const handleUpdateBoard = (boardId: string, boardData: BoardForm) => {
     if (!activeUserId) return;
 
     const newName = normalizeBoardName(boardData.name);
@@ -121,13 +123,6 @@ const Dashboard: React.FC = () => {
     setBoardModalMode("edit");
     setIsBoardModalOpen(true);
   };
-
-  type SessionDataLocal = { userId: string; createdAt: number };
-
-  function getSession(): SessionDataLocal | null {
-    const session = loadFromStorage(SESSION_STORAGE_KEY, null);
-    return session ?? null;
-  }
 
   function getAllBoards(): BoardItem[] {
     const stored = loadFromStorage(BOARDS_STORAGE_KEY, []);
@@ -236,6 +231,11 @@ const Dashboard: React.FC = () => {
         onClose={() => setIsBoardModalOpen(false)}
         onCreate={handleCreateBoard}
         onUpdate={handleUpdateBoard}
+      />
+
+      <LoginPrompt
+        isOpen={showLogin}
+        onLoginClick={() => navigate("/login")}
       />
     </Main>
   );

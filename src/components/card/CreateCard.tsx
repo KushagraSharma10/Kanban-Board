@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import type { CardData } from "../../utils/interface/card";
 import type { CardModalProps } from "../../utils/interface/card-modal";
-import { LABEL_OPTIONS, MAX_TITLE_LENGTH } from "../../utils/constants/card-modal";
+import {
+  LABEL_OPTIONS,
+  MAX_TITLE_LENGTH,
+} from "../../utils/constants/card-modal";
 import { validateEmail } from "../../utils/validation";
+import { getActiveUser } from "../../utils/auth";
 
 const CardModal: React.FC<CardModalProps> = ({
   card,
@@ -25,6 +29,8 @@ const CardModal: React.FC<CardModalProps> = ({
   const [assignees, setAssignees] = useState<string[]>(card.assignees ?? []);
   const [assigneeInput, setAssigneeInput] = useState<string>("");
   const [assigneeError, setAssigneeError] = useState<string>("");
+
+  const activeUser = getActiveUser();
 
   const addAssigneeFromInput = () => {
     const trimmed = assigneeInput.trim();
@@ -169,9 +175,7 @@ const CardModal: React.FC<CardModalProps> = ({
         />
         {dateError && <p className="text-red-400 text-sm mb-2">{dateError}</p>}
 
-        <label className="block text-sm text-[#9ca3af] mt-3 mb-1">
-          Label / Priority
-        </label>
+        <label className="block text-sm text-[#9ca3af] mt-3 mb-1">Label</label>
         <select
           value={selectedLabel}
           onChange={(e) =>
@@ -217,8 +221,9 @@ const CardModal: React.FC<CardModalProps> = ({
               if (assigneeError) setAssigneeError("");
             }}
             onKeyDown={handleAssigneeKeyDown}
-            placeholder="Type email and press Enter or ,"
-            className="w-full bg-transparent outline-none placeholder-[#9e9e9e] text-[#e6edf3]"
+            placeholder="Add assignees..."
+            disabled={activeUser?.role !== "admin"}
+            className="w-full bg-transparent outline-none placeholder-[#9e9e9e] text-[#e6edf3] disabled:cursor-no-drop"
           />
         </div>
         {assigneeError && (
