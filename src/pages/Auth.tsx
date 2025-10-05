@@ -18,16 +18,17 @@ import {
   validatePassword,
 } from "../utils/validation";
 import type { ModeProp } from "../utils/types/auth";
-import { loadFromStorage, saveToStorage } from "../utils/storage";
+import { saveToStorage } from "../utils/storage";
 import bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
 import {
   AuthMode,
-  SESSION_STORAGE_KEY,
   USERS_STORAGE_KEY,
 } from "../utils/constants/auth";
 import AuthSidebar from "../components/auth/AuthSidebar";
 import type { UserData } from "../utils/interface/user-data";
+import { getAllUsers } from "../utils/auth";
+import { createSession } from "../utils/session";
 
 const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
   const isLogin = mode === AuthMode.Login;
@@ -62,7 +63,7 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
       const authenticatedUser = authenticateUser(enteredEmail, enteredPassword);
       if (authenticatedUser) {
         createSession(authenticatedUser.id);
-        navigate("/dashboard");
+        navigate("/");
       } else {
         alert("Invalid credentials or please sign up first.");
       }
@@ -84,14 +85,9 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
       }
       createUserAndSave(enteredName, enteredEmail, enteredPassword);
       alert("Signup successful! Please login.");
-      navigate("/");
+      navigate("/login");
     }
   };
-
-  function getAllUsers(): UserData[] { 
-    const stored = loadFromStorage(USERS_STORAGE_KEY, []);
-    return Array.isArray(stored) ? (stored as UserData[]) : [];
-  }
 
   function canRegisterWithEmail(email: string): boolean {
     const allUsers = getAllUsers();
@@ -113,6 +109,7 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
       name: name.trim(),
       email: normalizedEmail,
       password: hashed,
+      role: "member",
     };
 
     const updatedUsers = [newUser, ...allUsers];
@@ -128,11 +125,6 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
     if (!userFound) return null;
     const isPasswordCorrect = bcrypt.compareSync(password, userFound.password);
     return isPasswordCorrect ? userFound : null;
-  }
-
-  function createSession(userId: string): void {
-    const session = { userId, createdAt: Date.now() };
-    saveToStorage(SESSION_STORAGE_KEY, session);
   }
 
   const fields: Field[] = [
