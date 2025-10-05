@@ -23,12 +23,12 @@ import bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
 import {
   AuthMode,
-  SESSION_STORAGE_KEY,
   USERS_STORAGE_KEY,
 } from "../utils/constants/auth";
 import AuthSidebar from "../components/auth/AuthSidebar";
 import type { UserData } from "../utils/interface/user-data";
 import { getAllUsers } from "../utils/auth";
+import { createSession } from "../utils/session";
 
 const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
   const isLogin = mode === AuthMode.Login;
@@ -125,11 +125,6 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
     if (!userFound) return null;
     const isPasswordCorrect = bcrypt.compareSync(password, userFound.password);
     return isPasswordCorrect ? userFound : null;
-  }
-
-  function createSession(userId: string): void {
-    const session = { userId, createdAt: Date.now() };
-    saveToStorage(SESSION_STORAGE_KEY, session);
   }
 
   const fields: Field[] = [
