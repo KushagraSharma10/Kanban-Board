@@ -46,7 +46,9 @@ const BoardCard: React.FC<CardProp> = ({
                 e.stopPropagation();
                 setMenuOpen((prev) => !prev);
               }}
+
             />
+            
           </DotWrap>
         </BoardContent>
       </ContentClip>

@@ -12,6 +12,7 @@ import { COLUMNS_KEY } from "../utils/constants/column";
 import { BOARDS_STORAGE_KEY } from "../utils/constants/board";
 import type { StoredColumn } from "../utils/types/column";
 import { getSession } from "../utils/session";
+import LoginPrompt from "../components/LoginPrompt";
 
 const BoardView = () => {
   const [boardName, setBoardName] = useState<string>("");
@@ -19,6 +20,7 @@ const BoardView = () => {
   const [showAdd, setShowAdd] = useState<boolean>(false);
   const [newColumnName, setNewColumnName] = useState<string>("");
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [showLogin, setShowLogin] = useState<boolean>(false);
 
   const draggingColumnIdRef = useRef<string | null>(null);
 
@@ -28,13 +30,22 @@ const BoardView = () => {
   const activeUserId = activeSession?.userId || null;
 
   useEffect(() => {
+    if (!activeUserId) {
+      const timer = setTimeout(() => {
+        setShowLogin(true);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+
     const board = getAllBoards().find(
       (board) => board.id === boardId && board.userId === activeUserId
     );
+
     if (!board) {
       navigate("/dashboard");
       return;
     }
+
     setBoardName(board.name);
     const seeded = ensureDefaultColumns(board.id);
     setColumns(seeded.map(({ id, title }) => ({ id, title })));
@@ -306,6 +317,7 @@ const BoardView = () => {
           </div>
         </div>
       </div>
+      <LoginPrompt isOpen={showLogin} onLoginClick={() => navigate("/login")} />
     </div>
   );
 };
