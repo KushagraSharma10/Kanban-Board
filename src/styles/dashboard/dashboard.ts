@@ -18,11 +18,11 @@ export const BoardArea = styled.div`
   padding: 1.5rem;
 
   @media (max-width: ${breakpoints.tablet}) {
-    padding: 1.5vw;
+    padding: 1.2rem;
   }
 
   @media (max-width: ${breakpoints.mobileM}) {
-    padding: 1vw;
+    padding: 1rem;
   }
 `;
 
