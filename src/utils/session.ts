@@ -1,5 +1,5 @@
-import type { SessionData } from "react-router";
 import { SESSION_STORAGE_KEY } from "./constants/auth";
+import type { SessionData } from "./types/session";
 
 export function getSession(): SessionData | null {
   try {

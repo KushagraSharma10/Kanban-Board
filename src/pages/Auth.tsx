@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AuthFormFields from "../components/auth/AuthFormFields";
 import type { Field, FormFields } from "../utils/types/form";
 import { AuthContent, AuthMain, AuthWrapper } from "../styles/auth/auth-main";
@@ -12,123 +12,76 @@ import { AuthForm } from "../styles/auth/auth-form";
 import { AuthLink } from "../styles/auth/auth-link";
 import { AuthButton } from "../styles/auth/auth-button";
 import { useNavigate } from "react-router";
-import {
-  normalizeEmail,
-  validateEmail,
-  validatePassword,
-} from "../utils/validation";
+import { validateEmail, validatePassword } from "../utils/validation";
 import type { ModeProp } from "../utils/types/auth";
-import { saveToStorage } from "../utils/storage";
-import bcrypt from "bcryptjs";
-import { nanoid } from "nanoid";
-import {
-  AuthMode,
-  USERS_STORAGE_KEY,
-} from "../utils/constants/auth";
+import { AuthMode } from "../utils/constants/auth";
 import AuthSidebar from "../components/auth/AuthSidebar";
-import type { UserData } from "../utils/interface/user-data";
-import { getAllUsers } from "../utils/auth";
-import { createSession } from "../utils/session";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { loginUser, signupUser } from "../features/auth/thunks";
+import { selectAuthUser } from "../features/auth/auth-slice";
 
 const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
-  const isLogin = mode === AuthMode.Login;
-
+  const isLoginMode = mode === AuthMode.Login;
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const [form, setForm] = useState<FormFields>({
     name: "",
     email: "",
     password: "",
   });
+  const authenticatedUser = useAppSelector(selectAuthUser);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+  const handleInputChange = (
+    changeEvent: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value } = changeEvent.target;
+    setForm((previousForm) => ({ ...previousForm, [name]: value }));
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
+  const handleFormSubmit = (submitEvent: React.FormEvent) => {
+    submitEvent.preventDefault();
 
-    const enteredName = form.name.trim();
-    const enteredEmail = form.email.trim();
-    const enteredPassword = form.password;
+    const trimmedName = form.name.trim();
+    const trimmedEmail = form.email.trim();
+    const rawPassword = form.password;
 
-    const emailValidationMessage = validateEmail(enteredEmail);
+    const emailValidationMessage = validateEmail(trimmedEmail);
     if (emailValidationMessage) {
       alert(emailValidationMessage);
       return;
     }
 
-    if (isLogin) {
-      const authenticatedUser = authenticateUser(enteredEmail, enteredPassword);
-      if (authenticatedUser) {
-        createSession(authenticatedUser.id);
-        navigate("/");
-      } else {
-        alert("Invalid credentials or please sign up first.");
-      }
+    if (isLoginMode) {
+      dispatch(loginUser({ email: trimmedEmail, password: rawPassword }));
     } else {
-      if (!enteredName) {
+      if (!trimmedName) {
         alert("Please enter your name");
         return;
       }
-
-      const passwordValidationMessage = validatePassword(enteredPassword);
+      const passwordValidationMessage = validatePassword(rawPassword);
       if (passwordValidationMessage) {
         alert(passwordValidationMessage);
         return;
       }
-
-      if (!canRegisterWithEmail(enteredEmail)) {
-        alert("An account with this email already exists.");
-        return;
-      }
-      createUserAndSave(enteredName, enteredEmail, enteredPassword);
-      alert("Signup successful! Please login.");
-      navigate("/login");
+      dispatch(
+        signupUser({
+          name: trimmedName,
+          email: trimmedEmail,
+          password: rawPassword,
+        })
+      );
     }
   };
 
-  function canRegisterWithEmail(email: string): boolean {
-    const allUsers = getAllUsers();
-    const normalizedEmail = normalizeEmail(email);
-    return !allUsers.some((user) => user.email === normalizedEmail);
-  }
-
-  function createUserAndSave(
-    name: string,
-    email: string,
-    password: string
-  ): UserData {
-    const allUsers = getAllUsers();
-    const normalizedEmail = normalizeEmail(email);
-    const hashed = bcrypt.hashSync(password, 10);
-
-    const newUser: UserData = {
-      id: nanoid(),
-      name: name.trim(),
-      email: normalizedEmail,
-      password: hashed,
-      role: "member",
-    };
-
-    const updatedUsers = [newUser, ...allUsers];
-    saveToStorage(USERS_STORAGE_KEY, updatedUsers);
-
-    return newUser;
-  }
-
-  function authenticateUser(email: string, password: string): UserData | null {
-    const allUsers = getAllUsers();
-    const normalizedEmail = normalizeEmail(email);
-    const userFound = allUsers.find((user) => user.email === normalizedEmail);
-    if (!userFound) return null;
-    const isPasswordCorrect = bcrypt.compareSync(password, userFound.password);
-    return isPasswordCorrect ? userFound : null;
-  }
+  useEffect(() => {
+    if (authenticatedUser) {
+      navigate("/");
+    }
+  }, [authenticatedUser, navigate]);
 
   const fields: Field[] = [
-    ...(!isLogin
+    ...(!isLoginMode
       ? [
           {
             id: "name",
@@ -166,20 +119,20 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
             <img src="/kanban.svg" alt="Kanban Logo" width={30} height={30} />
             Kanban Board
           </AuthBrand>
-          <h2>{isLogin ? "Welcome Back" : "Create your account"}</h2>
+          <h2>{isLoginMode ? "Welcome Back" : "Create your account"}</h2>
           <p>
-            {isLogin
+            {isLoginMode
               ? "Please enter your details to sign in."
               : "Start managing your work in one place."}
           </p>
-          <AuthForm onSubmit={handleSubmit}>
+          <AuthForm onSubmit={handleFormSubmit}>
             <AuthFormFields
               fields={fields}
               form={form}
-              onChange={handleChange}
+              onChange={handleInputChange}
             />
             <AuthButton type="submit">
-              {isLogin ? AuthMode.Login : AuthMode.SignUP}
+              {isLoginMode ? AuthMode.Login : AuthMode.SignUP}
             </AuthButton>
           </AuthForm>
           <AuthDivider>
@@ -188,14 +141,15 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
             <AuthLine />
           </AuthDivider>
           <AuthFooter>
-            {isLogin ? (
+            {isLoginMode ? (
               <>
                 Don’t have an account?{" "}
                 <AuthLink href="/signup">Sign Up</AuthLink>
               </>
             ) : (
               <>
-                Already have an account? <AuthLink href="/">Login</AuthLink>
+                Already have an account?{" "}
+                <AuthLink href="/login">Login</AuthLink>
               </>
             )}
           </AuthFooter>

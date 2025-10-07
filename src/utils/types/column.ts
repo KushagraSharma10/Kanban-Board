@@ -5,4 +5,5 @@ export type ColumnProps = {
   onRename: (id: string, newTitle: string) => void;
   onDelete: (id: string) => void;
   boardId: string;
+  searchText?: string;
 };

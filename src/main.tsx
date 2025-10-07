@@ -7,6 +7,8 @@ import Login from "./pages/Login.tsx";
 import Signup from "./pages/Signup.tsx";
 import BoardView from "./pages/BoardView.tsx";
 import { seedInitialUsers } from "./utils/seed-users.ts";
+import { store } from "./store/store.ts";
+import { Provider } from "react-redux";
 
 seedInitialUsers();
 
@@ -31,4 +33,8 @@ const router = createBrowserRouter([
 
 const root = document.getElementById("root") as HTMLElement;
 
-createRoot(root).render(<RouterProvider router={router} />);
+createRoot(root).render(
+   <Provider store={store}>
+    <RouterProvider router={router} />
+  </Provider>
+  );
