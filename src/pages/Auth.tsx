@@ -22,12 +22,13 @@ import { loadFromStorage, saveToStorage } from "../utils/storage";
 import bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
 import {
-  AuthMode,
-  SESSION_STORAGE_KEY,
   USERS_STORAGE_KEY,
 } from "../utils/constants/auth";
 import AuthSidebar from "../components/auth/AuthSidebar";
 import type { UserData } from "../utils/interface/user-data";
+import { SESSION_STORAGE_KEY } from "../utils/constants/session";
+import { AuthMode } from "../utils/enum/auth";
+import { toast } from "react-toastify";
 
 const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
   const isLogin = mode === AuthMode.Login;
@@ -54,7 +55,7 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
 
     const emailValidationMessage = validateEmail(enteredEmail);
     if (emailValidationMessage) {
-      alert(emailValidationMessage);
+      toast.error(emailValidationMessage);
       return;
     }
 
@@ -64,26 +65,26 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
         createSession(authenticatedUser.id);
         navigate("/dashboard");
       } else {
-        alert("Invalid credentials or please sign up first.");
+        toast.error("Invalid credentials or please sign up first.");
       }
     } else {
       if (!enteredName) {
-        alert("Please enter your name");
+        toast.error("Please enter your name");
         return;
       }
 
       const passwordValidationMessage = validatePassword(enteredPassword);
       if (passwordValidationMessage) {
-        alert(passwordValidationMessage);
+        toast.error(passwordValidationMessage);
         return;
       }
 
       if (!canRegisterWithEmail(enteredEmail)) {
-        alert("An account with this email already exists.");
+        toast.error("An account with this email already exists.");
         return;
       }
       createUserAndSave(enteredName, enteredEmail, enteredPassword);
-      alert("Signup successful! Please login.");
+      toast.success("Signup successful! Please login.");
       navigate("/");
     }
   };

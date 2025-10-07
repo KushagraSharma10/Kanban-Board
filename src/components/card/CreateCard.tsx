@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import type { CardData } from "../../utils/interface/card";
 import type { CardModalProps } from "../../utils/interface/card-modal";
-import { LABEL_OPTIONS, MAX_TITLE_LENGTH } from "../../constants/card-modal";
+import { LABEL_OPTIONS, MAX_TITLE_LENGTH } from "../../utils/constants/card-modal";
 import { validateEmail } from "../../utils/validation";
+import { toast } from "react-toastify";
 
 const CardModal: React.FC<CardModalProps> = ({
   card,
@@ -15,7 +16,7 @@ const CardModal: React.FC<CardModalProps> = ({
   const [description, setDescription] = useState<string>(
     card.description || ""
   );
-  const [dueDate, setDueDate] = useState(card.dueDate || "");
+  const [dueDate, setDueDate] = useState<string>(card.dueDate || "");
   const [dateError, setDateError] = useState<string>("");
 
   const [selectedLabel, setSelectedLabel] = useState<CardData["label"]>(
@@ -30,9 +31,9 @@ const CardModal: React.FC<CardModalProps> = ({
     const trimmed = assigneeInput.trim();
     if (!trimmed) return;
 
-    const err = validateEmail(trimmed);
-    if (err) {
-      setAssigneeError(err);
+    const errorMessage = validateEmail(trimmed);
+    if (errorMessage) {
+      setAssigneeError(errorMessage);
       return;
     }
 
@@ -67,7 +68,7 @@ const CardModal: React.FC<CardModalProps> = ({
   const handleSave = () => {
     if (!title.trim()) return;
     if (title.length > MAX_TITLE_LENGTH) {
-      alert(`Title cannot exceed ${MAX_TITLE_LENGTH} characters.`);
+      toast.error(`Title cannot exceed ${MAX_TITLE_LENGTH} characters.`);
       return;
     }
 
@@ -77,7 +78,7 @@ const CardModal: React.FC<CardModalProps> = ({
         existing.title.toLowerCase() === title.toLowerCase()
     );
     if (titleClash) {
-      alert("A card with this title already exists!");
+      toast.error("A card with this title already exists!");
       return;
     }
 
@@ -170,7 +171,7 @@ const CardModal: React.FC<CardModalProps> = ({
         {dateError && <p className="text-red-400 text-sm mb-2">{dateError}</p>}
 
         <label className="block text-sm text-[#9ca3af] mt-3 mb-1">
-          Label / Priority
+          Priority
         </label>
         <select
           value={selectedLabel}
@@ -217,7 +218,7 @@ const CardModal: React.FC<CardModalProps> = ({
               if (assigneeError) setAssigneeError("");
             }}
             onKeyDown={handleAssigneeKeyDown}
-            placeholder="Type email and press Enter or ,"
+            placeholder="Type email and press Enter"
             className="w-full bg-transparent outline-none placeholder-[#9e9e9e] text-[#e6edf3]"
           />
         </div>

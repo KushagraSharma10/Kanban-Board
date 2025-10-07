@@ -15,12 +15,15 @@ import type { BoardForm, BoardItem } from "../utils/types/dashboard";
 import { useNavigate } from "react-router";
 import { nanoid } from "nanoid";
 import { loadFromStorage, saveToStorage } from "../utils/storage";
-import { SESSION_STORAGE_KEY } from "../utils/constants/auth";
+import { BOARDS_STORAGE_KEY } from "../utils/constants/board";
+import { getSession } from "../utils/session";
+import { normalizeBoardName } from "../utils/boards";
+import { toast } from "react-toastify";
 
 
 const Dashboard: React.FC = () => {
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
   const activeSession = getSession();
   const activeUserId = activeSession?.userId || null;
 
@@ -48,7 +51,7 @@ const Dashboard: React.FC = () => {
     const newName = normalizeBoardName(boardData.name);
 
     if (!newName) {
-      alert("Please enter a board name.");
+      toast.error("Please enter a board name.");
       return;
     }
 
@@ -57,7 +60,7 @@ const Dashboard: React.FC = () => {
     );
 
     if (isDuplicate) {
-      alert("A board with this name already exists.");
+      toast.error("A board with this name already exists.");
       return;
     }
 
@@ -65,8 +68,7 @@ const Dashboard: React.FC = () => {
     setBoardList((previousBoards) => [createdBoard, ...previousBoards]);
   };
 
-  const normalizeBoardName = (name: string) =>
-    name.trim().split(" ").filter(Boolean).join(" ").toLowerCase();
+  
 
   const handleUpdateBoard = (
     boardId: string,
@@ -77,7 +79,7 @@ const Dashboard: React.FC = () => {
     const newName = normalizeBoardName(boardData.name);
 
     if (!newName) {
-      alert("Please enter a board name.");
+      toast.error("Please enter a board name.");
       return;
     }
 
@@ -87,7 +89,7 @@ const Dashboard: React.FC = () => {
     );
 
     if (isDuplicate) {
-      alert("A board with this name already exists.");
+      toast.error("A board with this name already exists.");
       return;
     }
 
@@ -120,13 +122,6 @@ const Dashboard: React.FC = () => {
     setBoardModalMode("edit");
     setIsBoardModalOpen(true);
   };
-
-  type SessionDataLocal = { userId: string; createdAt: number };
-
-  function getSession(): SessionDataLocal | null {
-    const session = loadFromStorage(SESSION_STORAGE_KEY, null);
-    return session ?? null;
-  }
 
   function getAllBoards(): BoardItem[] {
     const stored = loadFromStorage(BOARDS_STORAGE_KEY, []);
@@ -199,7 +194,6 @@ const Dashboard: React.FC = () => {
       <BoardWrapper>
         <BoardArea>
           <h1>My Boards</h1>
-
           {!boardList.length ? (
             <NoBoards>No boards right now. Create one to get started!</NoBoards>
           ) : !filteredBoards.length ? (

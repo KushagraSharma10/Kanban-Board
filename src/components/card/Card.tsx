@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import CardModal from "./CreateCard";
 import type { CardData, CardProps } from "../../utils/interface/card";
+import { MAX_DESCRIPTION_LENGTH } from "../../utils/constants/card";
 
 const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,8 +29,8 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
         <h3 className="font-semibold text-[#e6edf3] truncate">{card.title}</h3>
         {card.description && (
           <p className="text-sm text-[#9ca3af] mt-1">
-            {card.description.length > 33
-              ? card.description.slice(0, 33) + "..."
+            {card.description.length > MAX_DESCRIPTION_LENGTH
+              ? card.description.slice(0, MAX_DESCRIPTION_LENGTH) + "..."
               : card.description}
           </p>
         )}

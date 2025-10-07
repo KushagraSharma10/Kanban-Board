@@ -2,20 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { GoPlus } from "react-icons/go";
 import Column from "../components/board/Column";
 import { useNavigate, useParams } from "react-router";
-import {
-  ensureDefaultColumns,
-  addColumn,
-  renameColumn,
-  deleteColumn,
-  type StoredColumn,
-} from "../utils/columns";
-
 import type { ColumnItem } from "../utils/types/board-view";
-import { loadFromStorage } from "../utils/storage";
+import { loadFromStorage, saveToStorage } from "../utils/storage";
 import type { BoardItem } from "../utils/types/dashboard";
-
-const SESSION_STORAGE_KEY = "kanban.session";
-const BOARDS_STORAGE_KEY = "kanban.boards";
+import { nanoid } from "nanoid";
+import { COLUMNS_KEY } from "../utils/constants/column";
+import { BOARDS_STORAGE_KEY } from "../utils/constants/board";
+import type { StoredColumn } from "../utils/types/column";
+import { getSession } from "../utils/session";
 
 const BoardView = () => {
   const [boardName, setBoardName] = useState<string>("");
@@ -70,17 +64,106 @@ const BoardView = () => {
     setColumns(updated.map(({ id, title }) => ({ id, title })));
   };
 
-  type SessionDataLocal = { userId: string; createdAt: number };
-
-  function getSession(): SessionDataLocal | null {
-    const session = loadFromStorage(SESSION_STORAGE_KEY, null);
-    return session ?? null;
-  }
-
   function getAllBoards(): BoardItem[] {
     const stored = loadFromStorage(BOARDS_STORAGE_KEY, []);
     return (Array.isArray(stored) ? stored : []) as BoardItem[];
   }
+
+  function loadAllColumns(): StoredColumn[] {
+    return loadFromStorage(COLUMNS_KEY, [] as StoredColumn[]);
+  }
+
+  function saveAllColumns(columns: StoredColumn[]): void {
+    saveToStorage(COLUMNS_KEY, columns);
+  }
+
+  function loadColumnsForBoard(boardId: string): StoredColumn[] {
+    return loadAllColumns().filter((column) => column.boardId === boardId);
+  }
+
+  function saveColumnsForBoard(
+    boardId: string,
+    nextColumns: StoredColumn[]
+  ): void {
+    const all = loadAllColumns().filter((column) => column.boardId !== boardId);
+    saveAllColumns([...all, ...nextColumns]);
+  }
+
+  function ensureDefaultColumns(boardId: string): StoredColumn[] {
+    const existing = loadColumnsForBoard(boardId);
+    if (existing.length > 0) return existing;
+
+    const now = Date.now();
+    const defaults: StoredColumn[] = [
+      { id: nanoid(), boardId, title: "To Do", createdAt: now },
+      { id: nanoid(), boardId, title: "In Progress", createdAt: now },
+      { id: nanoid(), boardId, title: "Done", createdAt: now },
+    ];
+
+    const all = loadAllColumns();
+    saveAllColumns([...all, ...defaults]);
+    return defaults;
+  }
+
+  function addColumn(boardId: string, titleRaw: string): StoredColumn[] {
+    const title = titleRaw.trim();
+    if (!title) return loadColumnsForBoard(boardId);
+
+    const current = loadColumnsForBoard(boardId);
+    const duplicate = current.some(
+      (column) => column.title.toLowerCase() === title.toLowerCase()
+    );
+    if (duplicate) return current;
+
+    const newCol: StoredColumn = {
+      id: nanoid(),
+      boardId,
+      title,
+      createdAt: Date.now(),
+    };
+    const updated = [...current, newCol];
+    saveColumnsForBoard(boardId, updated);
+    return updated;
+  }
+
+  function renameColumn(
+    boardId: string,
+    columnId: string,
+    newTitleRaw: string
+  ): StoredColumn[] {
+    const newTitle = newTitleRaw.trim();
+    if (!newTitle) return loadColumnsForBoard(boardId);
+
+    const current = loadColumnsForBoard(boardId);
+    const duplicate = current.some(
+      (column) =>
+        column.id !== columnId &&
+        column.title.toLowerCase() === newTitle.toLowerCase()
+    );
+    if (duplicate) return current;
+
+    const updated = current.map((column) =>
+      column.id === columnId ? { ...column, title: newTitle } : column
+    );
+    saveColumnsForBoard(boardId, updated);
+    return updated;
+  }
+
+  function deleteColumn(boardId: string, columnId: string): StoredColumn[] {
+    const updated = loadColumnsForBoard(boardId).filter(
+      (column) => column.id !== columnId
+    );
+    saveColumnsForBoard(boardId, updated);
+    return updated;
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") handleCreateColumn();
+    if (e.key === "Escape") {
+      setShowAdd(false);
+      setNewColumnName("");
+    }
+  };
 
   return (
     <div className="w-full min-h-screen text-[#e6edf3] bg-[#0b0f14]">
@@ -114,13 +197,7 @@ const BoardView = () => {
                   ref={inputRef}
                   value={newColumnName}
                   onChange={(e) => setNewColumnName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleCreateColumn();
-                    if (e.key === "Escape") {
-                      setShowAdd(false);
-                      setNewColumnName("");
-                    }
-                  }}
+                  onKeyDown={handleKeyDown}
                   maxLength={15}
                   className="w-full rounded-md text-sm border border-[#3a3f44] bg-[#222c38] px-3 py-2 outline-none placeholder-[#9e9e9e]"
                   placeholder="Column name"
