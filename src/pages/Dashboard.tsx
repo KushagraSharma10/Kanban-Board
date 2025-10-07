@@ -17,7 +17,6 @@ import { nanoid } from "nanoid";
 import { loadFromStorage, saveToStorage } from "../utils/storage";
 import { SESSION_STORAGE_KEY } from "../utils/constants/auth";
 
-const BOARDS_STORAGE_KEY = "kanban.boards";
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();

@@ -1,3 +1,4 @@
+import { AuthMode } from "../utils/constants/auth";
 import AuthPage from "./Auth";
 import { AuthMode } from "../utils/constants/auth";
 
