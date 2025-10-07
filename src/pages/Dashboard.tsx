@@ -13,13 +13,13 @@ import {
 import CreateBoardModal from "../components/dashboard/CreateBoardModal";
 import Header from "../components/dashboard/Header";
 import type { BoardItem } from "../utils/types/dashboard";
-import { loadFromStorage} from "../utils/storage";
+import { loadFromStorage, saveToStorage} from "../utils/storage";
+import { BOARDS_STORAGE_KEY } from "../utils/constants/board";
 
-const BOARDS_STORAGE_KEY = "kanban.boards";
+
 
 const Dashboard = () => {
   const [boards, setBoards] = useState<BoardItem[]>(() => getAllBoards());
-
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [selectedBoard, setSelectedBoard] = useState<BoardItem | null>(null);
@@ -61,7 +61,7 @@ const Dashboard = () => {
   }
 
   function saveAllBoards(boards: BoardItem[]) {
-    localStorage.setItem(BOARDS_STORAGE_KEY, JSON.stringify(boards));
+    saveToStorage(BOARDS_STORAGE_KEY, boards);
   }
 
   const handleEditBoard = (board: BoardItem) => {
