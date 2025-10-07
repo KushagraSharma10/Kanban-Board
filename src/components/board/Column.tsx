@@ -2,35 +2,47 @@ import { useState, useRef, useEffect } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Card from "../card/Card";
 import { loadFromStorage, saveToStorage } from "../../utils/storage";
-import { nanoid } from "nanoid";
 import type { ColumnProps } from "../../utils/types/column";
 import type { CardData } from "../../utils/interface/card";
-import { MAX_TITLE_LENGTH } from "../../utils/constants/card-modal";
 import { CARD_KEY } from "../../utils/constants/card";
+
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import {
+  selectCardsForColumn,
+  loadCardsForColumn,
+  addCardToColumn,
+  updateCardInColumn,
+  deleteCardFromColumn,
+} from "../../features/cards/card-slice";
+import { MAX_TITLE_LENGTH } from "../../utils/constants/card-modal";
+
 
 const Column: React.FC<ColumnProps> = ({
   column,
   onRename,
   onDelete,
   boardId,
+  searchText = "",
 }: ColumnProps) => {
+  const dispatch = useAppDispatch();
+
   const [editing, setEditing] = useState<boolean>(false);
   const [title, setTitle] = useState<string>(column.title);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const [cards, setCards] = useState<CardData[]>([]);
+
+  const cards = useAppSelector((state) =>
+    selectCardsForColumn(state, column.id)
+  );
+
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const [newCardTitle, setNewCardTitle] = useState<string>("");
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
-    const allCards = loadCards();
-    const filtered = allCards.filter(
-      (card) => card.boardId === boardId && card.columnId === column.id
-    );
-    setCards(filtered);
-  }, [boardId, column.id]);
+    dispatch(loadCardsForColumn(column.id));
+  }, [dispatch, column.id]);
 
   useEffect(() => {
     setTitle(column.title);
@@ -65,26 +77,32 @@ const Column: React.FC<ColumnProps> = ({
     }
     if (
       cards.some(
-        (card) => card.title.toLowerCase() === trimmedTitle.toLowerCase()
+        (existingCard) =>
+          existingCard.title.toLowerCase() === trimmedTitle.toLowerCase()
       )
     ) {
       setError("A card with this title already exists!");
       return;
     }
-    const newCard: CardData = {
-      id: nanoid(),
-      title: trimmedTitle,
-      boardId,
-      columnId: column.id,
-    };
-    const updatedCards = [...cards, newCard];
-    setCards(updatedCards);
-    const allCards = loadCards();
-    saveCards([...allCards, newCard]);
+    dispatch(addCardToColumn(boardId, column.id, trimmedTitle));
+
     setNewCardTitle("");
     setIsAdding(false);
     setError("");
   };
+
+  const normalizedQuery = searchText.trim().toLowerCase();
+  const visibleCards = !normalizedQuery
+    ? cards
+    : cards.filter((card) => {
+        const title = card.title.toLowerCase().includes(normalizedQuery);
+        const label = (card.label ?? "none").toLowerCase().includes(normalizedQuery);
+        const assignee = (card.assignees ?? []).some((assignee) =>
+          assignee.toLowerCase().includes(normalizedQuery)
+        );
+        return title || label || assignee;
+      });
+
 
   const handleCardUpdate = (updatedCard: CardData) => {
     const allCards = loadCards();
@@ -191,7 +209,7 @@ const Column: React.FC<ColumnProps> = ({
         <div className="relative" ref={menuRef}>
           <BsThreeDotsVertical
             className="hover:cursor-pointer opacity-80"
-            onClick={() => setMenuOpen((open) => !open)}
+            onClick={() => setMenuOpen((isOpen) => !isOpen)}
           />
           {menuOpen && (
             <div className="absolute right-0 mt-1 w-30 rounded-md bg-[#222c38] border border-[#3a3f44] shadow-lg z-50 overflow-hidden">
@@ -210,7 +228,7 @@ const Column: React.FC<ColumnProps> = ({
       </div>
 
       <div className="cards flex flex-col gap-2 px-3 py-1.5">
-        {cards.map((card) => (
+        {visibleCards.map((card) => (
           <Card
             key={card.id}
             card={card}
@@ -218,6 +236,11 @@ const Column: React.FC<ColumnProps> = ({
             onDelete={handleCardDelete}
           />
         ))}
+        {normalizedQuery && visibleCards.length === 0 && (
+          <div className="text-xs text-[#9ca3af] italic px-2 py-3">
+            No matching cards
+          </div>
+        )}
       </div>
 
       <div className="px-1">
