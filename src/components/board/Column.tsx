@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Card from "../card/Card";
-import { loadCards, saveCards } from "../../utils/storage";
+import { loadFromStorage, saveToStorage } from "../../utils/storage";
 import { nanoid } from "nanoid";
 import type { ColumnProps } from "../../utils/types/column";
 import type { CardData } from "../../utils/interface/card";
-
-const MAX_TITLE_LENGTH = 15;
+import { MAX_TITLE_LENGTH } from "../../utils/constants/card-modal";
+import { CARD_KEY } from "../../utils/constants/card";
 
 const Column: React.FC<ColumnProps> = ({
   column,
@@ -35,6 +35,14 @@ const Column: React.FC<ColumnProps> = ({
   useEffect(() => {
     setTitle(column.title);
   }, [column.title]);
+
+  const loadCards = (): CardData[] => {
+    return loadFromStorage(CARD_KEY, [] as CardData[]);
+  };
+
+  const saveCards = (cards: CardData[]): void => {
+    saveToStorage(CARD_KEY, cards);
+  };
 
   useEffect(() => {
     if (editing) {
@@ -78,6 +86,60 @@ const Column: React.FC<ColumnProps> = ({
     setError("");
   };
 
+  const handleCardUpdate = (updatedCard: CardData) => {
+    const allCards = loadCards();
+    const updatedAll = allCards.map((card) =>
+      card.id === updatedCard.id ? updatedCard : card
+    );
+    saveCards(updatedAll);
+    setCards((prev) =>
+      prev.map((card) => (card.id === updatedCard.id ? updatedCard : card))
+    );
+  };
+
+  const handleCardDelete = (id: CardData["id"]) => {
+    const allCards = loadCards().filter((card) => card.id !== id);
+    saveCards(allCards);
+    setCards((prev) => prev.filter((card) => card.id !== id));
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  if (e.key === "Enter") {
+    handleAddCard();
+  }
+  if (e.key === "Escape") {
+    setIsAdding(false);
+    setNewCardTitle("");
+    setError("");
+  }
+};
+
+const handleCancelCard = () => {
+  setIsAdding(false);
+  setError("");
+  setNewCardTitle("");
+};
+
+  const menuItems = [
+    {
+      label: "Rename",
+      className: "w-full text-left px-3 py-2 hover:bg-[#141b26] text-sm",
+      onClick: () => {
+        setMenuOpen(false);
+        setEditing(true);
+      },
+    },
+    {
+      label: "Delete",
+      className:
+        "w-full text-left px-3 py-2 hover:bg-[#141b26] text-sm text-red-400",
+      onClick: () => {
+        setMenuOpen(false);
+        onDelete(column.id);
+      },
+    },
+  ];
+
   return (
     <div className="min-w-[70vw] max-h-max md:min-w-[40vw] lg:min-w-[20vw] bg-[#161a21] rounded-md md:p-1.5 p-1">
       <div className="flex items-center justify-between mb-2 px-4 py-3 ">
@@ -120,24 +182,15 @@ const Column: React.FC<ColumnProps> = ({
           />
           {menuOpen && (
             <div className="absolute right-0 mt-1 w-30 rounded-md bg-[#222c38] border border-[#3a3f44] shadow-lg z-50 overflow-hidden">
-              <button
-                className="w-full text-left px-3 py-2 hover:bg-[#141b26] text-sm"
-                onClick={() => {
-                  setMenuOpen(false);
-                  setEditing(true);
-                }}
-              >
-                Rename
-              </button>
-              <button
-                className="w-full text-left px-3 py-2 hover:bg-[#141b26] text-sm text-red-400"
-                onClick={() => {
-                  setMenuOpen(false);
-                  onDelete(column.id);
-                }}
-              >
-                Delete
-              </button>
+              {menuItems.map((item) => (
+                <button
+                  key={item.label}
+                  className={item.className}
+                  onClick={item.onClick}
+                >
+                  {item.label}
+                </button>
+              ))}
             </div>
           )}
         </div>
@@ -148,23 +201,8 @@ const Column: React.FC<ColumnProps> = ({
           <Card
             key={card.id}
             card={card}
-            onUpdate={(updatedCard: CardData) => {
-              const allCards = loadCards();
-              const updatedAll = allCards.map((card) =>
-                card.id === updatedCard.id ? updatedCard : card
-              );
-              saveCards(updatedAll);
-              setCards((prev) =>
-                prev.map((card) =>
-                  card.id === updatedCard.id ? updatedCard : card
-                )
-              );
-            }}
-            onDelete={(id: CardData["id"]) => {
-              const allCards = loadCards().filter((card) => card.id !== id);
-              saveCards(allCards);
-              setCards((prev) => prev.filter((card) => card.id !== id));
-            }}
+            onUpdate={handleCardUpdate}
+            onDelete={handleCardDelete}
           />
         ))}
       </div>
@@ -184,14 +222,7 @@ const Column: React.FC<ColumnProps> = ({
               type="text"
               value={newCardTitle}
               onChange={(e) => setNewCardTitle(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleAddCard();
-                if (e.key === "Escape") {
-                  setIsAdding(false);
-                  setNewCardTitle("");
-                  setError("");
-                }
-              }}
+              onKeyDown={handleKeyDown}
               placeholder="Card title"
               className="px-2 py-1 rounded bg-zinc-900 text-white placeholder-zinc-600 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-zinc-500"
             />
@@ -204,11 +235,7 @@ const Column: React.FC<ColumnProps> = ({
                 Add
               </button>
               <button
-                onClick={() => {
-                  setIsAdding(false);
-                  setError("");
-                  setNewCardTitle("");
-                }}
+                onClick={handleCancelCard}
                 className="px-3 py-1 rounded bg-[#222c38] text-sm text-[#e6edf3] border border-[#3a3f44] hover:brightness-110 transition"
               >
                 Cancel

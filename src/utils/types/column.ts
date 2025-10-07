@@ -6,3 +6,11 @@ export type ColumnProps = {
   onDelete: (id: string) => void;
   boardId: string;
 };
+
+export type StoredColumn = {
+  id: string;
+  boardId: string;
+  title: string;
+  createdAt: number;
+};
+
