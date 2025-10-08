@@ -1,4 +1,4 @@
-import { AuthMode } from "../utils/constants/auth";
+import { AuthMode } from "../utils/enum/auth";
 import AuthPage from "./Auth";
 
 const Signup = () => {

@@ -8,8 +8,9 @@ export const HeaderContainer = styled.div`
   padding: 1rem;
   color: ${theme.colors.brightGray};
   justify-content: space-between;
-  border-bottom: 1px solid #28394e;
+  border-bottom: 1px solid ${theme.colors.balticSeaGray};
   flex-wrap: wrap;
+  background-color: ${theme.colors.darkBlue1};
 `;
 export const HeaderLeft = styled.div`
   display: flex;
@@ -27,7 +28,6 @@ export const HeaderRight = styled.div`
   @media (max-width: ${breakpoints.tablet}) {
     flex-wrap: wrap;
     width: 100%;
-    justify-content: space-between;
   }
 
   @media (max-width: ${breakpoints.mobileM}) {
@@ -58,11 +58,19 @@ export const SearchInput = styled.input`
   margin-left: 1rem;
   padding: 0.5rem;
   border-radius: 0.5rem;
-  border: none;
+  border: 1px solid ${theme.colors.balticSeaGray};
   outline: none;
   width: 21.875rem;
   color: ${theme.colors.brightGray};
   background-color: ${theme.colors.darkBlue3};
+
+  &::placeholder {
+    color: ${theme.colors.spanishGray};
+  }
+  &:focus {
+    border-color: ${theme.colors.blue};
+    box-shadow: 0 0 0 3px rgba(0, 150, 255, 0.2);
+  }
 
   @media (max-width: ${breakpoints.tablet}) {
     margin-left: 0;
@@ -85,6 +93,20 @@ export const Profile = styled.div`
     border: none;
     border-radius: 0.5rem;
     cursor: pointer;
+
+    &:hover {
+      filter: brightness(1.05);
+    }
+    &:focus-visible {
+      outline: 2px solid ${theme.colors.brightBlue};
+    }
+
+    &:hover {
+      filter: brightness(1.05);
+    }
+    &:focus-visible {
+      outline: 2px solid ${theme.colors.brightBlue};
+    }
 
     @media (max-width: ${breakpoints.mobileS}) {
       font-size: 0.7rem;

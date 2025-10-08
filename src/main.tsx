@@ -5,7 +5,7 @@ import "./index.css";
 import App from "./App.tsx";
 import Login from "./pages/Login.tsx";
 import Signup from "./pages/Signup.tsx";
-import { StrictMode } from "react";
+import BoardView from "./pages/BoardView.tsx";
 
 const router = createBrowserRouter([
   {
@@ -14,15 +14,15 @@ const router = createBrowserRouter([
   },
   {
     path: "/dashboard",
-    element: (
-      <StrictMode>
-        <App />
-      </StrictMode>
-    ),
+    element: <App />,
   },
   {
-    path: "signup",
+    path: "/signup",
     element: <Signup />,
+  },
+  {
+    path: "/board/:id",
+    element: <BoardView />,
   },
 ]);
 

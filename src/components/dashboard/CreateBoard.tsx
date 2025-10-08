@@ -11,11 +11,12 @@ import {
   Overlay,
 } from "../../styles/dashboard/create-board";
 import { Field } from "../../styles/dashboard/create-board";
-import type { BoardModalProp } from "../../utils/types/dashboard";
+import type { BoardForm, BoardModalProp } from "../../utils/types/dashboard";
 import { selectTypes } from "../../utils/constants/board";
 import { DEFAULT_COLORS } from "../../utils/constants/colors";
 
-const CreateBoardModal: React.FC<BoardModalProp> = ({
+const CreateBoard: React.FC<BoardModalProp> = ({
+
   open,
   onClose,
   onCreate,
@@ -23,7 +24,7 @@ const CreateBoardModal: React.FC<BoardModalProp> = ({
   board,
   onUpdate,
 }: BoardModalProp) => {
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<BoardForm>({
     name: "",
     type: "",
     color: DEFAULT_COLORS[0],
@@ -54,6 +55,7 @@ const CreateBoardModal: React.FC<BoardModalProp> = ({
   };
 
   if (!open) return null;
+  const isFormValid = form.name.trim() !== "" && form.type.trim() !== "";
 
   return (
     <Overlay onClick={onClose}>
@@ -73,6 +75,7 @@ const CreateBoardModal: React.FC<BoardModalProp> = ({
               }
               placeholder="e.g. Sprint Planning"
               required
+              maxLength={15}
             />
           </Field>
 
@@ -115,7 +118,11 @@ const CreateBoardModal: React.FC<BoardModalProp> = ({
             <Button type="button" className="secondary" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" className="primary">
+            <Button 
+            type="submit"
+            className="primary"
+            disabled = {!isFormValid}
+            >
               {mode === "edit" ? "Save changes" : "Create"}
             </Button>
           </Actions>
@@ -123,6 +130,6 @@ const CreateBoardModal: React.FC<BoardModalProp> = ({
       </Dialog>
     </Overlay>
   );
-};
+}
 
-export default CreateBoardModal;
+export default CreateBoard;

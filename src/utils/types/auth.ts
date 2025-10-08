@@ -1,4 +1,4 @@
-import {type AUTH_MODE } from "../constants/auth";
+import type { AuthMode } from "../enum/auth";
 import type { Field, FormFields } from "./form"
 
 export type AuthProp = {
@@ -8,5 +8,5 @@ export type AuthProp = {
 };
 
 export type ModeProp = {
-  mode: AUTH_MODE;
+  mode: AuthMode;
 };

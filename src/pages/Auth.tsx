@@ -1,5 +1,4 @@
 import { useState } from "react";
-import LeftPanel from "../components/auth/AuthSidebar";
 import AuthFormFields from "../components/auth/AuthFormFields";
 import type { Field, FormFields } from "../utils/types/form";
 import { AuthContent, AuthMain, AuthWrapper } from "../styles/auth/auth-main";
@@ -13,15 +12,27 @@ import { AuthForm } from "../styles/auth/auth-form";
 import { AuthLink } from "../styles/auth/auth-link";
 import { AuthButton } from "../styles/auth/auth-button";
 import { useNavigate } from "react-router";
-import { normalizeEmail, validateEmail } from "../utils/validation";
+import {
+  normalizeEmail,
+  validateEmail,
+  validatePassword,
+} from "../utils/validation";
 import type { ModeProp } from "../utils/types/auth";
-import type { UserData } from "../utils/interface/userData";
 import { loadFromStorage, saveToStorage } from "../utils/storage";
 import bcrypt from "bcryptjs";
-import { AuthMode, USERS_STORAGE_KEY } from "../utils/constants/auth";
+import { nanoid } from "nanoid";
+import {
+  USERS_STORAGE_KEY,
+} from "../utils/constants/auth";
+import AuthSidebar from "../components/auth/AuthSidebar";
+import type { UserData } from "../utils/interface/user-data";
+import { SESSION_STORAGE_KEY } from "../utils/constants/session";
+import { AuthMode } from "../utils/enum/auth";
+import { toast } from "react-toastify";
 
-const Auth = ({ mode }: ModeProp) => {
+const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
   const isLogin = mode === AuthMode.Login;
+
   const navigate = useNavigate();
 
   const [form, setForm] = useState<FormFields>({
@@ -30,88 +41,100 @@ const Auth = ({ mode }: ModeProp) => {
     password: "",
   });
 
-  function validateUser(email: string, password: string): boolean {
-    const users = getAllUsers();
-    const normalizedEmail = normalizeEmail(email);
-
-    const existingUser = users.find((user) => user.email === normalizedEmail);
-    if (!existingUser) return false;
-
-    return bcrypt.compareSync(password, existingUser.password);
-  }
-
-  function getAllUsers(): UserData[] {
-    const data = loadFromStorage(USERS_STORAGE_KEY, []);
-    return Array.isArray(data) ? (data as UserData[]) : [];
-  }
-
-  function saveAllUsers(users: UserData[]) {
-    saveToStorage(USERS_STORAGE_KEY, users);
-  }
-
-  function registerUser(
-    name: string,
-    email: string,
-    password: string
-  ): boolean {
-    const users = getAllUsers();
-    const normalizedEmail = normalizeEmail(email);
-
-    if (users.some((user) => user.email === normalizedEmail)) {
-      return false;
-    }
-
-    const hashed = bcrypt.hashSync(password, 10);
-    users.push({ name, email: normalizedEmail, password: hashed });
-    saveAllUsers(users);
-    return true;
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
 
-    try {
-      const name = form.name.trim();
-      const email = form.email.trim();
-      const password = form.password;
+    const enteredName = form.name.trim();
+    const enteredEmail = form.email.trim();
+    const enteredPassword = form.password;
 
-      const emailError = validateEmail(email);
-      if (emailError) {
-        throw new Error(emailError);
-      }
+    const emailValidationMessage = validateEmail(enteredEmail);
+    if (emailValidationMessage) {
+      toast.error(emailValidationMessage);
+      return;
+    }
 
-      if (isLogin) {
-        if (validateUser(email, password)) {
-          navigate("/dashboard");
-        } else {
-          throw new Error("Invalid credentials or please signup first");
-        }
+    if (isLogin) {
+      const authenticatedUser = authenticateUser(enteredEmail, enteredPassword);
+      if (authenticatedUser) {
+        createSession(authenticatedUser.id);
+        navigate("/dashboard");
       } else {
-        if (!name) {
-          throw new Error("Please enter your name");
-        }
-
-        const isRegistered = registerUser(name, email, password);
-        if (!isRegistered) {
-          throw new Error("An account with this email already exists.");
-        }
-
-        alert("Signup successful! Please login.");
-        navigate("/");
+        toast.error("Invalid credentials or please sign up first.");
       }
-    } catch (err) {
-      if (typeof err === "object" && err !== null && "message" in err) {
-        alert((err as { message: string }).message);
-      } else {
-        alert("Unexpected error occurred");
+    } else {
+      if (!enteredName) {
+        toast.error("Please enter your name");
+        return;
       }
+
+      const passwordValidationMessage = validatePassword(enteredPassword);
+      if (passwordValidationMessage) {
+        toast.error(passwordValidationMessage);
+        return;
+      }
+
+      if (!canRegisterWithEmail(enteredEmail)) {
+        toast.error("An account with this email already exists.");
+        return;
+      }
+      createUserAndSave(enteredName, enteredEmail, enteredPassword);
+      toast.success("Signup successful! Please login.");
+      navigate("/");
     }
   };
+
+  function getAllUsers(): UserData[] { 
+    const stored = loadFromStorage(USERS_STORAGE_KEY, []);
+    return Array.isArray(stored) ? (stored as UserData[]) : [];
+  }
+
+  function canRegisterWithEmail(email: string): boolean {
+    const allUsers = getAllUsers();
+    const normalizedEmail = normalizeEmail(email);
+    return !allUsers.some((user) => user.email === normalizedEmail);
+  }
+
+  function createUserAndSave(
+    name: string,
+    email: string,
+    password: string
+  ): UserData {
+    const allUsers = getAllUsers();
+    const normalizedEmail = normalizeEmail(email);
+    const hashed = bcrypt.hashSync(password, 10);
+
+    const newUser: UserData = {
+      id: nanoid(),
+      name: name.trim(),
+      email: normalizedEmail,
+      password: hashed,
+    };
+
+    const updatedUsers = [newUser, ...allUsers];
+    saveToStorage(USERS_STORAGE_KEY, updatedUsers);
+
+    return newUser;
+  }
+
+  function authenticateUser(email: string, password: string): UserData | null {
+    const allUsers = getAllUsers();
+    const normalizedEmail = normalizeEmail(email);
+    const userFound = allUsers.find((user) => user.email === normalizedEmail);
+    if (!userFound) return null;
+    const isPasswordCorrect = bcrypt.compareSync(password, userFound.password);
+    return isPasswordCorrect ? userFound : null;
+  }
+
+  function createSession(userId: string): void {
+    const session = { userId, createdAt: Date.now() };
+    saveToStorage(SESSION_STORAGE_KEY, session);
+  }
 
   const fields: Field[] = [
     ...(!isLogin
@@ -146,7 +169,7 @@ const Auth = ({ mode }: ModeProp) => {
   return (
     <AuthMain>
       <AuthWrapper>
-        <LeftPanel />
+        <AuthSidebar />
         <AuthContent>
           <AuthBrand>
             <img src="/kanban.svg" alt="Kanban Logo" width={30} height={30} />
@@ -181,8 +204,7 @@ const Auth = ({ mode }: ModeProp) => {
               </>
             ) : (
               <>
-                Already have an account?{" "}
-                <AuthLink href="/login">Login</AuthLink>
+                Already have an account? <AuthLink href="/">Login</AuthLink>
               </>
             )}
           </AuthFooter>

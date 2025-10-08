@@ -7,7 +7,6 @@ import {
   ContentClip,
   DotWrap,
   OptionsMenu,
-  OptionWrapper,
   ThreeDots,
 } from "../../styles/dashboard/board-card";
 import type { CardProp } from "../../utils/types/dashboard";
@@ -18,16 +17,21 @@ const BoardCard: React.FC<CardProp> = ({
   type,
   onEdit,
   onDelete,
+  onOpen,
 }: CardProp) => {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
 
+  const handleCardClick = () => {
+    if (menuOpen) return setMenuOpen(false);
+    onOpen?.();
+  };
   const menuOptions = [
     { label: "Edit", action: onEdit },
     { label: "Delete", action: onDelete },
   ];
 
   return (
-    <Card onClick={() => setMenuOpen(false)}>
+    <Card onClick={handleCardClick}>
       <ContentClip>
         <ColorDiv $bg={color} />
         <BoardContent>
@@ -48,7 +52,7 @@ const BoardCard: React.FC<CardProp> = ({
       </ContentClip>
 
       {menuOpen && (
-        <OptionWrapper>
+        <>
           <Backdrop onClick={() => setMenuOpen(false)} />
           <OptionsMenu>
             {menuOptions.map((option) => (
@@ -63,7 +67,7 @@ const BoardCard: React.FC<CardProp> = ({
               </button>
             ))}
           </OptionsMenu>
-        </OptionWrapper>
+        </>
       )}
     </Card>
   );
