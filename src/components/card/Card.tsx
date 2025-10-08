@@ -49,6 +49,12 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
     onDelete(card.id);
   };
 
+  const handleDeleteCard = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setIsMenuOpen(false);
+    onDelete(card.id);
+  };
+
   return (
     <>
       <div

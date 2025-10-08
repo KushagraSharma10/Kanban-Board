@@ -85,19 +85,6 @@ const Column: React.FC<ColumnProps> = ({
     ? cards
     : cards.filter((card) => {
         const title = card.title.toLowerCase().includes(normalizedQuery);
-        const label = (card.label ?? "none").toLowerCase().includes(normalizedQuery);
-        const assignee = (card.assignees ?? []).some((assignee) =>
-          assignee.toLowerCase().includes(normalizedQuery)
-        );
-        return title || label || assignee;
-      });
-
-
-  const normalizedQuery = searchText.trim().toLowerCase();
-  const visibleCards = !normalizedQuery
-    ? cards
-    : cards.filter((card) => {
-        const title = card.title.toLowerCase().includes(normalizedQuery);
         const label = (card.label ?? "none")
           .toLowerCase()
           .includes(normalizedQuery);
@@ -156,12 +143,12 @@ const Column: React.FC<ColumnProps> = ({
       handleAddCard();
     }
 
-    if (keyboardEvent.key === "Escape") {
-      setIsAdding(false);
-      setNewCardTitle("");
-      setError("");
-    }
-  };
+  if (keyboardEvent.key === "Escape") {
+    setIsAdding(false);
+    setNewCardTitle(""); 
+    setError("");    
+  }
+};
 
   const handleCancelCard = () => {
     setIsAdding(false);

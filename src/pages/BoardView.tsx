@@ -134,11 +134,6 @@ const BoardView: React.FC = () => {
     }
   };
 
-  const handleCancelAddColumn = () => {
-    setShowAdd(false);
-    setNewColumnName("");
-  };
-
   return (
     <div className="w-full min-h-screen text-[#e6edf3] bg-[#0b0f14]">
       <header className="p-4 md:p-6 border-b border-[#3a3f44] bg-[#161a21] flex items-center gap-3 md:gap-4 justify-between sticky top-0 z-10">
