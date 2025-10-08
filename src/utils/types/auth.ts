@@ -13,3 +13,8 @@ export type ModeProp = {
 };
 
 export type AuthUser = Omit<UserData, "password">;
+
+export type AuthState = {
+  user: AuthUser | null;
+};
+
