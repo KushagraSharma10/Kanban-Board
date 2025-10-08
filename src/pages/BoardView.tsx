@@ -21,7 +21,7 @@ import {
   selectColumnItemsForBoard,
 } from "../features/columns/column-slice";
 
-const BoardView = () => {
+const BoardView: React.FC = () => {
   const [boardName, setBoardName] = useState<string>("");
   const [showAdd, setShowAdd] = useState<boolean>(false);
   const [newColumnName, setNewColumnName] = useState<string>("");
@@ -38,7 +38,6 @@ const BoardView = () => {
   const activeSession = getSession();
   const activeUserId = activeSession?.userId || null;
 
-  // ✅ Columns now from Redux
   const columns: ColumnItem[] = useAppSelector((state) =>
     selectColumnItemsForBoard(state, boardId ?? "")
   );
