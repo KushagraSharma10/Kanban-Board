@@ -7,6 +7,7 @@ import {
 } from "../../utils/constants/card-modal";
 import { validateEmail } from "../../utils/validation";
 import { getActiveUser } from "../../utils/auth";
+import { toast } from "react-toastify";
 
 const CardModal: React.FC<CardModalProps> = ({
   card,
@@ -73,7 +74,7 @@ const CardModal: React.FC<CardModalProps> = ({
   const handleSave = () => {
     if (!title.trim()) return;
     if (title.length > MAX_TITLE_LENGTH) {
-      alert(`Title cannot exceed ${MAX_TITLE_LENGTH} characters.`);
+      toast.error(`Title cannot exceed ${MAX_TITLE_LENGTH} characters.`);
       return;
     }
 
@@ -83,7 +84,7 @@ const CardModal: React.FC<CardModalProps> = ({
         existing.title.toLowerCase() === title.toLowerCase()
     );
     if (titleClash) {
-      alert("A card with this title already exists!");
+      toast.error("A card with this title already exists!");
       return;
     }
 
@@ -118,6 +119,15 @@ const CardModal: React.FC<CardModalProps> = ({
     onDelete(card.id);
     onClose();
   };
+
+  const handleAssigneeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  setAssigneeInput(e.target.value);
+  
+  if (assigneeError) {
+    setAssigneeError("");
+  }
+};
+
 
   return (
     <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
@@ -178,9 +188,7 @@ const CardModal: React.FC<CardModalProps> = ({
         <label className="block text-sm text-[#9ca3af] mt-3 mb-1">Label</label>
         <select
           value={selectedLabel}
-          onChange={(e) =>
-            setSelectedLabel(e.target.value as CardData["label"])
-          }
+          onChange={(e) => setSelectedLabel(e.target.value as CardData["label"])}
           className="w-full border border-[#3a3f44] rounded px-3 py-2 bg-[#0b0f14] text-[#e6edf3] focus:outline-none"
         >
           {LABEL_OPTIONS.map((opt) => (
@@ -216,10 +224,7 @@ const CardModal: React.FC<CardModalProps> = ({
           <input
             type="email"
             value={assigneeInput}
-            onChange={(e) => {
-              setAssigneeInput(e.target.value);
-              if (assigneeError) setAssigneeError("");
-            }}
+            onChange={handleAssigneeInputChange}
             onKeyDown={handleAssigneeKeyDown}
             placeholder="Add assignees..."
             disabled={activeUser?.role !== "admin"}

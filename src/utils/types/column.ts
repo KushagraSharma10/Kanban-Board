@@ -7,3 +7,12 @@ export type ColumnProps = {
   boardId: string;
   searchText?: string;
 };
+
+export type StoredColumn = {
+  id: string;
+  boardId: string;
+  title: string;
+  createdAt: number;
+};
+
+export type ColumnsState = { items: StoredColumn[] };

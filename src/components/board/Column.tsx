@@ -4,16 +4,12 @@ import Card from "../card/Card";
 import type { ColumnProps } from "../../utils/types/column";
 import type { CardData } from "../../utils/interface/card";
 
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../app/store/hooks";
 import {
   selectCardsForColumn,
-  loadCardsForColumn,
-  addCardToColumn,
-  updateCardInColumn,
-  deleteCardFromColumn,
-} from "../../features/cards/card-slice";
+} from "../../app/slices/card.slice";
 import { MAX_TITLE_LENGTH } from "../../utils/constants/card-modal";
-
+import { addCardToColumn, deleteCardFromColumn, loadCardsForColumn, updateCardInColumn } from "../../app/thunks/card.thunks";
 
 const Column: React.FC<ColumnProps> = ({
   column,
@@ -86,14 +82,75 @@ const Column: React.FC<ColumnProps> = ({
     ? cards
     : cards.filter((card) => {
         const title = card.title.toLowerCase().includes(normalizedQuery);
-        const label = (card.label ?? "none").toLowerCase().includes(normalizedQuery);
+        const label = (card.label ?? "none")
+          .toLowerCase()
+          .includes(normalizedQuery);
         const assignee = (card.assignees ?? []).some((assignee) =>
           assignee.toLowerCase().includes(normalizedQuery)
         );
         return title || label || assignee;
       });
 
- 
+  const handleKeyDown = (
+    keyboardEvent: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (keyboardEvent.key === "Enter") {
+      onRename(column.id, title.trim());
+      setEditing(false);
+    }
+    if (keyboardEvent.key === "Escape") {
+      setTitle(column.title);
+      setEditing(false);
+    }
+  };
+
+  const handleBlur = () => {
+    onRename(column.id, title.trim());
+    setEditing(false);
+  };
+
+  const handleRenameClick = () => {
+    setMenuOpen(false);
+    setEditing(true);
+  };
+
+  const handleDeleteClick = () => {
+    setMenuOpen(false);
+    onDelete(column.id);
+  };
+
+  const menuOptions = [
+    {
+      label: "Rename",
+      action: handleRenameClick,
+      className: "w-full text-left px-3 py-2 hover:bg-[#141b26] text-sm",
+    },
+    {
+      label: "Delete",
+      action: handleDeleteClick,
+      className:
+        "w-full text-left px-3 py-2 hover:bg-[#141b26] text-sm text-red-400",
+    },
+  ];
+
+  const handleNewCardKeyDown = (keyboardEvent: React.KeyboardEvent<HTMLInputElement>) => {
+  if (keyboardEvent.key === "Enter") {
+    handleAddCard();
+  }
+
+  if (keyboardEvent.key === "Escape") {
+    setIsAdding(false);
+    setNewCardTitle(""); 
+    setError("");    
+  }
+};
+
+const handleCancelCard = () => {
+  setIsAdding(false);     
+  setError("");           
+  setNewCardTitle("");   
+};
+
   return (
     <div className="min-w-[70vw] max-h-max md:min-w-[40vw] lg:min-w-[20vw] bg-[#161a21] rounded-md md:p-1.5 p-1">
       <div className="flex items-center justify-between mb-2 px-4 py-3 ">
@@ -102,20 +159,8 @@ const Column: React.FC<ColumnProps> = ({
             ref={inputRef}
             value={title}
             onChange={(changeEvent) => setTitle(changeEvent.target.value)}
-            onKeyDown={(keyboardEvent) => {
-              if (keyboardEvent.key === "Enter") {
-                onRename(column.id, title.trim());
-                setEditing(false);
-              }
-              if (keyboardEvent.key === "Escape") {
-                setTitle(column.title);
-                setEditing(false);
-              }
-            }}
-            onBlur={() => {
-              onRename(column.id, title.trim());
-              setEditing(false);
-            }}
+            onKeyDown={handleKeyDown}
+            onBlur={handleBlur}
             className="text-sm font-medium w-full bg-transparent outline-none border-b border-transparent focus:border-[#3a3f44] pb-0.5 text-[#e6edf3] placeholder-[#9e9e9e]"
             placeholder="Column name"
           />
@@ -136,24 +181,15 @@ const Column: React.FC<ColumnProps> = ({
           />
           {menuOpen && (
             <div className="absolute right-0 mt-1 w-30 rounded-md bg-[#222c38] border border-[#3a3f44] shadow-lg z-50 overflow-hidden">
-              <button
-                className="w-full text-left px-3 py-2 hover:bg-[#141b26] text-sm"
-                onClick={() => {
-                  setMenuOpen(false);
-                  setEditing(true);
-                }}
-              >
-                Rename
-              </button>
-              <button
-                className="w-full text-left px-3 py-2 hover:bg-[#141b26] text-sm text-red-400"
-                onClick={() => {
-                  setMenuOpen(false);
-                  onDelete(column.id);
-                }}
-              >
-                Delete
-              </button>
+              {menuOptions.map((option) => (
+                <button
+                  key={option.label}
+                  className={option.className}
+                  onClick={option.action}
+                >
+                  {option.label}
+                </button>
+              ))}
             </div>
           )}
         </div>
@@ -193,15 +229,10 @@ const Column: React.FC<ColumnProps> = ({
             <input
               type="text"
               value={newCardTitle}
-              onChange={(changeEvent) => setNewCardTitle(changeEvent.target.value)}
-              onKeyDown={(keyboardEvent) => {
-                if (keyboardEvent.key === "Enter") handleAddCard();
-                if (keyboardEvent.key === "Escape") {
-                  setIsAdding(false);
-                  setNewCardTitle("");
-                  setError("");
-                }
-              }}
+              onChange={(changeEvent) =>
+                setNewCardTitle(changeEvent.target.value)
+              }
+              onKeyDown={handleNewCardKeyDown}
               placeholder="Card title"
               className="px-2 py-1 rounded bg-zinc-900 text-white placeholder-zinc-600 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-zinc-500"
             />
@@ -214,11 +245,7 @@ const Column: React.FC<ColumnProps> = ({
                 Add
               </button>
               <button
-                onClick={() => {
-                  setIsAdding(false);
-                  setError("");
-                  setNewCardTitle("");
-                }}
+                onClick={handleCancelCard}
                 className="px-3 py-1 rounded bg-[#222c38] text-sm text-[#e6edf3] border border-[#3a3f44] hover:brightness-110 transition"
               >
                 Cancel

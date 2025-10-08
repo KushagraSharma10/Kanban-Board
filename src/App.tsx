@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import Dashboard from "./pages/Dashboard";
-import { useAppDispatch } from "./store/hooks";
-import { loadSession } from "./features/auth/thunks";
+import { useAppDispatch } from "./app/store/hooks";
+import { loadSession } from "./app/thunks/auth.thunks";
 
 const App = () => {
   const dispatch = useAppDispatch();

@@ -1,7 +1,7 @@
 import { SESSION_STORAGE_KEY } from "./constants/auth";
 import type { SessionData } from "./types/session";
 
-export function getSession(): SessionData | null {
+export const getSession = (): SessionData | null => {
   try {
     const rawSession = sessionStorage.getItem(SESSION_STORAGE_KEY);
 
@@ -15,7 +15,7 @@ export function getSession(): SessionData | null {
   }
 }
 
-export function createSession(userId: string): void {
+export const createSession= (userId: string): void => {
   try {
     const session = {
       userId: userId,

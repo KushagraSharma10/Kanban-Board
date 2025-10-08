@@ -1,9 +1,5 @@
 import React from "react";
-
-type LoginPromptModalProps = {
-  isOpen: boolean;
-  onLoginClick: () => void;
-};
+import type { LoginPromptModalProps } from "../utils/types/login-prompt";
 
 const LoginPrompt: React.FC<LoginPromptModalProps> = ({
   isOpen,

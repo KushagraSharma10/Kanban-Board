@@ -16,9 +16,10 @@ import { validateEmail, validatePassword } from "../utils/validation";
 import type { ModeProp } from "../utils/types/auth";
 import { AuthMode } from "../utils/constants/auth";
 import AuthSidebar from "../components/auth/AuthSidebar";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { loginUser, signupUser } from "../features/auth/thunks";
-import { selectAuthUser } from "../features/auth/auth-slice";
+import { useAppDispatch, useAppSelector } from "../app/store/hooks";
+import { loginUser, signupUser } from "../app/thunks/auth.thunks";
+import { selectAuthUser } from "../app/slices/auth.slice";
+import { toast } from "react-toastify";
 
 const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
   const isLoginMode = mode === AuthMode.Login;
@@ -48,7 +49,7 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
 
     const emailValidationMessage = validateEmail(trimmedEmail);
     if (emailValidationMessage) {
-      alert(emailValidationMessage);
+      toast.error(emailValidationMessage);
       return;
     }
 
@@ -56,12 +57,12 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
       dispatch(loginUser({ email: trimmedEmail, password: rawPassword }));
     } else {
       if (!trimmedName) {
-        alert("Please enter your name");
+        toast.error("Please enter your name");
         return;
       }
       const passwordValidationMessage = validatePassword(rawPassword);
       if (passwordValidationMessage) {
-        alert(passwordValidationMessage);
+        toast.error(passwordValidationMessage);
         return;
       }
       dispatch(

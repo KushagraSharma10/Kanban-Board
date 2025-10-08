@@ -15,16 +15,11 @@ import type { BoardForm, BoardItem } from "../utils/types/dashboard";
 import { useNavigate } from "react-router";
 import { getSession } from "../utils/session";
 import LoginPrompt from "../components/LoginPrompt";
-
-import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { useAppDispatch, useAppSelector } from "../app/store/hooks";
 import {
-  createBoardForUser,
-  deleteBoardForUser,
-  loadBoardsForUser,
   selectBoards,
-  updateBoardForUser,
-} from "../features/boards/board-slice";
-
+} from "../app/slices/board.slice";
+import { createBoardForUser, deleteBoardForUser, loadBoardsForUser, updateBoardForUser } from "../app/thunks/board.thunks";
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -36,8 +31,11 @@ const Dashboard: React.FC = () => {
   const boardsList = useAppSelector(selectBoards);
 
   const [isBoardModalOpen, setIsBoardModalOpen] = useState<boolean>(false);
-  const [boardModalMode, setBoardModalMode] = useState<"create" | "edit">("create");
-  const [selectedBoardForEdit, setSelectedBoardForEdit] = useState<BoardItem | null>(null);
+  const [boardModalMode, setBoardModalMode] = useState<"create" | "edit">(
+    "create"
+  );
+  const [selectedBoardForEdit, setSelectedBoardForEdit] =
+    useState<BoardItem | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [showLogin, setShowLogin] = useState<boolean>(false);
 
@@ -76,12 +74,17 @@ const Dashboard: React.FC = () => {
     setIsBoardModalOpen(true);
   };
 
-
   const filteredBoards = boardsList.filter(
     (board) =>
       board.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       board.type.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleCreateBoardClick = () => {
+    setSelectedBoardForEdit(null);
+    setBoardModalMode("create");
+    setIsBoardModalOpen(true);
+  };
 
   return (
     <Main>
@@ -90,7 +93,6 @@ const Dashboard: React.FC = () => {
         search={searchQuery}
         onSearchChange={setSearchQuery}
       />
-
       <BoardWrapper>
         <BoardArea>
           <h1>My Boards</h1>
@@ -115,13 +117,7 @@ const Dashboard: React.FC = () => {
                 />
               ))}
 
-              <CreateBoardDiv
-                onClick={() => {
-                  setSelectedBoardForEdit(null);
-                  setBoardModalMode("create");
-                  setIsBoardModalOpen(true);
-                }}
-              >
+              <CreateBoardDiv onClick={handleCreateBoardClick}>
                 + Create Board
               </CreateBoardDiv>
             </Cards>

@@ -1,6 +1,6 @@
-
 import type { AuthMode } from "../constants/auth";
-import type { Field, FormFields } from "./form"
+import type { UserData } from "../interface/user-data";
+import type { Field, FormFields } from "./form";
 
 export type AuthProp = {
   fields: Field[];
@@ -11,3 +11,5 @@ export type AuthProp = {
 export type ModeProp = {
   mode: AuthMode;
 };
+
+export type AuthUser = Omit<UserData, "password">;

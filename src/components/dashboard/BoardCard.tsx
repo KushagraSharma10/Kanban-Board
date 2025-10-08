@@ -21,9 +21,24 @@ const BoardCard: React.FC<CardProp> = ({
 }: CardProp) => {
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
 
+  const handleThreeDotsClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setMenuOpen((prev) => !prev);
+  };
+
   const handleCardClick = () => {
     if (menuOpen) return setMenuOpen(false);
     onOpen?.();
+  };
+
+  const menuOptions = [
+    { label: "Edit", action: onEdit },
+    { label: "Delete", action: onDelete },
+  ];
+
+  const handleOptionClick = (action: (() => void) | undefined) => {
+    setMenuOpen(false);
+    action?.();
   };
 
   return (
@@ -36,41 +51,24 @@ const BoardCard: React.FC<CardProp> = ({
             <p>{type}</p>
           </div>
           <DotWrap>
-            <ThreeDots
-              size={20}
-              onClick={(e) => {
-                e.stopPropagation();
-                setMenuOpen((prev) => !prev);
-              }}
-
-            />
-            
+            <ThreeDots size={20} onClick={handleThreeDotsClick} />
           </DotWrap>
           {menuOpen && (
-          <>
-            <Backdrop onClick={() => setMenuOpen(false)} />
-            <OptionsMenu>
-              <button
-                onClick={() => {
-                  setMenuOpen(false);
-                  onEdit?.();
-                }}
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => {
-                  setMenuOpen(false);
-                  onDelete?.();
-                }}
-              >
-                Delete
-              </button>
-            </OptionsMenu>
-          </>
-        )}
+            <>
+              <Backdrop onClick={() => setMenuOpen(false)} />
+              <OptionsMenu>
+                {menuOptions.map((option) => (
+                  <button
+                    key={option.label}
+                    onClick={() => handleOptionClick(option.action)}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </OptionsMenu>
+            </>
+          )}
         </BoardContent>
-        
       </ContentClip>
     </Card>
   );
