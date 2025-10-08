@@ -30,8 +30,11 @@ const Dashboard: React.FC = () => {
   const boardsList = useAppSelector(selectBoards);
 
   const [isBoardModalOpen, setIsBoardModalOpen] = useState<boolean>(false);
-  const [boardModalMode, setBoardModalMode] = useState<"create" | "edit">("create");
-  const [selectedBoardForEdit, setSelectedBoardForEdit] = useState<BoardItem | null>(null);
+  const [boardModalMode, setBoardModalMode] = useState<"create" | "edit">(
+    "create"
+  );
+  const [selectedBoardForEdit, setSelectedBoardForEdit] =
+    useState<BoardItem | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {

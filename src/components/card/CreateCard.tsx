@@ -134,16 +134,6 @@ const CardModal: React.FC<CardModalProps> = ({
     onClose();
   };
 
-  const handleAssigneeInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setAssigneeInput(e.target.value);
-
-    if (assigneeError) {
-      setAssigneeError("");
-    }
-  };
-
   return (
     <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
       <div className="bg-theme-cardSurface rounded-lg shadow-xl w-96 p-6 relative">

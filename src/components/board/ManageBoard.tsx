@@ -72,9 +72,7 @@ const ManageBoard: React.FC<BoardModalProp> = ({
             <h2>Board name</h2>
             <input
               value={form.name}
-              onChange={(e) =>
-                setForm((field) => ({ ...field, name: e.target.value }))
-              }
+              onChange={(e) => setForm((field) => ({ ...field, name: e.target.value }))}
               placeholder="e.g. Sprint Planning"
               required
               maxLength={MAX_BOARD_NAME_LENGTH}
