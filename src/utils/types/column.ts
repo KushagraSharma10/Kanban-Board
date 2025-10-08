@@ -15,3 +15,4 @@ export type StoredColumn = {
   createdAt: number;
 };
 
+export type ColumnsState = { items: StoredColumn[] };

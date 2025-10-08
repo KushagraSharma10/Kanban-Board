@@ -1,8 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { UserData } from "../../utils/interface/user-data";
+import type { AuthUser } from "../../utils/types/auth";
 
-export type AuthUser = Omit<UserData, "password">;
 
 type AuthState = {
   user: AuthUser | null;

@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import CardModal from "./CreateCard";
 import type { CardData, CardProps } from "../../utils/interface/card";
-import { MAX_DESCRIPTION_LENGTH } from "../../utils/constants/card";
-import { cloneCardInColumn } from "../../features/cards/card-slice";
-import { useAppDispatch } from "../../store/hooks";
+import { useAppDispatch } from "../../app/store/hooks";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { MAX_DESCRIPTION_LENGTH } from "../../utils/constants/card";
+import { cloneCardInColumn } from "../../app/thunks/card.thunks";
 
 const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
- const dispatch = useAppDispatch();
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
@@ -37,20 +37,26 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
     setIsModalOpen(false);
   };
 
+  const handleDeleteCard = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setIsMenuOpen(false);
+    onDelete(card.id);
+  };
+
   return (
     <>
       <div
         onClick={handleCardClick}
         className="relative bg-[#222c38] shadow-md rounded-md p-3 mb-2 cursor-pointer hover:bg-[#293442] transition"
       >
-         <div
+        <div
           className="absolute top-3 right-2 z-10"
           ref={menuRef}
           onClick={(e) => e.stopPropagation()}
         >
           <button
             aria-label="Card options"
-            onClick={() => setIsMenuOpen((s) => !s)}
+            onClick={() => setIsMenuOpen((prev) => !prev)}
             className="opacity-80 hover:opacity-100"
           >
             <BsThreeDotsVertical />
@@ -66,11 +72,7 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
               </button>
               <button
                 className="w-full text-left px-3 py-2 hover:bg-[#141b26] text-sm text-red-400"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsMenuOpen(false);
-                  onDelete(card.id);
-                }}
+                onClick={handleDeleteCard}
               >
                 Delete
               </button>

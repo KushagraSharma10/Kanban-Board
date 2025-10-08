@@ -50,29 +50,25 @@ const BoardCard: React.FC<CardProp> = ({
             <p>{type}</p>
           </div>
           <DotWrap>
-            <ThreeDots
-              size={20}
-              onClick={handleThreeDotsClick}
-            />
+            <ThreeDots size={20} onClick={handleThreeDotsClick} />
           </DotWrap>
+          {menuOpen && (
+            <>
+              <Backdrop onClick={() => setMenuOpen(false)} />
+              <OptionsMenu>
+                {menuOptions.map((option) => (
+                  <button
+                    key={option.label}
+                    onClick={() => handleOptionClick(option.action)}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </OptionsMenu>
+            </>
+          )}
         </BoardContent>
       </ContentClip>
-
-      {menuOpen && (
-        <>
-          <Backdrop onClick={() => setMenuOpen(false)} />
-          <OptionsMenu>
-            {menuOptions.map((option) => (
-              <button
-                key={option.label}
-                onClick={()=>handleOptionClick(option.action)}
-              >
-                {option.label}
-              </button>
-            ))}
-          </OptionsMenu>
-        </>
-      )}
     </Card>
   );
 };
