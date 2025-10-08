@@ -49,6 +49,7 @@ const BoardCard: React.FC<CardProp> = ({
 
             />
             
+            
           </DotWrap>
         </BoardContent>
       </ContentClip>
