@@ -17,6 +17,7 @@ import {
   selectTypes,
 } from "../../utils/constants/board";
 import { DEFAULT_COLORS } from "../../utils/constants/colors";
+import { toast } from "react-toastify";
 
 const CreateBoard: React.FC<BoardModalProp> = ({
   open,
@@ -43,14 +44,13 @@ const CreateBoard: React.FC<BoardModalProp> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.trim()) return alert("Please enter a board name");
+    if (!form.name.trim()) return toast.error("Please enter a board name");
 
     if (mode === "edit" && board && onUpdate) {
       onUpdate(board.id, form);
       onClose();
       return;
     }
-
     onCreate(form);
     setForm({ name: "", type: "", color: DEFAULT_COLORS[0] });
     onClose();
@@ -72,9 +72,7 @@ const CreateBoard: React.FC<BoardModalProp> = ({
             <h2>Board name</h2>
             <input
               value={form.name}
-              onChange={(e) =>
-                setForm((field) => ({ ...field, name: e.target.value }))
-              }
+              onChange={(e) => setForm((field) => ({ ...field, name: e.target.value }))}
               placeholder="e.g. Sprint Planning"
               required
               maxLength={MAX_BOARD_NAME_LENGTH}
@@ -85,9 +83,7 @@ const CreateBoard: React.FC<BoardModalProp> = ({
             <h2>Type</h2>
             <select
               value={form.type}
-              onChange={(e) =>
-                setForm((form) => ({ ...form, type: e.target.value }))
-              }
+              onChange={(event) => setForm((form) => ({ ...form, type: event.target.value }))}
             >
               <option value="">Select type</option>
               {selectTypes.map((type) => (

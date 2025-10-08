@@ -1,4 +1,4 @@
-export function getNextCloneTitle(baseTitle: string, siblingTitles: string[]): string {
+export const getNextCloneTitle =(baseTitle: string, siblingTitles: string[]): string =>{
   const trimmedTitle = baseTitle.trim();
   const match = trimmedTitle.match(/^(.*?)(?:\s+(\d+))?$/);
 

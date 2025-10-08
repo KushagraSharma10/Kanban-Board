@@ -1,5 +1,5 @@
-import type { AppDispatch } from "../../store/store";
-import { setUser, clearUser, loadSessionDone } from "./auth-slice";
+import type { AppDispatch } from "../store/store";
+import { setUser, clearUser, loadSessionDone } from "../slices/auth.slice";
 import bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
 import { getAllUsers } from "../../utils/auth";
@@ -15,6 +15,7 @@ import {
   validatePassword,
 } from "../../utils/validation";
 import type { UserData } from "../../utils/interface/user-data";
+import { toast } from "react-toastify";
 
 const readAllUsersFromStorage = (): UserData[] => getAllUsers?.() ?? [];
 const writeAllUsersToStorage = (users: UserData[]): void =>
@@ -60,12 +61,12 @@ export const loginUser =
       );
 
       if (!existing) {
-        alert("Invalid credentials or please sign up first.");
+        toast.error("Invalid credentials or please sign up first.");
         return;
       }
       const isValid = bcrypt.compareSync(password, existing.password);
       if (!isValid) {
-        alert("Invalid credentials or please sign up first.");
+        toast.error("Invalid credentials or please sign up first.");
         return;
       }
 
@@ -79,7 +80,7 @@ export const loginUser =
         })
       );
     } catch {
-      alert("Login failed. Please try again.");
+      toast.error("Login failed. Please try again.");
     }
   };
 
@@ -97,12 +98,12 @@ export const signupUser =
     try {
       const emailMessage = validateEmail(email);
       if (emailMessage) {
-        alert(emailMessage);
+        toast.error(emailMessage);
         return;
       }
       const passwordMessage = validatePassword(password);
       if (passwordMessage) {
-        alert(passwordMessage);
+        toast.error(passwordMessage);
         return;
       }
 
@@ -113,7 +114,7 @@ export const signupUser =
         (user) => user.email.toLowerCase() === normalizedEmail
       );
       if (isDuplicate) {
-        alert("An account with this email already exists.");
+        toast.error("An account with this email already exists.");
         return;
       }
 
@@ -137,7 +138,7 @@ export const signupUser =
         })
       );
     } catch {
-      alert("Signup failed. Please try again.");
+      toast.error("Signup failed. Please try again.");
     }
   };
 
