@@ -24,6 +24,10 @@ review:
   security_checks: true
   test_hints: true
   architectural_notes: true
+  auto_review: true
+  review_status: true
+  base_branches:
+    - "*"
 
 project:
   languages: [TypeScript, JavaScript, JSX, TSX]
