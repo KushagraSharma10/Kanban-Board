@@ -1,0 +1,62 @@
+version: 1
+
+triggers:
+  on_open: true
+  on_push: true
+  on_comment: true
+  draft_prs: false
+
+include:
+  - "src/**/*"
+  - "apps/**/src/**/*"
+  - "packages/**/src/**/*"
+exclude:
+  - "dist/**"
+  - "build/**"
+  - "coverage/**"
+  - "**/*.lock"
+  - "node_modules/**"
+
+review:
+  max_comments: 40
+  summarize_findings: true
+  suggest_fixes: true
+  security_checks: true
+  test_hints: true
+  architectural_notes: true
+
+project:
+  languages: [TypeScript, JavaScript, JSX, TSX]
+  frameworks: [React, Redux Toolkit, Vite, Node.js, Express, Jest, RTL]
+  coding_guidelines: >
+    Use strict TS types; prefer RTK patterns (createSlice, immutable updates);
+    keep components presentational; move data logic to slices/selectors;
+    follow ESLint rules & Prettier; avoid mutating state; write unit tests for reducers.
+
+paths:
+  - globs: ["src/**/slices/**/*.ts", "src/**/store/**/*.ts"]
+    instructions: >
+      Verify reducer immutability, action payload types, selector memoization,
+      and proper RTK patterns (createSlice, createAsyncThunk). Flag any direct
+      localStorage writes in reducers (move to thunks/middleware).
+
+  - globs: ["src/**/components/**/*.{tsx,jsx}"]
+    instructions: >
+      Check prop types, render performance (useMemo/useCallback), key usage in lists,
+      a11y basics (labels/roles), and testability. Prefer controlled drag-and-drop handlers.
+
+  - globs: ["**/*.{spec,test}.{ts,tsx,js,jsx}"]
+    instructions: >
+      Ensure meaningful assertions, RTL best practices (avoid getByTestId
+      when role/label works), and coverage of edge cases.
+
+pull_request:
+  require_description: true
+  checklists:
+    - "Explains state changes and storage updates"
+    - "Includes tests or justification"
+    - "Migration notes for Redux state shape (if any)"
+
+ignore:
+  comments_matching:
+    - "chore\\(deps\\):.*"
