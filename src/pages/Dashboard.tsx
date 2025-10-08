@@ -22,7 +22,6 @@ import { toast } from "react-toastify";
 import LoginPrompt from "../components/LoginPrompt";
 
 const Dashboard: React.FC = () => {
-
   const navigate = useNavigate();
   const activeSession = getSession();
   const activeUserId = activeSession?.userId || null;
@@ -42,13 +41,12 @@ const Dashboard: React.FC = () => {
       const timer = setTimeout(() => {
         setShowLogin(true);
       }, 2000);
-      return () => clearTimeout(timer); 
+      return () => clearTimeout(timer);
     } else {
-     
       const userBoards = getBoardsForUser(activeUserId);
       setBoardList(userBoards);
     }
-  }, [activeUserId]); 
+  }, [activeUserId]);
 
   const handleCreateBoard = (boardData: BoardForm) => {
     if (!activeUserId) return;
@@ -72,8 +70,6 @@ const Dashboard: React.FC = () => {
     const createdBoard = addBoardForUser(activeUserId, boardData);
     setBoardList((previousBoards) => [createdBoard, ...previousBoards]);
   };
-
-  
 
   const handleUpdateBoard = (boardId: string, boardData: BoardForm) => {
     if (!activeUserId) return;
@@ -125,20 +121,20 @@ const Dashboard: React.FC = () => {
     setIsBoardModalOpen(true);
   };
 
-  function getAllBoards(): BoardItem[] {
+  const getAllBoards = (): BoardItem[] => {
     const stored = loadFromStorage(BOARDS_STORAGE_KEY, []);
     return (Array.isArray(stored) ? stored : []) as BoardItem[];
-  }
+  };
 
-  function saveAllBoards(all: BoardItem[]) {
+  const saveAllBoards = (all: BoardItem[]) => {
     saveToStorage(BOARDS_STORAGE_KEY, all);
-  }
+  };
 
-  function getBoardsForUser(userId: string): BoardItem[] {
+  const getBoardsForUser = (userId: string): BoardItem[] => {
     return getAllBoards().filter((board) => board.userId === userId);
-  }
+  };
 
-  function addBoardForUser(userId: string, data: BoardForm): BoardItem {
+  const addBoardForUser = (userId: string, data: BoardForm): BoardItem => {
     const all = getAllBoards();
     const newBoard: BoardItem = {
       id: nanoid(),
@@ -149,13 +145,13 @@ const Dashboard: React.FC = () => {
     };
     saveAllBoards([newBoard, ...all]);
     return newBoard;
-  }
+  };
 
-  function updateBoardForUser(
+  const updateBoardForUser = (
     userId: string,
     boardId: string,
     data: BoardForm
-  ): void {
+  ): void => {
     const all = getAllBoards();
     const updated = all.map((board) =>
       board.id === boardId && board.userId === userId
@@ -163,15 +159,15 @@ const Dashboard: React.FC = () => {
         : board
     );
     saveAllBoards(updated);
-  }
+  };
 
-  function deleteBoardForUser(userId: string, boardId: string): void {
+  const deleteBoardForUser = (userId: string, boardId: string): void => {
     const all = getAllBoards();
     const remaining = all.filter(
       (board) => !(board.id === boardId && board.userId === userId)
     );
     saveAllBoards(remaining);
-  }
+  };
 
   const filteredBoards = boardList.filter(
     (board) =>
@@ -233,10 +229,7 @@ const Dashboard: React.FC = () => {
         onUpdate={handleUpdateBoard}
       />
 
-      <LoginPrompt
-        isOpen={showLogin}
-        onLoginClick={() => navigate("/login")}
-      />
+      <LoginPrompt isOpen={showLogin} onLoginClick={() => navigate("/login")} />
     </Main>
   );
 };

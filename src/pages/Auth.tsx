@@ -90,17 +90,17 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
     }
   };
 
-  function canRegisterWithEmail(email: string): boolean {
+  const canRegisterWithEmail = (email: string): boolean =>{
     const allUsers = getAllUsers();
     const normalizedEmail = normalizeEmail(email);
     return !allUsers.some((user) => user.email === normalizedEmail);
   }
 
-  function createUserAndSave(
+  const createUserAndSave = (
     name: string,
     email: string,
     password: string
-  ): UserData {
+  ): UserData =>{
     const allUsers = getAllUsers();
     const normalizedEmail = normalizeEmail(email);
     const hashed = bcrypt.hashSync(password, 10);
@@ -119,7 +119,7 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
     return newUser;
   }
 
-  function authenticateUser(email: string, password: string): UserData | null {
+  const authenticateUser = (email: string, password: string): UserData | null => {
     const allUsers = getAllUsers();
     const normalizedEmail = normalizeEmail(email);
     const userFound = allUsers.find((user) => user.email === normalizedEmail);

@@ -16,7 +16,6 @@ import { selectTypes } from "../../utils/constants/board";
 import { DEFAULT_COLORS } from "../../utils/constants/colors";
 
 const CreateBoard: React.FC<BoardModalProp> = ({
-
   open,
   onClose,
   onCreate,

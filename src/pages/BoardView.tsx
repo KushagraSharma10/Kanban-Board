@@ -133,32 +133,32 @@ const BoardView = () => {
     draggingColumnIdRef.current = null;
   };
 
-  function getAllBoards(): BoardItem[] {
+  const getAllBoards = (): BoardItem[] =>{
     const stored = loadFromStorage(BOARDS_STORAGE_KEY, []);
     return (Array.isArray(stored) ? stored : []) as BoardItem[];
   }
 
-  function loadAllColumns(): StoredColumn[] {
+  const loadAllColumns = (): StoredColumn[] =>{
     return loadFromStorage(COLUMNS_KEY, [] as StoredColumn[]);
   }
 
-  function saveAllColumns(columns: StoredColumn[]): void {
+  const saveAllColumns = (columns: StoredColumn[]): void =>{
     saveToStorage(COLUMNS_KEY, columns);
   }
 
-  function loadColumnsForBoard(boardId: string): StoredColumn[] {
+  const loadColumnsForBoard = (boardId: string): StoredColumn[] => {
     return loadAllColumns().filter((column) => column.boardId === boardId);
   }
 
-  function saveColumnsForBoard(
+  const saveColumnsForBoard =(
     boardId: string,
     nextColumns: StoredColumn[]
-  ): void {
+  ): void => {
     const all = loadAllColumns().filter((column) => column.boardId !== boardId);
     saveAllColumns([...all, ...nextColumns]);
   }
 
-  function ensureDefaultColumns(boardId: string): StoredColumn[] {
+  const ensureDefaultColumns = (boardId: string): StoredColumn[] =>{
     const existing = loadColumnsForBoard(boardId);
     if (existing.length > 0) return existing;
 
@@ -174,7 +174,7 @@ const BoardView = () => {
     return defaults;
   }
 
-  function addColumn(boardId: string, titleRaw: string): StoredColumn[] {
+  const addColumn = (boardId: string, titleRaw: string): StoredColumn[] => {
     const title = titleRaw.trim();
     if (!title) return loadColumnsForBoard(boardId);
 
@@ -195,11 +195,11 @@ const BoardView = () => {
     return updated;
   }
 
-  function renameColumn(
+  const renameColumn = (
     boardId: string,
     columnId: string,
     newTitleRaw: string
-  ): StoredColumn[] {
+  ): StoredColumn[] => {
     const newTitle = newTitleRaw.trim();
     if (!newTitle) return loadColumnsForBoard(boardId);
 
@@ -218,7 +218,7 @@ const BoardView = () => {
     return updated;
   }
 
-  function deleteColumn(boardId: string, columnId: string): StoredColumn[] {
+  const deleteColumn = (boardId: string, columnId: string): StoredColumn[] => {
     const updated = loadColumnsForBoard(boardId).filter(
       (column) => column.id !== columnId
     );
@@ -233,6 +233,11 @@ const BoardView = () => {
       setNewColumnName("");
     }
   };
+
+  const handleCancelAddColumn = () => {
+  setShowAdd(false);
+  setNewColumnName("");
+};
 
   return (
     <div className="w-full min-h-screen text-[#e6edf3] bg-[#0b0f14]">
@@ -292,10 +297,7 @@ const BoardView = () => {
                     Add
                   </button>
                   <button
-                    onClick={() => {
-                      setShowAdd(false);
-                      setNewColumnName("");
-                    }}
+                    onClick={handleCancelAddColumn}
                     className="ml-auto px-3 py-2 rounded-md hover:bg-[#222c38] border border-transparent"
                     aria-label="Close"
                     title="Close"

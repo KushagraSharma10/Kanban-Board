@@ -6,8 +6,7 @@ import { seedUsers } from "../data/seed-users";
 export const seedInitialUsers = () => {
   const existingUsers = getAllUsers();
 
-  if (existingUsers.length === 0) {
-    console.warn("No users found. Seeding initial users...");
+  if (!existingUsers.length) {
     saveToStorage(USERS_STORAGE_KEY, seedUsers);
   }
 };

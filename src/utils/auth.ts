@@ -1,4 +1,5 @@
-import { SESSION_STORAGE_KEY, USERS_STORAGE_KEY } from "./constants/auth";
+import { USERS_STORAGE_KEY } from "./constants/auth";
+import { SESSION_STORAGE_KEY } from "./constants/session";
 import type { UserData } from "./interface/user-data";
 import { loadFromStorage } from "./storage";
 

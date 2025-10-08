@@ -1,14 +1,14 @@
-export type DragPayload = { id: string };
+import type { DragPayload } from "./types/drag-and-drop";
 
-export function setDragData(
+export const setDragData = (
   event: React.DragEvent,
   payload: DragPayload
-): void {
+): void => {
   event.dataTransfer.effectAllowed = "move";
   event.dataTransfer.setData("text/plain", JSON.stringify(payload));
-}
+};
 
-export function getDragData(event: React.DragEvent): DragPayload | null {
+export const getDragData = (event: React.DragEvent): DragPayload | null => {
   try {
     const text = event.dataTransfer.getData("text/plain");
     if (!text) return null;
@@ -16,27 +16,27 @@ export function getDragData(event: React.DragEvent): DragPayload | null {
   } catch {
     return null;
   }
-}
+};
 
-export function moveItemWithinList<T>(
+export const moveItemWithinList = <T>(
   list: T[],
   fromIndex: number,
   toIndex: number
-): T[] {
+): T[] => {
   if (fromIndex === toIndex) return list;
   const next = [...list];
   const [movedItem] = next.splice(fromIndex, 1);
   const safeIndex = Math.max(0, Math.min(toIndex, next.length));
   next.splice(safeIndex, 0, movedItem);
   return next;
-}
+};
 
-export function reorderById<T extends { id: string }>(
+export const reorderById = <T extends { id: string }>(
   list: T[],
   sourceId: string,
   targetId: string | null,
   position: "before" | "after" | "end" = "before"
-): T[] {
+): T[] => {
   const sourceIndex = list.findIndex((item) => item.id === sourceId);
   if (sourceIndex === -1) return list;
 
@@ -51,4 +51,4 @@ export function reorderById<T extends { id: string }>(
   const adjustedIndex =
     sourceIndex < targetIndex ? intendedIndex - 1 : intendedIndex;
   return moveItemWithinList(list, sourceIndex, adjustedIndex);
-}
+};
