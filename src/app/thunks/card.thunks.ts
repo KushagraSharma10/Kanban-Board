@@ -83,8 +83,7 @@ export const updateCardInColumn =
     const isDuplicateTitle = cardsInSameColumn.some(
       (existingCard) =>
         existingCard.id !== incomingCard.id &&
-        existingCard.title.trim().toLowerCase() ===
-          normalizedTitle.toLowerCase()
+        existingCard.title.trim().toLowerCase() === normalizedTitle.toLowerCase()
     );
     if (isDuplicateTitle) {
       toast.error("A card with this title already exists in this column.");
@@ -129,10 +128,7 @@ export const cloneCardInColumn =
     const existingTitlesInColumn = getCardsByColumn(allCards, columnId).map(
       (card) => card.title
     );
-    const clonedTitle = getNextCloneTitle(
-      sourceCard.title,
-      existingTitlesInColumn
-    );
+    const clonedTitle = getNextCloneTitle(sourceCard.title, existingTitlesInColumn);
 
     const clonedCard: CardData = {
       ...sourceCard,
