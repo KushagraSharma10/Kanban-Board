@@ -3,16 +3,21 @@ import { GoPlus } from "react-icons/go";
 import Column from "../components/board/Column";
 import { useNavigate, useParams } from "react-router";
 import type { ColumnItem } from "../utils/types/board-view";
-import { loadFromStorage, saveToStorage } from "../utils/storage";
+import { loadFromStorage } from "../utils/storage";
 import type { BoardItem } from "../utils/types/dashboard";
 import { saveBoardColumnOrder } from "../utils/order-storage";
 import { getDragData, reorderById, setDragData } from "../utils/drag-and-drop";
 import { nanoid } from "nanoid";
-import { COLUMNS_KEY } from "../utils/constants/column";
 import { BOARDS_STORAGE_KEY } from "../utils/constants/board";
 import type { StoredColumn } from "../utils/types/column";
 import { getSession } from "../utils/session";
 import LoginPrompt from "../components/LoginPrompt";
+import {
+  loadAllColumns,
+  loadColumnsForBoard,
+  saveAllColumns,
+  validateColumnTitle,
+} from "../utils/column";
 
 const BoardView = () => {
   const [boardName, setBoardName] = useState<string>("");
@@ -133,34 +138,24 @@ const BoardView = () => {
     draggingColumnIdRef.current = null;
   };
 
-  const getAllBoards = (): BoardItem[] =>{
-    const stored = loadFromStorage(BOARDS_STORAGE_KEY, []);
-    return (Array.isArray(stored) ? stored : []) as BoardItem[];
-  }
+  const getAllBoards = (): BoardItem[] => {
+    const storedBoards = loadFromStorage(BOARDS_STORAGE_KEY, []);
+    return (Array.isArray(storedBoards) ? storedBoards : []) as BoardItem[];
+  };
 
-  const loadAllColumns = (): StoredColumn[] =>{
-    return loadFromStorage(COLUMNS_KEY, [] as StoredColumn[]);
-  }
-
-  const saveAllColumns = (columns: StoredColumn[]): void =>{
-    saveToStorage(COLUMNS_KEY, columns);
-  }
-
-  const loadColumnsForBoard = (boardId: string): StoredColumn[] => {
-    return loadAllColumns().filter((column) => column.boardId === boardId);
-  }
-
-  const saveColumnsForBoard =(
+  const saveColumnsForBoard = (
     boardId: string,
     nextColumns: StoredColumn[]
   ): void => {
-    const all = loadAllColumns().filter((column) => column.boardId !== boardId);
-    saveAllColumns([...all, ...nextColumns]);
-  }
+    const allColumns = loadAllColumns().filter(
+      (column) => column.boardId !== boardId
+    );
+    saveAllColumns([...allColumns, ...nextColumns]);
+  };
 
-  const ensureDefaultColumns = (boardId: string): StoredColumn[] =>{
-    const existing = loadColumnsForBoard(boardId);
-    if (existing.length > 0) return existing;
+  const ensureDefaultColumns = (boardId: string): StoredColumn[] => {
+    const existingColumns = loadColumnsForBoard(boardId);
+    if (existingColumns.length > 0) return existingColumns;
 
     const now = Date.now();
     const defaults: StoredColumn[] = [
@@ -169,54 +164,46 @@ const BoardView = () => {
       { id: nanoid(), boardId, title: "Done", createdAt: now },
     ];
 
-    const all = loadAllColumns();
-    saveAllColumns([...all, ...defaults]);
+    const allColumns = loadAllColumns();
+    saveAllColumns([...allColumns, ...defaults]);
     return defaults;
-  }
+  };
 
   const addColumn = (boardId: string, titleRaw: string): StoredColumn[] => {
-    const title = titleRaw.trim();
-    if (!title) return loadColumnsForBoard(boardId);
+    const { isValid, columns, title } = validateColumnTitle(boardId, titleRaw);
+    if (!isValid || !title) return columns;
 
-    const current = loadColumnsForBoard(boardId);
-    const duplicate = current.some(
-      (column) => column.title.toLowerCase() === title.toLowerCase()
-    );
-    if (duplicate) return current;
-
-    const newCol: StoredColumn = {
+    const newColumn: StoredColumn = {
       id: nanoid(),
       boardId,
       title,
       createdAt: Date.now(),
     };
-    const updated = [...current, newCol];
-    saveColumnsForBoard(boardId, updated);
-    return updated;
-  }
+
+    const updatedColumns = [...columns, newColumn];
+    saveColumnsForBoard(boardId, updatedColumns);
+    return updatedColumns;
+  };
 
   const renameColumn = (
     boardId: string,
     columnId: string,
     newTitleRaw: string
   ): StoredColumn[] => {
-    const newTitle = newTitleRaw.trim();
-    if (!newTitle) return loadColumnsForBoard(boardId);
-
-    const current = loadColumnsForBoard(boardId);
-    const duplicate = current.some(
-      (column) =>
-        column.id !== columnId &&
-        column.title.toLowerCase() === newTitle.toLowerCase()
+    const { isValid, columns, title } = validateColumnTitle(
+      boardId,
+      newTitleRaw,
+      columnId
     );
-    if (duplicate) return current;
+    if (!isValid || !title) return columns;
 
-    const updated = current.map((column) =>
-      column.id === columnId ? { ...column, title: newTitle } : column
+    const updated = columns.map((column) =>
+      column.id === columnId ? { ...column, title } : column
     );
+
     saveColumnsForBoard(boardId, updated);
     return updated;
-  }
+  };
 
   const deleteColumn = (boardId: string, columnId: string): StoredColumn[] => {
     const updated = loadColumnsForBoard(boardId).filter(
@@ -224,7 +211,7 @@ const BoardView = () => {
     );
     saveColumnsForBoard(boardId, updated);
     return updated;
-  }
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") handleCreateColumn();
@@ -235,9 +222,9 @@ const BoardView = () => {
   };
 
   const handleCancelAddColumn = () => {
-  setShowAdd(false);
-  setNewColumnName("");
-};
+    setShowAdd(false);
+    setNewColumnName("");
+  };
 
   return (
     <div className="w-full min-h-screen text-[#e6edf3] bg-[#0b0f14]">

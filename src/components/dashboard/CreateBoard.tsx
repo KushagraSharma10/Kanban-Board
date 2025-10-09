@@ -12,7 +12,7 @@ import {
 } from "../../styles/dashboard/create-board";
 import { Field } from "../../styles/dashboard/create-board";
 import type { BoardForm, BoardModalProp } from "../../utils/types/dashboard";
-import { selectTypes } from "../../utils/constants/board";
+import { MAX_BOARD_NAME_LENGTH, selectTypes } from "../../utils/constants/board";
 import { DEFAULT_COLORS } from "../../utils/constants/colors";
 
 const CreateBoard: React.FC<BoardModalProp> = ({
@@ -74,7 +74,7 @@ const CreateBoard: React.FC<BoardModalProp> = ({
               }
               placeholder="e.g. Sprint Planning"
               required
-              maxLength={15}
+              maxLength={MAX_BOARD_NAME_LENGTH}
             />
           </Field>
 
@@ -82,7 +82,7 @@ const CreateBoard: React.FC<BoardModalProp> = ({
             <h2>Type</h2>
             <select
               value={form.type}
-              onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
+              onChange={(e) => setForm((form) => ({ ...form, type: e.target.value }))}
             >
               <option value="">Select type</option>
               {selectTypes.map((type) => (

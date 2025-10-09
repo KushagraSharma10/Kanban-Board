@@ -3,7 +3,7 @@ import { SESSION_STORAGE_KEY } from "./constants/session";
 import type { UserData } from "./interface/user-data";
 import { loadFromStorage } from "./storage";
 
-export function getActiveUser(): UserData | null {
+export const getActiveUser = (): UserData | null => {
   const session = loadFromStorage(SESSION_STORAGE_KEY, null);
   if (!session?.userId) {
     return null;
@@ -15,7 +15,7 @@ export function getActiveUser(): UserData | null {
   return activeUser || null;
 }
 
-export function getAllUsers(): UserData[] {
+export const getAllUsers = (): UserData[] => {
   const stored = loadFromStorage(USERS_STORAGE_KEY, []);
   return Array.isArray(stored) ? (stored as UserData[]) : [];
 }

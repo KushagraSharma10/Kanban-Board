@@ -4,7 +4,7 @@ import type { CardData, CardProps } from "../../utils/interface/card";
 import { MAX_DESCRIPTION_LENGTH } from "../../utils/constants/card";
 
 const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const handleCardClick = () => {
     setIsModalOpen(true);
