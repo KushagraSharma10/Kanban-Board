@@ -37,8 +37,7 @@ const BoardView: React.FC = () => {
   );
 
   useEffect(() => {
-
-     if (!activeUserId) return;
+    if (!activeUserId) return;
 
     const board = readAllBoards().find(
       (candidateBoard) =>
@@ -97,8 +96,8 @@ const BoardView: React.FC = () => {
     dragEvent.preventDefault();
     dragEvent.stopPropagation();
 
-    const payload = getDragData(dragEvent);
-    const sourceColumnId = draggingColumnIdRef.current || payload?.id;
+    const draggedColumn = getDragData(dragEvent);
+    const sourceColumnId = draggingColumnIdRef.current || draggedColumn?.id;
     if (!sourceColumnId || sourceColumnId === targetColumnId) return;
 
     const nextColumns: ColumnItem[] = (() => {

@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
 import LoginPrompt from "../components/LoginPrompt";
 import { getSession } from "../utils/session";
 
-const ProtectedRoute = () => {
+const ProtectedRoute: React.FC = () => {
   const navigate = useNavigate();
 
   const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
