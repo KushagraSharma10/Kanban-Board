@@ -14,7 +14,6 @@ import Header from "../components/dashboard/Header";
 import type { BoardForm, BoardItem } from "../utils/types/dashboard";
 import { useNavigate } from "react-router";
 import { getSession } from "../utils/session";
-import LoginPrompt from "../components/LoginPrompt";
 import { useAppDispatch, useAppSelector } from "../app/store/hooks";
 import {
   selectBoards,
@@ -37,14 +36,11 @@ const Dashboard: React.FC = () => {
   const [selectedBoardForEdit, setSelectedBoardForEdit] =
     useState<BoardItem | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [showLogin, setShowLogin] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!activeUserId) {
-      const timer = setTimeout(() => setShowLogin(true), 2000);
-      return () => clearTimeout(timer);
+    if(activeUserId){
+      dispatch(loadBoardsForUser(activeUserId));
     }
-    dispatch(loadBoardsForUser(activeUserId));
   }, [activeUserId, dispatch]);
 
   const handleCreateBoard = (boardData: BoardForm) => {
@@ -134,7 +130,6 @@ const Dashboard: React.FC = () => {
         onUpdate={handleUpdateBoard}
       />
 
-      <LoginPrompt isOpen={showLogin} onLoginClick={() => navigate("/login")} />
     </Main>
   );
 };

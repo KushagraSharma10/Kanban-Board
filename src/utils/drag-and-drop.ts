@@ -1,4 +1,4 @@
-export type DragPayload = { id: string };
+import type { DragPayload } from "./types/drag-and-drop";
 
 export const setDragData = (
   event: React.DragEvent,
