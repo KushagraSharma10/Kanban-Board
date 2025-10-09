@@ -14,11 +14,13 @@ import Header from "../components/dashboard/Header";
 import type { BoardForm, BoardItem } from "../utils/types/dashboard";
 import { useNavigate } from "react-router";
 import { nanoid } from "nanoid";
-import { loadFromStorage, saveToStorage } from "../utils/storage";
-import { BOARDS_STORAGE_KEY } from "../utils/constants/board";
 import { getSession } from "../utils/session";
-import { normalizeBoardName } from "../utils/boards";
-import { toast } from "react-toastify";
+import {
+  getAllBoards,
+  getBoardsForUser,
+  saveAllBoards,
+  validateBoardName,
+} from "../utils/boards";
 import LoginPrompt from "../components/LoginPrompt";
 
 const Dashboard: React.FC = () => {
@@ -51,47 +53,20 @@ const Dashboard: React.FC = () => {
   const handleCreateBoard = (boardData: BoardForm) => {
     if (!activeUserId) return;
 
-    const newName = normalizeBoardName(boardData.name);
+    const newName = validateBoardName(activeUserId, boardData);
+    if (!newName) return;
 
-    if (!newName) {
-      toast.error("Please enter a board name.");
-      return;
-    }
-
-    const isDuplicate = getBoardsForUser(activeUserId).some(
-      (board) => normalizeBoardName(board.name) === newName
-    );
-
-    if (isDuplicate) {
-      toast.error("A board with this name already exists.");
-      return;
-    }
-
-    const createdBoard = addBoardForUser(activeUserId, boardData);
+    const createdBoard = addBoard(activeUserId, boardData);
     setBoardList((previousBoards) => [createdBoard, ...previousBoards]);
   };
 
   const handleUpdateBoard = (boardId: string, boardData: BoardForm) => {
     if (!activeUserId) return;
 
-    const newName = normalizeBoardName(boardData.name);
+    const newName = validateBoardName(activeUserId, boardData);
+    if (!newName) return;
 
-    if (!newName) {
-      toast.error("Please enter a board name.");
-      return;
-    }
-
-    const isDuplicate = getBoardsForUser(activeUserId).some(
-      (board) =>
-        board.id !== boardId && normalizeBoardName(board.name) === newName
-    );
-
-    if (isDuplicate) {
-      toast.error("A board with this name already exists.");
-      return;
-    }
-
-    updateBoardForUser(activeUserId, boardId, boardData);
+    updateBoard(activeUserId, boardId, boardData);
     setBoardList((previousBoards) =>
       previousBoards.map((existingBoard) =>
         existingBoard.id === boardId
@@ -103,7 +78,7 @@ const Dashboard: React.FC = () => {
 
   const handleDeleteBoard = (boardId: string) => {
     if (!activeUserId) return;
-    deleteBoardForUser(activeUserId, boardId);
+    deleteBoard(activeUserId, boardId);
     setBoardList((previousBoards) =>
       previousBoards.filter((existingBoard) => existingBoard.id !== boardId)
     );
@@ -121,21 +96,8 @@ const Dashboard: React.FC = () => {
     setIsBoardModalOpen(true);
   };
 
-  const getAllBoards = (): BoardItem[] => {
-    const stored = loadFromStorage(BOARDS_STORAGE_KEY, []);
-    return (Array.isArray(stored) ? stored : []) as BoardItem[];
-  };
-
-  const saveAllBoards = (all: BoardItem[]) => {
-    saveToStorage(BOARDS_STORAGE_KEY, all);
-  };
-
-  const getBoardsForUser = (userId: string): BoardItem[] => {
-    return getAllBoards().filter((board) => board.userId === userId);
-  };
-
-  const addBoardForUser = (userId: string, data: BoardForm): BoardItem => {
-    const all = getAllBoards();
+  const addBoard = (userId: string, data: BoardForm): BoardItem => {
+    const allBoards = getAllBoards();
     const newBoard: BoardItem = {
       id: nanoid(),
       userId,
@@ -143,30 +105,30 @@ const Dashboard: React.FC = () => {
       type: data.type.trim(),
       color: data.color,
     };
-    saveAllBoards([newBoard, ...all]);
+    saveAllBoards([newBoard, ...allBoards]);
     return newBoard;
   };
 
-  const updateBoardForUser = (
+  const updateBoard = (
     userId: string,
     boardId: string,
     data: BoardForm
   ): void => {
-    const all = getAllBoards();
-    const updated = all.map((board) =>
+    const allBoards = getAllBoards();
+    const updatedBoards = allBoards.map((board) =>
       board.id === boardId && board.userId === userId
         ? { ...board, ...data }
         : board
     );
-    saveAllBoards(updated);
+    saveAllBoards(updatedBoards);
   };
 
-  const deleteBoardForUser = (userId: string, boardId: string): void => {
-    const all = getAllBoards();
-    const remaining = all.filter(
+  const deleteBoard = (userId: string, boardId: string): void => {
+    const allBoards = getAllBoards();
+    const remainingBoards = allBoards.filter(
       (board) => !(board.id === boardId && board.userId === userId)
     );
-    saveAllBoards(remaining);
+    saveAllBoards(remainingBoards);
   };
 
   const filteredBoards = boardList.filter(
