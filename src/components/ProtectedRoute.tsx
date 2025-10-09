@@ -14,7 +14,7 @@ const ProtectedRoute: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (isAuthed === false) {
+    if (!isAuthed) {
       const timer = setTimeout(() => setShowLogin(true), 2000);
       return () => clearTimeout(timer);
     }

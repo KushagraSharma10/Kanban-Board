@@ -112,8 +112,6 @@ export const renameColumnThunk =
     dispatch(setColumnsForBoard({ boardId, columns: updated }));
   };
 
-  console.log("first")
-
 export const deleteColumnThunk =
   (boardId: string, columnId: string) =>
   (dispatch: AppDispatch): void => {
