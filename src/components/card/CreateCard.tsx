@@ -121,14 +121,15 @@ const CardModal: React.FC<CardModalProps> = ({
     onClose();
   };
 
-  const handleAssigneeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  setAssigneeInput(e.target.value);
-  
-  if (assigneeError) {
-    setAssigneeError("");
-  }
-};
+  const handleAssigneeInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setAssigneeInput(e.target.value);
 
+    if (assigneeError) {
+      setAssigneeError("");
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
@@ -191,7 +192,9 @@ const CardModal: React.FC<CardModalProps> = ({
         </label>
         <select
           value={selectedLabel}
-          onChange={(e) => setSelectedLabel(e.target.value as CardData["label"])}
+          onChange={(e) =>
+            setSelectedLabel(e.target.value as CardData["label"])
+          }
           className="w-full border border-[#3a3f44] rounded px-3 py-2 bg-[#0b0f14] text-[#e6edf3] focus:outline-none"
         >
           {LABEL_OPTIONS.map((opt) => (

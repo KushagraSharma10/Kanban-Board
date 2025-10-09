@@ -69,7 +69,9 @@ const CreateBoard: React.FC<BoardModalProp> = ({
             <h2>Board name</h2>
             <input
               value={form.name}
-              onChange={(e) => setForm((field) => ({ ...field, name: e.target.value }))}
+              onChange={(e) =>
+                setForm((field) => ({ ...field, name: e.target.value }))
+              }
               placeholder="e.g. Sprint Planning"
               required
               maxLength={MAX_BOARD_NAME_LENGTH}
@@ -80,7 +82,9 @@ const CreateBoard: React.FC<BoardModalProp> = ({
             <h2>Type</h2>
             <select
               value={form.type}
-              onChange={(event) => setForm((form) => ({ ...form, type: event.target.value }))}
+              onChange={(event) =>
+                setForm((form) => ({ ...form, type: event.target.value }))
+              }
             >
               <option value="">Select type</option>
               {selectTypes.map((type) => (
@@ -115,11 +119,7 @@ const CreateBoard: React.FC<BoardModalProp> = ({
             <Button type="button" className="secondary" onClick={onClose}>
               Cancel
             </Button>
-            <Button 
-            type="submit"
-            className="primary"
-            disabled = {!isFormValid}
-            >
+            <Button type="submit" className="primary" disabled={!isFormValid}>
               {mode === "edit" ? "Save changes" : "Create"}
             </Button>
           </Actions>
@@ -127,6 +127,6 @@ const CreateBoard: React.FC<BoardModalProp> = ({
       </Dialog>
     </Overlay>
   );
-}
+};
 
 export default CreateBoard;
