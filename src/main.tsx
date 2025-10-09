@@ -11,25 +11,19 @@ import { store } from "./app/store/store.ts";
 import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ProtectedRoute from "./components/ProtectedRoute.tsx";
 
 seedInitialUsers();
 
 const router = createBrowserRouter([
+  { path: "/login", element: <Login /> },
+  { path: "/signup", element: <Signup /> },
   {
-    path: "/",
-    element: <App />,
-  },
-  {
-    path: "/login",
-    element: <Login />,
-  },
-  {
-    path: "/signup",
-    element: <Signup />,
-  },
-  {
-    path: "/board/:id",
-    element: <BoardView />,
+    element: <ProtectedRoute />,
+    children: [
+      { path: "/", element: <App /> },
+      { path: "/board/:id", element: <BoardView /> },
+    ],
   },
 ]);
 

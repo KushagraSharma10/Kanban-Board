@@ -5,7 +5,6 @@ import { useNavigate, useParams } from "react-router";
 import type { ColumnItem } from "../utils/types/board-view";
 import { getDragData, reorderById, setDragData } from "../utils/drag-and-drop";
 import { getSession } from "../utils/session";
-import LoginPrompt from "../components/LoginPrompt";
 import { useAppDispatch, useAppSelector } from "../app/store/hooks";
 import { selectColumnItemsForBoard } from "../app/slices/column.slice";
 import {
@@ -22,7 +21,6 @@ const BoardView: React.FC = () => {
   const [showAdd, setShowAdd] = useState<boolean>(false);
   const [newColumnName, setNewColumnName] = useState<string>("");
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [showLogin, setShowLogin] = useState<boolean>(false);
   const [cardSearch, setCardSearch] = useState<string>("");
 
   const draggingColumnIdRef = useRef<string | null>(null);
@@ -39,12 +37,8 @@ const BoardView: React.FC = () => {
   );
 
   useEffect(() => {
-    if (!activeUserId) {
-      const timer = setTimeout(() => {
-        setShowLogin(true);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
+
+     if (!activeUserId) return;
 
     const board = readAllBoards().find(
       (candidateBoard) =>
@@ -129,7 +123,6 @@ const BoardView: React.FC = () => {
     draggingColumnIdRef.current = null;
   };
 
-
   const handleColumnInputKeyDown = (
     keyboardEvent: React.KeyboardEvent<HTMLInputElement>
   ) => {
@@ -142,11 +135,16 @@ const BoardView: React.FC = () => {
     }
   };
 
+  const handleCancelAddColumn = () => {
+    setShowAdd(false);
+    setNewColumnName("");
+  };
+
   return (
     <div className="w-full min-h-screen text-[#e6edf3] bg-[#0b0f14]">
       <header className="p-4 md:p-6 border-b border-[#3a3f44] bg-[#161a21] flex items-center gap-3 md:gap-4 justify-between sticky top-0 z-10">
         <div className="flex items-center gap-2">
-          <img src="./kanban.svg" alt="" />
+          <img src="../public/Kanban.svg" alt="photo" className="w-9 h-9" />
           <h1 className="text-base md:text-xl font-semibold text-[#e6edf3]">
             {boardName || "Board"}
           </h1>
@@ -176,9 +174,7 @@ const BoardView: React.FC = () => {
                 handleColumnDragStart(columnItem.id, dragEvent)
               }
               onDragOver={handleColumnDragOver}
-              onDrop={(dragEvent) =>
-                handleColumnDrop(columnItem.id, dragEvent)
-              }
+              onDrop={(dragEvent) => handleColumnDrop(columnItem.id, dragEvent)}
               onDragEnd={() => (draggingColumnIdRef.current = null)}
               className="min-w-[70vw] md:min-w-[40vw] h-fit lg:min-w-[22vw] rounded-lg border border-[#3a3f44] bg-[#161a21] transition-colors hover:border-[#a3b1c2]/40"
               title="Drag to reorder"
@@ -214,7 +210,7 @@ const BoardView: React.FC = () => {
                   </button>
                   <button
                     onClick={handleCancelAddColumn}
-                    className="ml-auto px-3 py-2 rounded-md hover:bg-[#222c38] border border-transparent"
+                    className="ml-auto px-3 py-2 rounded-md border border-transparent text-[#e6edf3] hover:bg-[#2a3b4f]/30"
                     aria-label="Close"
                     title="Close"
                   >
@@ -235,7 +231,6 @@ const BoardView: React.FC = () => {
           </div>
         </div>
       </div>
-      <LoginPrompt isOpen={showLogin} onLoginClick={() => navigate("/login")} />
     </div>
   );
 };
