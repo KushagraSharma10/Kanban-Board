@@ -3,9 +3,9 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import type {
   BoardForm,
   BoardItem,
+  BoardsState,
 } from "../../utils/types/dashboard";
 import type { RootState } from "../store/store";
-import type { BoardsState } from "../../utils/types/board";
 
 const initialState: BoardsState = {
   items: [],
