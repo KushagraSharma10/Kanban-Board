@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { BoardForm, BoardItem } from "../../utils/types/dashboard";
+import type {
+  BoardForm,
+  BoardItem,
+  BoardsState,
+} from "../../utils/types/dashboard";
 import type { RootState } from "../store/store";
-
-type BoardsState = {
-  items: BoardItem[];
-};
 
 const initialState: BoardsState = {
   items: [],

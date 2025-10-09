@@ -15,7 +15,9 @@ const columnsSlice = createSlice({
       action: PayloadAction<{ boardId: string; columns: StoredColumn[] }>
     ) {
       const { boardId, columns } = action.payload;
-      const otherBoardsColumns = state.items.filter((c) => c.boardId !== boardId);
+      const otherBoardsColumns = state.items.filter(
+        (column) => column.boardId !== boardId
+      );
       state.items = [...otherBoardsColumns, ...columns];
     },
   },
