@@ -72,7 +72,9 @@ const ManageBoard: React.FC<BoardModalProp> = ({
             <h2>Board name</h2>
             <input
               value={form.name}
-              onChange={(e) => setForm((field) => ({ ...field, name: e.target.value }))}
+              onChange={(e) =>
+                setForm((field) => ({ ...field, name: e.target.value }))
+              }
               placeholder="e.g. Sprint Planning"
               required
               maxLength={MAX_BOARD_NAME_LENGTH}
@@ -83,7 +85,9 @@ const ManageBoard: React.FC<BoardModalProp> = ({
             <h2>Type</h2>
             <select
               value={form.type}
-              onChange={(event) => setForm((form) => ({ ...form, type: event.target.value }))}
+              onChange={(event) =>
+                setForm((form) => ({ ...form, type: event.target.value }))
+              }
             >
               <option value="">Select type</option>
               {selectTypes.map((type) => (
