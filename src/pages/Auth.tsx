@@ -18,7 +18,7 @@ import {
   validatePassword,
 } from "../utils/validation";
 import type { ModeProp } from "../utils/types/auth";
-import { loadFromStorage, saveToStorage } from "../utils/storage";
+import { saveToStorage } from "../utils/storage";
 import bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
 import {
@@ -26,9 +26,10 @@ import {
 } from "../utils/constants/auth";
 import AuthSidebar from "../components/auth/AuthSidebar";
 import type { UserData } from "../utils/interface/user-data";
-import { SESSION_STORAGE_KEY } from "../utils/constants/session";
 import { AuthMode } from "../utils/enum/auth";
 import { toast } from "react-toastify";
+import { getAllUsers } from "../utils/auth";
+import { createSession } from "../utils/session";
 
 const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
   const isLogin = mode === AuthMode.Login;
@@ -63,7 +64,7 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
       const authenticatedUser = authenticateUser(enteredEmail, enteredPassword);
       if (authenticatedUser) {
         createSession(authenticatedUser.id);
-        navigate("/dashboard");
+        navigate("/");
       } else {
         toast.error("Invalid credentials or please sign up first.");
       }
@@ -85,26 +86,21 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
       }
       createUserAndSave(enteredName, enteredEmail, enteredPassword);
       toast.success("Signup successful! Please login.");
-      navigate("/");
+      navigate("/login");
     }
   };
 
-  function getAllUsers(): UserData[] { 
-    const stored = loadFromStorage(USERS_STORAGE_KEY, []);
-    return Array.isArray(stored) ? (stored as UserData[]) : [];
-  }
-
-  function canRegisterWithEmail(email: string): boolean {
+  const canRegisterWithEmail = (email: string): boolean =>{
     const allUsers = getAllUsers();
     const normalizedEmail = normalizeEmail(email);
     return !allUsers.some((user) => user.email === normalizedEmail);
   }
 
-  function createUserAndSave(
+  const createUserAndSave = (
     name: string,
     email: string,
     password: string
-  ): UserData {
+  ): UserData =>{
     const allUsers = getAllUsers();
     const normalizedEmail = normalizeEmail(email);
     const hashed = bcrypt.hashSync(password, 10);
@@ -114,6 +110,7 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
       name: name.trim(),
       email: normalizedEmail,
       password: hashed,
+      role: "member",
     };
 
     const updatedUsers = [newUser, ...allUsers];
@@ -122,18 +119,13 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
     return newUser;
   }
 
-  function authenticateUser(email: string, password: string): UserData | null {
+  const authenticateUser = (email: string, password: string): UserData | null => {
     const allUsers = getAllUsers();
     const normalizedEmail = normalizeEmail(email);
     const userFound = allUsers.find((user) => user.email === normalizedEmail);
     if (!userFound) return null;
     const isPasswordCorrect = bcrypt.compareSync(password, userFound.password);
     return isPasswordCorrect ? userFound : null;
-  }
-
-  function createSession(userId: string): void {
-    const session = { userId, createdAt: Date.now() };
-    saveToStorage(SESSION_STORAGE_KEY, session);
   }
 
   const fields: Field[] = [

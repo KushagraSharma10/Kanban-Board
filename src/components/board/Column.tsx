@@ -103,42 +103,67 @@ const Column: React.FC<ColumnProps> = ({
     setCards((prev) => prev.filter((card) => card.id !== id));
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-  if (e.key === "Enter") {
-    handleAddCard();
-  }
-  if (e.key === "Escape") {
-    setIsAdding(false);
-    setNewCardTitle("");
-    setError("");
-  }
-};
+  const handleRenameClick = () => {
+    setMenuOpen(false);
+    setEditing(true);
+  };
 
-const handleCancelCard = () => {
-  setIsAdding(false);
-  setError("");
-  setNewCardTitle("");
-};
+  const handleDeleteClick = () => {
+    setMenuOpen(false);
+    onDelete(column.id);
+  };
 
-  const menuItems = [
+  const menuOptions = [
     {
       label: "Rename",
+      action: handleRenameClick,
       className: "w-full text-left px-3 py-2 hover:bg-[#141b26] text-sm",
-      onClick: () => {
-        setMenuOpen(false);
-        setEditing(true);
-      },
     },
     {
       label: "Delete",
+      action: handleDeleteClick,
       className:
         "w-full text-left px-3 py-2 hover:bg-[#141b26] text-sm text-red-400",
-      onClick: () => {
-        setMenuOpen(false);
-        onDelete(column.id);
-      },
     },
   ];
+
+  const handleKeyDown = (
+    keyboardEvent: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (keyboardEvent.key === "Enter") {
+      onRename(column.id, title.trim());
+      setEditing(false);
+    }
+    if (keyboardEvent.key === "Escape") {
+      setTitle(column.title);
+      setEditing(false);
+    }
+  };
+
+  const handleBlur = () => {
+    onRename(column.id, title.trim());
+    setEditing(false);
+  };
+
+  const handleNewCardKeyDown = (
+    keyboardEvent: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (keyboardEvent.key === "Enter") {
+      handleAddCard();
+    }
+
+    if (keyboardEvent.key === "Escape") {
+      setIsAdding(false);
+      setNewCardTitle("");
+      setError("");
+    }
+  };
+
+  const handleCancelCard = () => {
+    setIsAdding(false);
+    setError("");
+    setNewCardTitle("");
+  };
 
   return (
     <div className="min-w-[70vw] max-h-max md:min-w-[40vw] lg:min-w-[20vw] bg-[#161a21] rounded-md md:p-1.5 p-1">
@@ -148,20 +173,8 @@ const handleCancelCard = () => {
             ref={inputRef}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                onRename(column.id, title.trim());
-                setEditing(false);
-              }
-              if (e.key === "Escape") {
-                setTitle(column.title);
-                setEditing(false);
-              }
-            }}
-            onBlur={() => {
-              onRename(column.id, title.trim());
-              setEditing(false);
-            }}
+            onKeyDown={handleKeyDown}
+            onBlur={handleBlur}
             className="text-sm font-medium w-full bg-transparent outline-none border-b border-transparent focus:border-[#3a3f44] pb-0.5 text-[#e6edf3] placeholder-[#9e9e9e]"
             placeholder="Column name"
           />
@@ -182,13 +195,13 @@ const handleCancelCard = () => {
           />
           {menuOpen && (
             <div className="absolute right-0 mt-1 w-30 rounded-md bg-[#222c38] border border-[#3a3f44] shadow-lg z-50 overflow-hidden">
-              {menuItems.map((item) => (
+              {menuOptions.map((option) => (
                 <button
-                  key={item.label}
-                  className={item.className}
-                  onClick={item.onClick}
+                  key={option.label}
+                  className={option.className}
+                  onClick={option.action}
                 >
-                  {item.label}
+                  {option.label}
                 </button>
               ))}
             </div>
@@ -222,7 +235,7 @@ const handleCancelCard = () => {
               type="text"
               value={newCardTitle}
               onChange={(e) => setNewCardTitle(e.target.value)}
-              onKeyDown={handleKeyDown}
+              onKeyDown={handleNewCardKeyDown}
               placeholder="Card title"
               className="px-2 py-1 rounded bg-zinc-900 text-white placeholder-zinc-600 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-zinc-500"
             />

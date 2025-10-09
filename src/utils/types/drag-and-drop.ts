@@ -1,0 +1,1 @@
+export type DragPayload = { id: string };

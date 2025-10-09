@@ -30,6 +30,16 @@ const BoardCard: React.FC<CardProp> = ({
     { label: "Delete", action: onDelete },
   ];
 
+  const handleOptionClick = (action: (() => void) | undefined) => {
+    setMenuOpen(false);
+    action?.();
+  };
+
+  const handleThreeDotsClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setMenuOpen((prev) => !prev);
+  };
+
   return (
     <Card onClick={handleCardClick}>
       <ContentClip>
@@ -42,10 +52,7 @@ const BoardCard: React.FC<CardProp> = ({
           <DotWrap>
             <ThreeDots
               size={20}
-              onClick={(e) => {
-                e.stopPropagation();
-                setMenuOpen((prev) => !prev);
-              }}
+              onClick={handleThreeDotsClick}
             />
           </DotWrap>
         </BoardContent>
@@ -57,11 +64,8 @@ const BoardCard: React.FC<CardProp> = ({
           <OptionsMenu>
             {menuOptions.map((option) => (
               <button
-                key={option.label} 
-                onClick={() => {
-                  setMenuOpen(false);
-                  option.action?.();
-                }}
+                key={option.label}
+                onClick={()=>handleOptionClick(option.action)}
               >
                 {option.label}
               </button>

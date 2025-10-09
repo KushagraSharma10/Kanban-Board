@@ -58,6 +58,7 @@ export const ColorDiv = styled.div<{ $bg: string }>`
 `;
 
 export const BoardContent = styled.div`
+  position: relative;
   padding: 1.4rem 1.1rem;
   display: flex;
   align-items: center;
@@ -82,24 +83,18 @@ export const BoardContent = styled.div`
 
 export const DotWrap = styled.div`
   position: relative;
-`
-
-export const OptionWrapper = styled.div`
-  position:relative;
-`
+`;
 
 export const OptionsMenu = styled.div`
   position: absolute;
-  top: -2.5rem;
-  right: 1.6rem;
+  right: 1.2rem;
   background-color: ${theme.colors.darkBlue3};
   border: 1px solid ${theme.colors.balticSeaGray};
-  overflow: hidden;
   z-index: 999;
   min-width: 6vw;
   display: flex;
   flex-direction: column;
-  border-radius:.2rem;
+  border-radius: 0.2rem;
 
   button {
     padding: 0.6rem 1rem;
@@ -111,12 +106,11 @@ export const OptionsMenu = styled.div`
     cursor: pointer;
 
     &:hover {
-      background-color: rgba(255, 255, 255, 0.04); 
+      background-color: rgba(255, 255, 255, 0.04);
     }
 
     &:focus-visible {
       outline: 2px solid ${theme.colors.blue};
-      outline-offset: -2px;
     }
   }
 `;
