@@ -19,7 +19,7 @@ import {
 import { DEFAULT_COLORS } from "../../utils/constants/colors";
 import { toast } from "react-toastify";
 
-const CreateBoard: React.FC<BoardModalProp> = ({
+const ManageBoard: React.FC<BoardModalProp> = ({
   open,
   onClose,
   onCreate,
@@ -132,4 +132,4 @@ const CreateBoard: React.FC<BoardModalProp> = ({
   );
 };
 
-export default CreateBoard;
+export default ManageBoard;

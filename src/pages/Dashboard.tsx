@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import BoardCard from "../components/dashboard/BoardCard";
+import BoardCard from "../components/board/BoardCard";
 import {
   Board as BoardWrapper,
   BoardArea,
@@ -9,8 +9,8 @@ import {
   NoBoards,
   SearchQuery,
 } from "../styles/dashboard/dashboard";
-import CreateBoard from "../components/dashboard/CreateBoard";
-import Header from "../components/dashboard/Header";
+import ManageBoard from "../components/board/ManageBoard";
+import Header from "../components/board/Header";
 import type { BoardForm, BoardItem } from "../utils/types/dashboard";
 import { useNavigate } from "react-router";
 import { getSession } from "../utils/session";
@@ -121,7 +121,7 @@ const Dashboard: React.FC = () => {
         </BoardArea>
       </BoardWrapper>
 
-      <CreateBoard
+      <ManageBoard
         open={isBoardModalOpen}
         mode={boardModalMode}
         board={selectedBoardForEdit ?? undefined}

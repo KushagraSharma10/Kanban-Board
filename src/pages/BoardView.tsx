@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { GoPlus } from "react-icons/go";
-import Column from "../components/board/Column";
+import Column from "../components/column/Column";
 import { useNavigate, useParams } from "react-router";
 import type { ColumnItem } from "../utils/types/board-view";
 import { getDragData, reorderById, setDragData } from "../utils/drag-and-drop";
