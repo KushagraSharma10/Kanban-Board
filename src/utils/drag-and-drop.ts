@@ -10,26 +10,29 @@ export const setDragData = (
 
 export const getDragData = (event: React.DragEvent): DragPayload | null => {
   try {
-    const text = event.dataTransfer.getData("text/plain");
-    if (!text) return null;
-    return JSON.parse(text) as DragPayload;
+    const dataString  = event.dataTransfer.getData("text/plain");
+    if (!dataString ) return null;
+    return JSON.parse(dataString) as DragPayload;
   } catch {
     return null;
   }
 }
 
 export const moveItemWithinList = <T>(
-  list: T[],
-  fromIndex: number,
-  toIndex: number
+  items: T[],
+  sourceIndex: number,
+  destinationIndex: number
 ): T[] => {
-  if (fromIndex === toIndex) return list;
-  const next = [...list];
-  const [movedItem] = next.splice(fromIndex, 1);
-  const safeIndex = Math.max(0, Math.min(toIndex, next.length));
-  next.splice(safeIndex, 0, movedItem);
-  return next;
-}
+  if (sourceIndex === destinationIndex) return items;
+
+  const updatedItems = [...items];
+  const [itemToMove] = updatedItems.splice(sourceIndex, 1);
+
+  const validIndex = Math.max(0, Math.min(destinationIndex, updatedItems.length));
+  updatedItems.splice(validIndex, 0, itemToMove);
+
+  return updatedItems;
+};
 
 export const reorderById = <T extends { id: string }>(
   list: T[],

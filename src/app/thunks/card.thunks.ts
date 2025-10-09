@@ -7,8 +7,8 @@ import { toast } from "react-toastify";
 import { setCardsForColumn } from "../slices/card.slice";
 
 const getAllCards = (): CardData[] => {
-  const raw = localStorage.getItem(CARD_KEY);
-  return raw ? (JSON.parse(raw) as CardData[]) : [];
+  const rawCards = localStorage.getItem(CARD_KEY);
+  return rawCards ? (JSON.parse(rawCards) as CardData[]) : [];
 };
 
 const saveAllCards = (cards: CardData[]): void => {
@@ -38,45 +38,45 @@ export const addCardToColumn =
     };
 
     const allCards = getAllCards();
-    const updatedAll = [newCard, ...allCards];
-    saveAllCards(updatedAll);
+    const updatedAllCards = [newCard, ...allCards];
+    saveAllCards(updatedAllCards);
 
-    const columnCards = getCardsByColumn(updatedAll, columnId);
+    const columnCards = getCardsByColumn(updatedAllCards, columnId);
     dispatch(setCardsForColumn({ columnId, cards: columnCards }));
   };
 
 export const updateCardInColumn =
-  (incoming: CardData) =>
+  (incomingCard: CardData) =>
   (dispatch: AppDispatch): void => {
     const allCards = getAllCards();
 
-    const normalizedTitle = incoming.title.trim();
+    const normalizedTitle = incomingCard.title.trim();
     if (!normalizedTitle) {
       toast.error("Title cannot be empty.");
       return;
     }
 
     const cardsInSameColumn = allCards.filter(
-      (card) => card.columnId === incoming.columnId
+      (card) => card.columnId === incomingCard.columnId
     );
 
     const isDuplicateTitle = cardsInSameColumn.some(
-      (existing) =>
-        existing.id !== incoming.id &&
-        existing.title.trim().toLowerCase() === normalizedTitle.toLowerCase()
+      (existingCard) =>
+        existingCard.id !== incomingCard.id &&
+        existingCard.title.trim().toLowerCase() === normalizedTitle.toLowerCase()
     );
     if (isDuplicateTitle) {
       toast.error("A card with this title already exists in this column.");
       return;
     }
 
-    const updatedCard: CardData = { ...incoming, title: normalizedTitle };
-    const updatedAll = allCards.map((card) =>
+    const updatedCard: CardData = { ...incomingCard, title: normalizedTitle };
+    const updatedAllCards = allCards.map((card) =>
       card.id === updatedCard.id ? updatedCard : card
     );
-    saveAllCards(updatedAll);
+    saveAllCards(updatedAllCards);
 
-    const columnCards = getCardsByColumn(updatedAll, updatedCard.columnId);
+    const columnCards = getCardsByColumn(updatedAllCards, updatedCard.columnId);
     dispatch(
       setCardsForColumn({ columnId: updatedCard.columnId, cards: columnCards })
     );
@@ -86,10 +86,10 @@ export const updateCardInColumn =
 export const deleteCardFromColumn =
   (columnId: string, cardId: string) =>
   (dispatch: AppDispatch): void => {
-    const remaining = getAllCards().filter((c) => c.id !== cardId);
-    saveAllCards(remaining);
+    const remainingCards = getAllCards().filter((card) => card.id !== cardId);
+    saveAllCards(remainingCards);
 
-    const columnCards = getCardsByColumn(remaining, columnId);
+    const columnCards = getCardsByColumn(remainingCards, columnId);
     dispatch(setCardsForColumn({ columnId, cards: columnCards }));
   };
 
@@ -103,27 +103,27 @@ export const cloneCardInColumn =
     );
     if (sourceIndex === -1) return;
 
-    const source = allCards[sourceIndex];
+    const sourceCard = allCards[sourceIndex];
 
     const existingTitlesInColumn = getCardsByColumn(allCards, columnId).map(
       (card) => card.title
     );
-    const clonedTitle = getNextCloneTitle(source.title, existingTitlesInColumn);
+    const clonedTitle = getNextCloneTitle(sourceCard.title, existingTitlesInColumn);
 
     const clonedCard: CardData = {
-      ...source,
+      ...sourceCard,
       id: nanoid(),
       title: clonedTitle,
     };
 
-    const updatedAll = [
+    const updatedAllCards = [
       ...allCards.slice(0, sourceIndex + 1),
       clonedCard,
       ...allCards.slice(sourceIndex + 1),
     ];
 
-    saveAllCards(updatedAll);
+    saveAllCards(updatedAllCards);
 
-    const columnCards = getCardsByColumn(updatedAll, columnId);
+    const columnCards = getCardsByColumn(updatedAllCards, columnId);
     dispatch(setCardsForColumn({ columnId, cards: columnCards }));
   };

@@ -1,22 +1,27 @@
-export const getNextCloneTitle =(baseTitle: string, siblingTitles: string[]): string =>{
-  const trimmedTitle = baseTitle.trim();
-  const match = trimmedTitle.match(/^(.*?)(?:\s+(\d+))?$/);
+export const getNextCloneTitle = (
+  originalTitle: string,
+  existingTitles: string[]
+): string => {
+  const normalizedTitle = originalTitle.trim();
 
-  const base = match?.[1]?.trim() || trimmedTitle; 
-  const existingNumber = match?.[2] ? parseInt(match[2], 10) : 0; 
+  const titleMatch = normalizedTitle.match(/^(.*?)(?:\s+(\d+))?$/);
+  const baseName = titleMatch?.[1]?.trim() || normalizedTitle;
+  const currentNumber = titleMatch?.[2] ? parseInt(titleMatch[2], 10) : 0;
 
-  let maxNumber = 0;
+  let highestNumber = 0;
 
-  for (const sibling of siblingTitles) {
-    const siblingMatch = sibling.match(/^(.*?)(?:\s+(\d+))?$/);
-    const siblingBase = siblingMatch?.[1]?.trim() || sibling.trim();
-    const siblingNumber = siblingMatch?.[2] ? parseInt(siblingMatch[2], 10) : 0;
+  for (const existingTitle of existingTitles) {
+    const existingMatch = existingTitle.match(/^(.*?)(?:\s+(\d+))?$/);
+    const existingBase = existingMatch?.[1]?.trim() || existingTitle.trim();
+    const existingNumber = existingMatch?.[2]
+      ? parseInt(existingMatch[2], 10)
+      : 0;
 
-    if (siblingBase.toLowerCase() === base.toLowerCase()) {
-      maxNumber = Math.max(maxNumber, siblingNumber);
+    if (existingBase.toLowerCase() === baseName.toLowerCase()) {
+      highestNumber = Math.max(highestNumber, existingNumber);
     }
   }
 
-  const nextNumber = Math.max(existingNumber, maxNumber) + 1;
-  return `${base} ${nextNumber}`;
-}
+  const nextNumber = Math.max(currentNumber, highestNumber) + 1;
+  return `${baseName} ${nextNumber}`;
+};

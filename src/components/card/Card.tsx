@@ -8,8 +8,8 @@ import { cloneCardInColumn } from "../../app/thunks/card.thunks";
 
 const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
   const dispatch = useAppDispatch();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const handleCardClick = () => {

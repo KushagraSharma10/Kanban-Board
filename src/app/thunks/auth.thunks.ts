@@ -1,5 +1,5 @@
 import type { AppDispatch } from "../store/store";
-import { setUser, clearUser, loadSessionDone } from "../slices/auth.slice";
+import { setUser, loadSessionDone } from "../slices/auth.slice";
 import bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
 import { getAllUsers } from "../../utils/auth";
@@ -7,7 +7,6 @@ import { saveToStorage } from "../../utils/storage";
 import { createSession, getSession } from "../../utils/session";
 import {
   USERS_STORAGE_KEY,
-  SESSION_STORAGE_KEY,
 } from "../../utils/constants/auth";
 import {
   normalizeEmail,
@@ -31,17 +30,17 @@ export const loadSession =
         return;
       }
       const users = readAllUsersFromStorage();
-      const found = users.find((user) => user.id === existingSession.userId);
-      if (!found) {
+      const foundUser = users.find((user) => user.id === existingSession.userId);
+      if (!foundUser) {
         dispatch(loadSessionDone(null));
         return;
       }
       dispatch(
         loadSessionDone({
-          id: found.id,
-          name: found.name,
-          email: found.email,
-          role: found.role,
+          id: foundUser.id,
+          name: foundUser.name,
+          email: foundUser.email,
+          role: foundUser.role,
         })
       );
     } catch {
@@ -118,12 +117,12 @@ export const signupUser =
         return;
       }
 
-      const hashed = bcrypt.hashSync(password, 10);
+      const hashedPassword = bcrypt.hashSync(password, 10);
       const newUser: UserData = {
         id: nanoid(),
         name: name.trim() || normalizedEmail.split("@")[0],
         email: normalizedEmail,
-        password: hashed,
+        password: hashedPassword,
         role: "member",
       };
       writeAllUsersToStorage([newUser, ...users]);
@@ -139,15 +138,5 @@ export const signupUser =
       );
     } catch {
       toast.error("Signup failed. Please try again.");
-    }
-  };
-
-export const logoutUser =
-  () =>
-  (dispatch: AppDispatch): void => {
-    try {
-      sessionStorage.removeItem(SESSION_STORAGE_KEY);
-    } finally {
-      dispatch(clearUser());
     }
   };
