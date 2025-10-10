@@ -1,10 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Card from "../card/Card";
-import { loadFromStorage, saveToStorage } from "../../utils/storage";
 import type { ColumnProps } from "../../utils/types/column";
 import type { CardData } from "../../utils/interface/card";
-import { CARD_KEY } from "../../utils/constants/card";
 
 import { useAppDispatch, useAppSelector } from "../../app/store/hooks";
 import {
@@ -43,14 +41,6 @@ const Column: React.FC<ColumnProps> = ({
   useEffect(() => {
     setTitle(column.title);
   }, [column.title]);
-
-  const loadCards = (): CardData[] => {
-    return loadFromStorage(CARD_KEY, [] as CardData[]);
-  };
-
-  const saveCards = (cards: CardData[]): void => {
-    saveToStorage(CARD_KEY, cards);
-  };
 
   useEffect(() => {
     if (editing) {
@@ -224,8 +214,12 @@ const handleCancelCard = () => {
           <Card
             key={card.id}
             card={card}
-            onUpdate={handleCardUpdate}
-            onDelete={handleCardDelete}
+            onUpdate={(updatedCard: CardData) => {
+              dispatch(updateCardInColumn(updatedCard));
+            }}
+            onDelete={(cardId: CardData["id"]) => {
+              dispatch(deleteCardFromColumn(column.id, cardId));
+            }}
           />
         ))}
         {normalizedQuery && visibleCards.length === 0 && (

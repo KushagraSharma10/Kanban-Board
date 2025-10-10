@@ -1,10 +1,10 @@
 import { loadColumnsForBoard } from "../app/thunks/columns.thunks";
 
-export function validateColumnTitle(
+export const validateColumnTitle = (
   boardId: string,
   titleRaw: string,
   excludeColumnId?: string
-): { isValid: boolean; title: string; error?: string } {
+): { isValid: boolean; title: string; error?: string } => {
   const title = titleRaw.trim();
   if (!title) {
     return { isValid: false, title, error: "Title cannot be empty." };
@@ -22,4 +22,4 @@ export function validateColumnTitle(
   }
 
   return { isValid: true, title };
-}
+};
