@@ -23,7 +23,7 @@ const PageNotFound: React.FC = () => {
       <button
         onClick={handleGoHome}
         aria-label="Navigate back to home page"
-        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition-all duration-200"
+        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 cursor-pointer rounded-lg font-semibold transition-all duration-200"
       >
         Go Back to Home
       </button>
