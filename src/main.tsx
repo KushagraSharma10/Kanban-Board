@@ -12,6 +12,7 @@ import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
+import PageNotFound from "./pages/PageNotFound.tsx";
 
 seedInitialUsers();
 
@@ -25,6 +26,7 @@ const router = createBrowserRouter([
       { path: "/board/:id", element: <BoardView /> },
     ],
   },
+  { path: "*", element: <PageNotFound /> },
 ]);
 
 const root = document.getElementById("root") as HTMLElement;
