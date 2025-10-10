@@ -1,0 +1,50 @@
+language: "en-US"
+
+reviews:
+  profile: "chill"
+  high_level_summary: true
+  review_status: true
+  commit_status: true
+
+  path_filters:
+    - "src/**/*"
+    - "apps/**/src/**/*"
+    - "packages/**/src/**/*"
+    - "!dist/**"
+    - "!build/**"
+    - "!coverage/**"
+    - "!**/*.lock"
+    - "!node_modules/**"
+
+  path_instructions:
+    - globs: ["src/**/slices/**/*.ts", "src/**/store/**/*.ts"]
+      instructions: >
+        Verify reducer immutability, action payload types, selector memoization,
+        and proper RTK patterns (createSlice, createAsyncThunk). Flag any direct
+        localStorage writes in reducers (move to thunks/middleware).
+
+    - globs: ["src/**/components/**/*.{tsx,jsx}"]
+      instructions: >
+        Check prop types, render performance (useMemo/useCallback), key usage in lists,
+        a11y basics (labels/roles), and testability. Prefer controlled drag-and-drop handlers.
+
+    - globs: ["**/*.{spec,test}.{ts,tsx,js,jsx}"]
+      instructions: >
+        Ensure meaningful assertions, RTL best practices (avoid getByTestId when role/label works),
+        and coverage of edge cases.
+
+  auto_review:
+    enabled: true
+    drafts: false
+    auto_incremental_review: true
+    base_branches: [".*"]
+
+  pre_merge_checks:
+    description:
+      mode: "error"
+      requirements: "PR must explain state/storage changes and include tests or justification. Note migration notes if Redux state shape changed."
+
+tone_instructions: >
+  Use strict TS types; prefer RTK patterns; components presentational;
+  data logic in slices/selectors; follow ESLint/Prettier; avoid mutating state;
+  write unit tests for reducers.
