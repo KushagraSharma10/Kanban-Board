@@ -14,12 +14,12 @@ import { AuthButton } from "../styles/auth/auth-button";
 import { useNavigate } from "react-router";
 import { validateEmail, validatePassword } from "../utils/validation";
 import type { ModeProp } from "../utils/types/auth";
-import { AuthMode } from "../utils/constants/auth";
 import AuthSidebar from "../components/auth/AuthSidebar";
 import { useAppDispatch, useAppSelector } from "../app/store/hooks";
 import { loginUser, signupUser } from "../app/thunks/auth.thunks";
 import { selectAuthUser } from "../app/slices/auth.slice";
 import { toast } from "react-toastify";
+import { AuthMode } from "../utils/enum/auth";
 
 const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
   const isLoginMode = mode === AuthMode.Login;

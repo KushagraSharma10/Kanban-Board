@@ -8,7 +8,6 @@ import {
 import { validateEmail } from "../../utils/validation";
 import { toast } from "react-toastify";
 import { getActiveUser } from "../../utils/auth";
-import { toast } from "react-toastify";
 
 const CardModal: React.FC<CardModalProps> = ({
   card,

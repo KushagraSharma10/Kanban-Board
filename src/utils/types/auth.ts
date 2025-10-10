@@ -1,4 +1,4 @@
-import type { AuthMode } from "../constants/auth";
+import type { AuthMode } from "../enum/auth";
 import type { UserData } from "../interface/user-data";
 import type { Field, FormFields } from "./form";
 

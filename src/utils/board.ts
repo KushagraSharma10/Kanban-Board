@@ -1,11 +1,11 @@
 import type { BoardForm, BoardItem } from "./types/dashboard";
 
-export function validateBoardForm(
+export const validateBoardForm = (
   allBoards: BoardItem[],
   userId: string,
   boardId: string | null,
   form: BoardForm
-): string | null {
+): string | null => {
   const normalizedName = normalizeBoardName(form.name);
 
   if (!normalizedName) {
