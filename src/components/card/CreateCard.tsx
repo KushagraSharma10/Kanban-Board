@@ -99,8 +99,17 @@ const CardModal: React.FC<CardModalProps> = ({
     }
     setDateError("");
 
-    const finalAssignees = assigneeInput.trim()
-      ? Array.from(new Set([...assignees, assigneeInput.trim()]))
+    const pendingInput = assigneeInput.trim();
+    if (pendingInput) {
+      const pendingError = validateEmail(pendingInput);
+      if (pendingError) {
+        setAssigneeError(pendingError);
+        return;
+      }
+    }
+
+    const mergedAssignees = pendingInput
+      ? Array.from(new Set([...assignees, pendingInput]))
       : assignees;
 
     onSave({
@@ -108,7 +117,7 @@ const CardModal: React.FC<CardModalProps> = ({
       title: title.trim(),
       description: description.trim() || undefined,
       dueDate: dueDate || undefined,
-      assignees: finalAssignees.length ? finalAssignees : undefined,
+      assignees: mergedAssignees.length ? mergedAssignees : undefined,
       label: selectedLabel ?? "none",
     });
     onClose();
