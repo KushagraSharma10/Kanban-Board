@@ -1,10 +1,10 @@
 import { USERS_STORAGE_KEY } from "./constants/auth";
-import { SESSION_STORAGE_KEY } from "./constants/session";
 import type { UserData } from "./interface/user-data";
+import { getSession } from "./session";
 import { loadFromStorage } from "./storage";
 
 export const getActiveUser = (): UserData | null => {
-  const session = loadFromStorage(SESSION_STORAGE_KEY, null);
+  const session = getSession();
   if (!session?.userId) {
     return null;
   }
