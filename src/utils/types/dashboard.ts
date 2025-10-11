@@ -10,7 +10,7 @@ export type BoardsState = {
   items: BoardItem[];
 };
 
-export type CardProp = {
+export type BoardCardProp = {
   name: string;
   color: string;
   type: string;

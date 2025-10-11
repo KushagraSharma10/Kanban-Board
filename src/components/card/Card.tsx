@@ -5,16 +5,20 @@ import { useAppDispatch } from "../../app/store/hooks";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { MAX_DESCRIPTION_LENGTH } from "../../utils/constants/card";
 import { cloneCardInColumn } from "../../app/thunks/card.thunks";
+import DeleteConfirmation from "../DeleteConfirmation";
 
 const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
   const dispatch = useAppDispatch();
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isCardModalOpen, setIsCardModalOpen] = useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+  const [isConfirmingDeletion, setIsConfirmingDeletion] =
+    useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const handleCardClick = () => {
     if (isMenuOpen) return;
-    setIsModalOpen(true);
+    setIsCardModalOpen(true);
   };
 
   useEffect(() => {
@@ -34,7 +38,7 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
   };
   const handleSave = (updatedCard: CardData) => {
     onUpdate(updatedCard);
-    setIsModalOpen(false);
+    setIsCardModalOpen(false);
   };
   const handleKeyDown = (event:React.KeyboardEvent<HTMLDivElement> ) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -49,10 +53,27 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
     onDelete(card.id);
   };
 
-  const handleDeleteCard = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
+  const handleDeleteCard = (
+    mouseEvent: React.MouseEvent<HTMLButtonElement>
+  ): void => {
+    mouseEvent.stopPropagation();
     setIsMenuOpen(false);
-    onDelete(card.id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCancelDeletion = (): void => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleConfirmDeletion = async (): Promise<void> => {
+    try {
+      setIsConfirmingDeletion(true);
+      onDelete(card.id);
+    } finally {
+      setIsConfirmingDeletion(false);
+      setIsDeleteModalOpen(false);
+      setIsCardModalOpen(false);
+    }
   };
 
   return (
@@ -131,14 +152,20 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
         )}
       </div>
 
-      {isModalOpen && (
+      {isCardModalOpen && (
         <CardModal
           card={card}
           onSave={handleSave}
-          onDelete={() => onDelete(card.id)}
-          onClose={() => setIsModalOpen(false)}
+          onClose={() => setIsCardModalOpen(false)}
         />
       )}
+      <DeleteConfirmation
+        isOpen={isDeleteModalOpen}
+        itemName={card.title}
+        onCancel={handleCancelDeletion}
+        onConfirm={handleConfirmDeletion}
+        isConfirming={isConfirmingDeletion}
+      />
     </>
   );
 };
