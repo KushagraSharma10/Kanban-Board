@@ -15,6 +15,8 @@ import {
   SeedColumnsForBoard,
 } from "../app/thunks/columns.thunks";
 import { readAllBoards } from "../app/thunks/board.thunks";
+import { validateColumnTitle } from "../utils/column";
+import { MAX_COLUMN_NAME_LENGTH } from "../utils/constants/column";
 
 const BoardView: React.FC = () => {
   const [boardName, setBoardName] = useState<string>("");
@@ -22,6 +24,7 @@ const BoardView: React.FC = () => {
   const [newColumnName, setNewColumnName] = useState<string>("");
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [cardSearch, setCardSearch] = useState<string>("");
+  const [columnNameError, setColumnNameError] = useState<string>("");
 
   const draggingColumnIdRef = useRef<string | null>(null);
 
@@ -60,7 +63,16 @@ const BoardView: React.FC = () => {
 
   const handleCreateColumn = () => {
     if (!boardId) return;
-    dispatch(createColumn(boardId, newColumnName));
+
+    const validation = validateColumnTitle(boardId, newColumnName);
+
+    if (!validation.isValid) {
+      setColumnNameError(validation.error ?? "Invalid column name.");
+      return;
+    }
+
+    setColumnNameError("");
+    dispatch(createColumn(boardId, validation.title));
     setNewColumnName("");
     setShowAdd(false);
   };
@@ -137,6 +149,7 @@ const BoardView: React.FC = () => {
   const handleCancelAddColumn = () => {
     setShowAdd(false);
     setNewColumnName("");
+    setColumnNameError("");
   };
 
   return (
@@ -195,10 +208,15 @@ const BoardView: React.FC = () => {
                   value={newColumnName}
                   onChange={(e) => setNewColumnName(e.target.value)}
                   onKeyDown={handleColumnInputKeyDown}
-                  maxLength={15}
-                  className="w-full rounded-md text-sm border border-[#3a3f44] bg-[#222c38] px-3 py-2 outline-none placeholder-[#9e9e9e] focus:border-[#6ca0ff] focus:ring-2 focus:ring-[#0096ff]/30"
+                  maxLength={MAX_COLUMN_NAME_LENGTH}
+                  className={`w-full rounded-md text-sm border px-3 py-2 outline-none placeholder-[#9e9e9e]
+              bg-[#222c38] border-[#3a3f44] focus:border-[#6ca0ff] focus:ring-2 focus:ring-[#0096ff]/30
+              ${columnNameError ? "border-red-500 focus:ring-red-500/30" : ""}`}
                   placeholder="Column name"
                 />
+                {columnNameError && (
+                  <p className="mt-2 text-xs text-red-400">{columnNameError}</p>
+                )}
                 <div className="mt-3 flex items-center">
                   <button
                     onClick={handleCreateColumn}

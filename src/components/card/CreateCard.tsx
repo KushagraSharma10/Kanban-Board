@@ -99,34 +99,25 @@ const CardModal: React.FC<CardModalProps> = ({
     }
     setDateError("");
 
-    const pendingAssignee = assigneeInput.trim();
-    let finalAssignees = assignees;
-
-    if (pendingAssignee) {
-      const emailError = validateEmail(pendingAssignee);
-      if (emailError) {
-        setAssigneeError(emailError);
+    const pendingInput = assigneeInput.trim();
+    if (pendingInput) {
+      const pendingError = validateEmail(pendingInput);
+      if (pendingError) {
+        setAssigneeError(pendingError);
         return;
       }
-
-      const isDuplicateAssignee = assignees.some(
-        (assignee) => assignee.toLowerCase() === pendingAssignee.toLowerCase()
-      );
-
-      if (!isDuplicateAssignee) {
-        finalAssignees = [...assignees, pendingAssignee];
-      }
-
-      setAssigneeInput("");
-      setAssigneeError("");
     }
+
+    const mergedAssignees = pendingInput
+      ? Array.from(new Set([...assignees, pendingInput]))
+      : assignees;
 
     onSave({
       ...card,
       title: title.trim(),
       description: description.trim() || undefined,
       dueDate: dueDate || undefined,
-      assignees: finalAssignees.length ? finalAssignees : undefined,
+      assignees: mergedAssignees.length ? mergedAssignees : undefined,
       label: selectedLabel ?? "none",
     });
     onClose();

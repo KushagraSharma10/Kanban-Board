@@ -71,7 +71,6 @@ const addColumn = (boardId: string, titleRaw: string): StoredColumn[] => {
   return updatedColumns;
 };
 
-
 const renameColumn = (
   boardId: string,
   columnId: string,
@@ -93,7 +92,6 @@ const renameColumn = (
   saveColumnsForBoard(boardId, updatedColumns);
   return updatedColumns;
 };
-
 
 const deleteColumn = (boardId: string, columnId: string): StoredColumn[] => {
   const updatedColumn = loadColumnsForBoard(boardId).filter(
