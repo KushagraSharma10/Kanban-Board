@@ -23,8 +23,13 @@ const saveAllColumns = (columns: StoredColumn[]): void => {
 export const loadColumnsForBoard = (boardId: string): StoredColumn[] =>
   loadAllColumns().filter((column) => column.boardId === boardId);
 
-const saveColumnsForBoard = (boardId: string, updatedColumn: StoredColumn[]): void => {
-  const remainingColumns = loadAllColumns().filter((column) => column.boardId !== boardId);
+const saveColumnsForBoard = (
+  boardId: string,
+  updatedColumn: StoredColumn[]
+): void => {
+  const remainingColumns = loadAllColumns().filter(
+    (column) => column.boardId !== boardId
+  );
   saveAllColumns([...remainingColumns, ...updatedColumn]);
 };
 
@@ -66,7 +71,6 @@ const addColumn = (boardId: string, titleRaw: string): StoredColumn[] => {
   return updatedColumns;
 };
 
-
 const renameColumn = (
   boardId: string,
   columnId: string,
@@ -89,9 +93,10 @@ const renameColumn = (
   return updatedColumns;
 };
 
-
 const deleteColumn = (boardId: string, columnId: string): StoredColumn[] => {
-  const updatedColumn = loadColumnsForBoard(boardId).filter((column) => column.id !== columnId);
+  const updatedColumn = loadColumnsForBoard(boardId).filter(
+    (column) => column.id !== columnId
+  );
   saveColumnsForBoard(boardId, updatedColumn);
   return updatedColumn;
 };
@@ -127,7 +132,12 @@ export const deleteColumnThunk =
 export const applyColumnOrder =
   (boardId: string, nextColumns: Array<{ id: string; title: string }>) =>
   (dispatch: AppDispatch): void => {
-    saveBoardColumnOrder(boardId, nextColumns, loadColumnsForBoard, saveColumnsForBoard);
+    saveBoardColumnOrder(
+      boardId,
+      nextColumns,
+      loadColumnsForBoard,
+      saveColumnsForBoard
+    );
     const reloadedColumns = loadColumnsForBoard(boardId);
     dispatch(setColumnsForBoard({ boardId, columns: reloadedColumns }));
   };
