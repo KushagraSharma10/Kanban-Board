@@ -6,6 +6,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { MAX_DESCRIPTION_LENGTH } from "../../utils/constants/card";
 import { cloneCardInColumn } from "../../app/thunks/card.thunks";
 import DeleteConfirmation from "../DeleteConfirmation";
+import { FiEdit2 } from "react-icons/fi";
 
 const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
   const dispatch = useAppDispatch();
@@ -16,9 +17,10 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
     useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
-  const handleCardClick = () => {
-    if (isMenuOpen) return;
-    setIsCardModalOpen(true);
+   const handleCardClick = (): void => {
+    if (isMenuOpen) {
+      setIsMenuOpen(false);
+    }
   };
 
   useEffect(() => {
@@ -39,6 +41,11 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
   const handleSave = (updatedCard: CardData) => {
     onUpdate(updatedCard);
     setIsCardModalOpen(false);
+  };
+
+  const handleOpenEditModal = (mouseEvent: React.MouseEvent<HTMLButtonElement>): void => {
+    mouseEvent.stopPropagation();
+    setIsCardModalOpen(true);
   };
 
   const handleDeleteCard = (
@@ -71,14 +78,22 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
         className="relative bg-[#222c38] shadow-md rounded-md p-3 mb-2 cursor-pointer hover:bg-[#293442] transition"
       >
         <div
-          className="absolute top-3 right-2 z-10"
+          className="absolute top-3 right-2 z-10 flex items-center gap-2"
           ref={menuRef}
           onClick={(e) => e.stopPropagation()}
         >
+           <button
+            aria-label="Edit card"
+            title="Edit"
+            onClick={handleOpenEditModal}
+            className="opacity-90 hover:opacity-100 hover:scale-[1.03] transition cursor-pointer"
+          >
+            <FiEdit2 />
+          </button>
           <button
             aria-label="Card options"
             onClick={() => setIsMenuOpen((prev) => !prev)}
-            className="opacity-80 hover:opacity-100"
+            className="opacity-80 hover:opacity-100 cursor-pointer"
           >
             <BsThreeDotsVertical />
           </button>
