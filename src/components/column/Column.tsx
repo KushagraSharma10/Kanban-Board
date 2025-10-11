@@ -5,11 +5,15 @@ import type { ColumnProps } from "../../utils/types/column";
 import type { CardData } from "../../utils/interface/card";
 
 import { useAppDispatch, useAppSelector } from "../../app/store/hooks";
-import {
-  selectCardsForColumn,
-} from "../../app/slices/card.slice";
+import { selectCardsForColumn } from "../../app/slices/card.slice";
 import { MAX_TITLE_LENGTH } from "../../utils/constants/card-modal";
-import { addCardToColumn, deleteCardFromColumn, loadCardsForColumn, updateCardInColumn } from "../../app/thunks/card.thunks";
+import {
+  addCardToColumn,
+  deleteCardFromColumn,
+  loadCardsForColumn,
+  updateCardInColumn,
+} from "../../app/thunks/card.thunks";
+import DeleteConfirmation from "../DeleteConfirmation";
 
 const Column: React.FC<ColumnProps> = ({
   column,
@@ -33,6 +37,9 @@ const Column: React.FC<ColumnProps> = ({
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const [newCardTitle, setNewCardTitle] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+  const [isConfirmingDeletion, setIsConfirmingDeletion] =
+    useState<boolean>(false);
 
   useEffect(() => {
     dispatch(loadCardsForColumn(column.id));
@@ -114,9 +121,23 @@ const Column: React.FC<ColumnProps> = ({
     setEditing(true);
   };
 
-  const handleDeleteClick = () => {
+  const handleDeleteColumnClick = (): void => {
     setMenuOpen(false);
-    onDelete(column.id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCancelDeletion = (): void => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleConfirmDeletion = async (): Promise<void> => {
+    try {
+      setIsConfirmingDeletion(true);
+      onDelete(column.id);
+    } finally {
+      setIsConfirmingDeletion(false);
+      setIsDeleteModalOpen(false);
+    }
   };
 
   const menuOptions = [
@@ -127,29 +148,31 @@ const Column: React.FC<ColumnProps> = ({
     },
     {
       label: "Delete",
-      action: handleDeleteClick,
+      action: handleDeleteColumnClick,
       className:
         "w-full text-left px-3 py-2 hover:bg-[#141b26] text-sm text-red-400",
     },
   ];
 
-  const handleNewCardKeyDown = (keyboardEvent: React.KeyboardEvent<HTMLInputElement>) => {
-  if (keyboardEvent.key === "Enter") {
-    handleAddCard();
-  }
+  const handleNewCardKeyDown = (
+    keyboardEvent: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (keyboardEvent.key === "Enter") {
+      handleAddCard();
+    }
 
-  if (keyboardEvent.key === "Escape") {
+    if (keyboardEvent.key === "Escape") {
+      setIsAdding(false);
+      setNewCardTitle("");
+      setError("");
+    }
+  };
+
+  const handleCancelCard = () => {
     setIsAdding(false);
-    setNewCardTitle(""); 
-    setError("");    
-  }
-};
-
-const handleCancelCard = () => {
-  setIsAdding(false);     
-  setError("");           
-  setNewCardTitle("");   
-};
+    setError("");
+    setNewCardTitle("");
+  };
 
   return (
     <div className="min-w-[70vw] max-h-max md:min-w-[40vw] lg:min-w-[20vw] bg-[#161a21] rounded-md md:p-1.5 p-1">
@@ -254,6 +277,13 @@ const handleCancelCard = () => {
           </div>
         )}
       </div>
+      <DeleteConfirmation
+        isOpen={isDeleteModalOpen}
+        itemName={column.title}
+        onCancel={handleCancelDeletion}
+        onConfirm={handleConfirmDeletion}
+        isConfirming={isConfirmingDeletion}
+      />
     </div>
   );
 };

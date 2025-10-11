@@ -12,7 +12,6 @@ import { getActiveUser } from "../../utils/auth";
 const CardModal: React.FC<CardModalProps> = ({
   card,
   onSave,
-  onDelete,
   onClose,
   existingCards = [],
 }) => {
@@ -112,11 +111,6 @@ const CardModal: React.FC<CardModalProps> = ({
       assignees: finalAssignees.length ? finalAssignees : undefined,
       label: selectedLabel ?? "none",
     });
-    onClose();
-  };
-
-  const handleDelete = () => {
-    onDelete(card.id);
     onClose();
   };
 
@@ -241,12 +235,6 @@ const CardModal: React.FC<CardModalProps> = ({
         )}
 
         <div className="flex justify-end gap-2 mt-6">
-          <button
-            onClick={handleDelete}
-            className="px-3 py-1 rounded bg-red-600 text-sm text-white hover:brightness-110"
-          >
-            Delete
-          </button>
           <button
             onClick={onClose}
             className="px-3 py-1 rounded bg-[#222c38] text-sm text-[#e6edf3] border border-[#3a3f44] hover:brightness-110"
