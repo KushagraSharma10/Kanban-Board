@@ -1,14 +1,8 @@
 import React, { useEffect, useRef } from "react";
+import type { DeleteConfirmationModel } from "../utils/types/delete-confirmation";
 
-type DeleteConfirmationModal = {
-  isOpen: boolean;
-  itemName: string;
-  onCancel: () => void;
-  onConfirm: () => void;
-  isConfirming?: boolean;
-};
 
-const DeleteConfirmation: React.FC<DeleteConfirmationModal> = ({
+const DeleteConfirmation: React.FC<DeleteConfirmationModel> = ({
   isOpen,
   itemName,
   onCancel,

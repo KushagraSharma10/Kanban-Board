@@ -52,10 +52,14 @@ const BoardView: React.FC = () => {
       return;
     }
     setBoardName(board.name);
-    if (boardId) {
-      dispatch(SeedColumnsForBoard(boardId));
-    }
-  }, [activeUserId, boardId, navigate, dispatch]);
+  }, [activeUserId, boardId]);
+
+  useEffect(() => {
+  if (!boardId) return;
+  if (!columns.length) {
+    dispatch(SeedColumnsForBoard(boardId));
+  }
+}, [dispatch, boardId, columns.length]);
 
   useEffect(() => {
     if (showAdd) inputRef.current?.focus();

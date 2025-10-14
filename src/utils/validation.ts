@@ -27,7 +27,7 @@ export const validatePassword = (password: string): string | null => {
 };
 
 export const validateEmail = (email: string): string | null => {
-  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const emailPattern = /^[a-z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   if (!emailPattern.test(email)) {
     return "Please enter a valid email address.";

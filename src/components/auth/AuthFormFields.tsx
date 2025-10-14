@@ -5,6 +5,7 @@ import {
 } from "../../styles/auth/auth-form";
 import { AuthInput } from "../../styles/auth/auth-input";
 import { useState } from "react";
+import { BiHide, BiShow } from "react-icons/bi";
 
 const AuthFormFields: React.FC<AuthProp> = ({
   fields,
@@ -52,9 +53,9 @@ const AuthFormFields: React.FC<AuthProp> = ({
                   type="button"
                   aria-label={isVisible ? "Hide password" : "Show password"}
                   onClick={() => toggleVisibility(field.id)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-xs px-2 py-1 text-[#a3b1c2] hover:text-white"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-xl px-2 py-1 text-[#a3b1c2] hover:text-white"
                 >
-                  {isVisible ? "Hide" : "Show"}
+                  {isVisible ? <BiHide /> : <BiShow />}
                 </button>
               )}
             </div>
