@@ -12,8 +12,6 @@ import type { CardData } from "../../../utils/interface/card";
 import {
   loadCardsForColumn,
   addCardToColumn,
-  updateCardInColumn,
-  deleteCardFromColumn,
 } from "../../../app/thunks/card.thunks";
 
 const openColumnMenu = (): void => {
