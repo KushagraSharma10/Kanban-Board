@@ -14,9 +14,9 @@ import type { StoredColumn } from "../../utils/types/column";
 const navigateMock = jest.fn();
 
 jest.mock("react-router", () => {
-  const actual = jest.requireActual("react-router");
+  const actualRouter = jest.requireActual("react-router");
   return {
-    ...actual,
+    ...actualRouter,
     useParams: () => ({ id: "board-1" }),
     useNavigate: () => navigateMock,
   };
@@ -44,9 +44,9 @@ jest.mock("../../app/thunks/columns.thunks", () => ({
   renameColumnThunk: jest.fn(),
   deleteColumnThunk: jest.fn(),
   applyColumnOrder: jest.fn(
-    (boardId: string, cols: Array<{ id: string; title: string }>) => ({
+    (boardId: string, columns: Array<{ id: string; title: string }>) => ({
       type: "APPLY_COLUMN_ORDER",
-      payload: { boardId, cols },
+      payload: { boardId, columns },
     })
   ),
   loadColumnsForBoard: jest.fn(() => []),
@@ -59,7 +59,7 @@ jest.mock("../../components/column/Column", () => {
   return { __esModule: true, default: MockColumn };
 });
 
-describe("BoardView — Complete Test Suite", () => {
+describe("BoardView — Test cases", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (loadColumnsForBoard as jest.Mock).mockReturnValue([]);
@@ -130,7 +130,7 @@ describe("BoardView — Complete Test Suite", () => {
     (readAllBoards as jest.Mock).mockReturnValueOnce([]);
     renderWithProviders(<BoardView />);
     await waitFor(() => {
-      expect(navigateMock).toHaveBeenCalledWith("/");
+      expect(navigateMock).toHaveBeenCalledWith("/login");
     });
   });
 

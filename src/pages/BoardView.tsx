@@ -48,7 +48,7 @@ const BoardView: React.FC = () => {
     );
 
     if (!board) {
-      navigate("/");
+      navigate("/login");
       return;
     }
     setBoardName(board.name);

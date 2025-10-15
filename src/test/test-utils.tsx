@@ -28,7 +28,7 @@ export const renderWithProviders = (
       <MemoryRouter initialEntries={[route]}>
         <Routes>
           <Route path={path} element={component} />
-          <Route path="/" element={<div>Dashboard</div>} />
+          <Route path="/login" element={<div>Login</div>} />
         </Routes>
       </MemoryRouter>
     </Provider>
