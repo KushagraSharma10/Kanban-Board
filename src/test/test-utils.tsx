@@ -5,17 +5,17 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { MemoryRouter, Route, Routes } from "react-router";
 import columnsReducer from "../app/slices/column.slice";
 import type { RootState } from "../app/store/store";
+import type { RenderOptions } from "../utils/types/board";
 
-type RenderOptions = {
-  route?: string;
-  path?: string;
-  preloadedState?: Partial<RootState>;
-};
 
-export function renderWithProviders(
-  ui: React.ReactElement,
-  { route = "/board/board-1", path = "/board/:id", preloadedState }: RenderOptions = {}
-) {
+export const renderWithProviders = (
+  component: React.ReactElement,
+  {
+    route = "/board/board-1",
+    path = "/board/:id",
+    preloadedState,
+  }: RenderOptions = {}
+) => {
   const rootReducer = combineReducers({ columns: columnsReducer });
 
   const store = configureStore({
@@ -27,10 +27,29 @@ export function renderWithProviders(
     <Provider store={store}>
       <MemoryRouter initialEntries={[route]}>
         <Routes>
-          <Route path={path} element={ui} />
+          <Route path={path} element={component} />
           <Route path="/" element={<div>Dashboard</div>} />
         </Routes>
       </MemoryRouter>
     </Provider>
   );
-}
+};
+
+export const makeDataTransfer = (): DataTransfer => {
+  const store: Record<string, string> = {};
+  return {
+    setData: (type: string, value: string) => {
+      store[type] = value;
+    },
+    getData: (type: string) => store[type] || "",
+    clearData: () => {
+      Object.keys(store).forEach((key) => delete store[key]);
+    },
+    setDragImage: () => {},
+    effectAllowed: "all",
+    dropEffect: "move",
+    files: {} as FileList,
+    items: {} as DataTransferItemList,
+    types: [],
+  } as DataTransfer;
+};

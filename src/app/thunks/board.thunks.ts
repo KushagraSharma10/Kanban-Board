@@ -12,12 +12,12 @@ import {
 import { toast } from "react-toastify";
 import { validateBoardForm } from "../../utils/board";
 
-export function readAllBoards(): BoardItem[] {
+export const readAllBoards = (): BoardItem[] => {
   const stored = loadFromStorage(BOARDS_STORAGE_KEY, []);
   return (Array.isArray(stored) ? stored : []) as BoardItem[];
 }
 
-export function writeAllBoards(allBoards: BoardItem[]): void {
+export const writeAllBoards = (allBoards: BoardItem[]): void => {
   saveToStorage(BOARDS_STORAGE_KEY, allBoards);
 }
 

@@ -48,15 +48,15 @@ jest.mock("../../DeleteConfirmation", () => {
   return { __esModule: true, default: MockDelete };
 });
 
-const renderWithStore = (ui: React.ReactElement) =>{
+const renderWithStore = (component: React.ReactElement) => {
   const store = configureStore({
     reducer: combineReducers({
       dummy: (state = {}) => state,
     }),
   });
 
-  return { ...render(<Provider store={store}>{ui}</Provider>), store };
-}
+  return { ...render(<Provider store={store}>{component}</Provider>), store };
+};
 
 const longText = "x".repeat(500);
 
@@ -66,7 +66,7 @@ const baseCard: CardData = {
   columnId: "col-1",
   title: "Initial Title",
   description: longText,
-  dueDate: "2099-12-31",
+  dueDate: "2029-12-31",
   label: "high",
   assignees: [
     "alice@example.com",
@@ -76,19 +76,19 @@ const baseCard: CardData = {
   ],
 };
 
-describe("Card component (simple flow tests)", () => {
+describe("Card component flow tests", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it("renders title, label, truncated description, due date and assignees (+n)", () => {
+  it("renders title, label, truncated description, due date and assignees", () => {
     renderWithStore(
       <Card card={baseCard} onUpdate={jest.fn()} onDelete={jest.fn()} />
     );
 
     expect(screen.getByText("Initial Title")).toBeInTheDocument();
     expect(screen.getByText("HIGH")).toBeInTheDocument();
-    expect(screen.getByText(/Due: 2099-12-31/i)).toBeInTheDocument();
+    expect(screen.getByText(/Due: 2029-12-31/i)).toBeInTheDocument();
     expect(
       screen.getByText((text) => text.endsWith("..."))
     ).toBeInTheDocument();

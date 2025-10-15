@@ -1,7 +1,7 @@
 import { screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import BoardView from "../BoardView";
-import { renderWithProviders } from "../../test/test-utils";
+import { makeDataTransfer, renderWithProviders } from "../../test/test-utils";
 import {
   SeedColumnsForBoard,
   createColumn,
@@ -10,20 +10,6 @@ import {
 } from "../../app/thunks/columns.thunks";
 import { readAllBoards } from "../../app/thunks/board.thunks";
 import type { StoredColumn } from "../../utils/types/column";
-
-const makeDataTransfer = () => {
-  const store: Record<string, string> = {};
-  return {
-    setData: (type: string, val: string) => { store[type] = val; },
-    getData: (type: string) => store[type],
-    clearData: () => { Object.keys(store).forEach(key => delete store[key]); },
-    effectAllowed: "",
-    dropEffect: "",
-    files: [],
-    items: [],
-    types: [],
-  } as DataTransfer;
-};
 
 const navigateMock = jest.fn();
 
@@ -57,10 +43,12 @@ jest.mock("../../app/thunks/columns.thunks", () => ({
   })),
   renameColumnThunk: jest.fn(),
   deleteColumnThunk: jest.fn(),
-  applyColumnOrder: jest.fn((boardId: string, cols: Array<{id: string; title: string}>) => ({
-    type: "APPLY_COLUMN_ORDER",
-    payload: { boardId, cols },
-  })),
+  applyColumnOrder: jest.fn(
+    (boardId: string, cols: Array<{ id: string; title: string }>) => ({
+      type: "APPLY_COLUMN_ORDER",
+      payload: { boardId, cols },
+    })
+  ),
   loadColumnsForBoard: jest.fn(() => []),
 }));
 
@@ -125,7 +113,9 @@ describe("BoardView — Complete Test Suite", () => {
     await user.click(screen.getByTitle(/add column/i));
     expect(screen.getByPlaceholderText(/column name/i)).toBeInTheDocument();
     await user.click(screen.getByTitle(/close/i));
-    expect(screen.queryByPlaceholderText(/column name/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText(/column name/i)
+    ).not.toBeInTheDocument();
   });
 
   it("focuses input automatically when Add Column opens", async () => {
@@ -136,7 +126,7 @@ describe("BoardView — Complete Test Suite", () => {
     expect(input).toHaveFocus();
   });
 
-  it("redirects to dashboard when board not found", async () => {
+  it("redirects to login page when board not found", async () => {
     (readAllBoards as jest.Mock).mockReturnValueOnce([]);
     renderWithProviders(<BoardView />);
     await waitFor(() => {

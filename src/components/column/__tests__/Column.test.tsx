@@ -67,7 +67,7 @@ jest.mock("../../DeleteConfirmation", () => {
 });
 
 const renderWithLocalStore = (
-  ui: React.ReactElement,
+  component: React.ReactElement,
   preloaded: {
     columns?: { items: StoredColumn[] };
     cards?: { items: CardData[] };
@@ -84,7 +84,7 @@ const renderWithLocalStore = (
   });
 
   return {
-    ...render(<Provider store={store}>{ui}</Provider>),
+    ...render(<Provider store={store}>{component}</Provider>),
     store,
   };
 }
@@ -101,7 +101,7 @@ const baseCards: CardData[] = [
 
 const columnItem = { id: "col-1", title: "To Do" };
 
-describe("Column component (simple flow tests)", () => {
+describe("Column component flow tests", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
