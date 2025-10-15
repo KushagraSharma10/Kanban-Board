@@ -17,27 +17,38 @@ reviews:
     - "!node_modules/**"
 
   path_instructions:
-    - globs: ["src/**/slices/**/*.ts", "src/**/store/**/*.ts"]
+    - path: "src/**/slices/**/*.ts"
       instructions: >
         Verify reducer immutability, action payload types, selector memoization,
         and proper RTK patterns (createSlice, createAsyncThunk). Flag any direct
         localStorage writes in reducers (move to thunks/middleware).
 
-    - globs: ["src/**/components/**/*.{tsx,jsx}"]
+    - path: "src/**/store/**/*.ts"
+      instructions: >
+        Ensure store setup follows RTK best practices; check for proper middleware,
+        typed hooks, and selector reuse.
+
+    - path: "src/**/components/**/*.{tsx,jsx}"
       instructions: >
         Check prop types, render performance (useMemo/useCallback), key usage in lists,
-        a11y basics (labels/roles), and testability. Prefer controlled drag-and-drop handlers.
+        basic a11y (labels/roles), and testability. Prefer controlled drag-and-drop handlers.
 
-    - globs: ["**/*.{spec,test}.{ts,tsx,js,jsx}"]
+    - path: "**/*.spec.{ts,tsx,js,jsx}"
       instructions: >
-        Ensure meaningful assertions, RTL best practices (avoid getByTestId when role/label works),
-        and coverage of edge cases.
+        Ensure meaningful assertions, RTL best practices (prefer role/label over testids),
+        and edge-case coverage.
+
+    - path: "**/*.test.{ts,tsx,js,jsx}"
+      instructions: >
+        Ensure meaningful assertions, RTL best practices (prefer role/label over testids),
+        and edge-case coverage.
 
   auto_review:
     enabled: true
     drafts: false
     auto_incremental_review: true
-    base_branches: [".*"]
+    base_branches:
+      - ".*"
 
   pre_merge_checks:
     description:
