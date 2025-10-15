@@ -101,11 +101,11 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ isOpen, onClose }) => {
       },
       toggleVisibility: () => setIsConfirmPasswordVisible((previous) => !previous),
     },
-  ] as const;
+  ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4">
-      <div className="w-full max-w-md rounded-lg border border-[#3a3f44] bg-[#161a21] p-6 text-[#e6edf3]">
+     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4">
+      <div className="w-full max-w-md rounded-lg border border-theme-borderMuted bg-theme-authSurface p-6 text-theme-textPrimary">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">
             {currentStage === "verifyEmail" && "Forgot password"}
@@ -114,7 +114,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ isOpen, onClose }) => {
           <button
             onClick={handleCloseModal}
             aria-label="Close"
-            className="rounded px-2 py-1 text-[#a3b1c2] hover:bg-white/5"
+            className="rounded px-2 py-1 text-theme-inputIcon hover:bg-white/5"
           >
             ✕
           </button>
@@ -122,11 +122,11 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ isOpen, onClose }) => {
 
         {currentStage === "verifyEmail" && (
           <form onSubmit={handleSubmitEmail}>
-            <p className="mb-3 text-sm text-white/70">
+            <p className="mb-3 text-sm text-theme-textMuted">
               Enter your account email to continue.
             </p>
 
-            <label className="mb-1 block text-sm text-white/70">Email address</label>
+            <label className="mb-1 block text-sm text-theme-textMuted">Email address</label>
             <input
               type="email"
               value={emailAddress}
@@ -134,10 +134,10 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ isOpen, onClose }) => {
                 setEmailAddress(changeEvent.target.value);
                 if (emailValidationError) setEmailValidationError("");
               }}
-              className={`w-full rounded-md bg-[#0b0f14] px-3 py-2 outline-none border ${
+              className={`w-full rounded-md bg-theme-authSurfaceAlt px-3 py-2 outline-none border ${
                 emailValidationError
                   ? "border-red-500 focus:border-red-500"
-                  : "border-[#3a3f44] focus:border-[#6ca0ff] focus:ring-2 focus:ring-[#0096ff]/30"
+                  : "border-theme-borderMuted focus:border-theme-focusBorder focus:ring-2 focus:ring-theme-focusRing/30"
               }`}
               placeholder="you@example.com"
             />
@@ -149,13 +149,13 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ isOpen, onClose }) => {
               <button
                 type="button"
                 onClick={handleCloseModal}
-                className="rounded border border-[#3a3f44] px-3 py-1.5 text-sm hover:brightness-110"
+                className="rounded border border-theme-borderMuted px-3 py-1.5 text-sm hover:brightness-110"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="rounded bg-[#0096ff] px-4 py-1.5 text-sm font-medium text-black hover:bg-[#6ca0ff]"
+                className="rounded bg-theme-primaryButton px-4 py-1.5 text-sm font-medium text-black hover:bg-theme-primaryButtonHover"
               >
                 Continue
               </button>
@@ -167,7 +167,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ isOpen, onClose }) => {
           <form onSubmit={handleSubmitNewPassword}>
             {passwordFieldConfigs.map((fieldConfig, index) => (
               <div key={fieldConfig.key} className={index === 1 ? "mt-3" : ""}>
-                <label className="mb-1 block text-sm text-white/70">
+                <label className="mb-1 block text-sm text-theme-textMuted">
                   {fieldConfig.label}
                 </label>
                 <div className="relative">
@@ -175,7 +175,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ isOpen, onClose }) => {
                     type={fieldConfig.isVisible ? "text" : "password"}
                     value={fieldConfig.value}
                     onChange={(event) => fieldConfig.onChange(event.target.value)}
-                    className="w-full rounded-md bg-[#0b0f14] border border-[#3a3f44] px-3 py-2 pr-12 text-[#e6edf3] outline-none focus:border-[#6ca0ff] focus:ring-2 focus:ring-[#0096ff]/30"
+                    className="w-full rounded-md bg-theme-authSurfaceAlt border border-theme-borderMuted px-3 py-2 pr-12 text-theme-textPrimary outline-none focus:border-theme-focusBorder focus:ring-2 focus:ring-theme-focusRing/30"
                     placeholder="••••••••"
                   />
                   <button
@@ -183,7 +183,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ isOpen, onClose }) => {
                     onClick={fieldConfig.toggleVisibility}
                     aria-label={fieldConfig.isVisible ? "Hide password" : "Show password"}
                     title={fieldConfig.isVisible ? "Hide password" : "Show password"}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-xl px-2 py-1 text-[#a3b1c2] hover:text-white"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-xl px-2 py-1 text-theme-inputIcon hover:text-theme-inputIconHover"
                   >
                     {fieldConfig.isVisible ? <BiHide /> : <BiShow />}
                   </button>
@@ -199,13 +199,13 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ isOpen, onClose }) => {
               <button
                 type="button"
                 onClick={() => setCurrentStage("verifyEmail")}
-                className="rounded border border-[#3a3f44] px-3 py-1.5 text-sm hover:brightness-110"
+                className="rounded border border-theme-borderMuted px-3 py-1.5 text-sm hover:brightness-110"
               >
                 Back
               </button>
               <button
                 type="submit"
-                className="rounded bg-[#0096ff] px-4 py-1.5 text-sm font-medium text-black hover:bg-[#6ca0ff]"
+                className="rounded bg-theme-primaryButton px-4 py-1.5 text-sm font-medium text-black hover:bg-theme-primaryButtonHover"
               >
                 Update password
               </button>

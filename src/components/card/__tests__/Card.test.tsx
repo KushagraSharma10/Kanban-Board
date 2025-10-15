@@ -48,7 +48,7 @@ jest.mock("../../DeleteConfirmation", () => {
   return { __esModule: true, default: MockDelete };
 });
 
-function renderWithStore(ui: React.ReactElement) {
+const renderWithStore = (ui: React.ReactElement) =>{
   const store = configureStore({
     reducer: combineReducers({
       dummy: (state = {}) => state,

@@ -55,11 +55,11 @@ const BoardView: React.FC = () => {
   }, [activeUserId, boardId]);
 
   useEffect(() => {
-  if (!boardId) return;
-  if (!columns.length) {
-    dispatch(SeedColumnsForBoard(boardId));
-  }
-}, [dispatch, boardId, columns.length]);
+    if (!boardId) return;
+    if (!columns.length) {
+      dispatch(SeedColumnsForBoard(boardId));
+    }
+  }, [dispatch, boardId, columns.length]);
 
   useEffect(() => {
     if (showAdd) inputRef.current?.focus();
@@ -157,8 +157,8 @@ const BoardView: React.FC = () => {
   };
 
   return (
-    <div className="w-full min-h-screen text-[#e6edf3] bg-[#0b0f14]">
-      <header className="p-4 md:p-6 border-b border-[#3a3f44] bg-[#161a21] flex items-center gap-3 md:gap-4 justify-between sticky top-0 z-10">
+    <div className="w-full min-h-screen text-theme-primary bg-theme-page">
+      <header className="p-4 md:p-6 border-b border-theme-border bg-theme-surface flex items-center gap-3 md:gap-4 justify-between sticky top-0 z-10">
         <div className="flex items-center gap-2">
           <img src="/Kanban.svg" alt="photo" className="w-9 h-9" />
           <h1 className="text-base md:text-xl font-semibold text-[#e6edf3]">
@@ -169,18 +169,18 @@ const BoardView: React.FC = () => {
           value={cardSearch}
           onChange={(e) => setCardSearch(e.target.value)}
           placeholder="Search cards (title, label, assignee)…"
-          className="flex-1 max-w-[420px] px-3 py-2 rounded-md bg-[#0b0f14] border border-[#3a3f44] outline-none placeholder-[#9e9e9e] focus:ring-2 focus:ring-[#0096ff]/30 focus:border-[#6ca0ff]"
+          className="flex-1 max-w-[var(--size-theme-search)] px-3 py-2 rounded-md bg-theme-page border border-theme-border outline-none placeholder:text-theme-placeholder focus:ring-2 focus:ring-theme-accent/30 focus:border-theme-accentHover"
         />
         <button
           onClick={() => setShowAdd((previous) => !previous)}
-          className="flex items-center gap-2 px-3 py-2 rounded-md bg-[#222c38] hover:brightness-110 border border-[#3a3f44] text-[#e6edf3]"
+          className="flex items-center gap-2 px-3 py-2 rounded-md bg-theme-surfaceMuted hover:brightness-110 border border-theme-border text-theme-primary"
         >
           <GoPlus className="text-lg" />
           Add Column
         </button>
       </header>
 
-      <div className="w-full min-h-[90vh] overflow-auto">
+      <div className="w-full min-h-[var(--size-theme-board)] overflow-auto">
         <div className="flex gap-4 p-4 md:p-6 min-w-max">
           {columns.map((columnItem) => (
             <div
@@ -192,7 +192,7 @@ const BoardView: React.FC = () => {
               onDragOver={handleColumnDragOver}
               onDrop={(dragEvent) => handleColumnDrop(columnItem.id, dragEvent)}
               onDragEnd={() => (draggingColumnIdRef.current = null)}
-              className="min-w-[70vw] md:min-w-[40vw] h-fit lg:min-w-[22vw] rounded-lg border border-[#3a3f44] bg-[#161a21] transition-colors hover:border-[#a3b1c2]/40"
+              className="min-w-[var(--size-col-lg)] md:min-w-[var(--size-col-md)] lg:min-w-[var(--size-col-sm)] h-fit rounded-lg border border-theme-border bg-theme-surface transition-colors hover:border-theme-borderHover/40"
               title="Drag to reorder"
             >
               <Column
@@ -204,17 +204,17 @@ const BoardView: React.FC = () => {
               />
             </div>
           ))}
-          <div className="min-w-[22vw] max-w-[22vw]">
+          <div className="min-w-[var(--size-col-sm)] max-w-[var(--size-col-sm)]">
             {showAdd ? (
-              <div className="rounded-lg bg-[#161a21] border border-[#3a3f44] p-3 md:p-4 shadow-[0_0_0_1px_rgba(58,63,68,0.2)]">
+              <div className="rounded-lg bg-theme-surface border border-theme-border p-3 md:p-4 shadow-theme-outline">
                 <input
                   ref={inputRef}
                   value={newColumnName}
                   onChange={(e) => setNewColumnName(e.target.value)}
                   onKeyDown={handleColumnInputKeyDown}
                   maxLength={MAX_COLUMN_NAME_LENGTH}
-                  className={`w-full rounded-md text-sm border px-3 py-2 outline-none placeholder-[#9e9e9e]
-              bg-[#222c38] border-[#3a3f44] focus:border-[#6ca0ff] focus:ring-2 focus:ring-[#0096ff]/30
+                  className={`w-full rounded-md text-sm border px-3 py-2 outline-none placeholder:text-theme-placeholder
+              bg-theme-surfaceMuted border-theme-border focus:border-theme-accentHover focus:ring-2 focus:ring-theme-accent/30
               ${columnNameError ? "border-red-500 focus:ring-red-500/30" : ""}`}
                   placeholder="Column name"
                 />
@@ -225,13 +225,13 @@ const BoardView: React.FC = () => {
                   <button
                     onClick={handleCreateColumn}
                     disabled={!newColumnName.trim()}
-                    className="px-3 py-1.5 rounded-md bg-[#0096ff] text-sm text-black hover:bg-[#6ca0ff] disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-1.5 rounded-md bg-theme-accent text-sm text-black hover:bg-theme-accentHover disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Add
                   </button>
                   <button
                     onClick={handleCancelAddColumn}
-                    className="ml-auto px-3 py-2 rounded-md border border-transparent text-[#e6edf3] hover:bg-[#2a3b4f]/30"
+                    className="ml-auto px-3 py-2 rounded-md border border-transparent text-theme-primary hover:bg-theme-overlay/30"
                     aria-label="Close"
                     title="Close"
                   >
@@ -242,7 +242,7 @@ const BoardView: React.FC = () => {
             ) : (
               <button
                 onClick={() => setShowAdd(true)}
-                className="w-fit px-4 md:w-full py-3 flex items-center justify-center gap-2 rounded-lg border border-dashed border-[#3a3f44] bg-[#161a21]/60 hover:bg-[#161a21] text-sm text-[#e6edf3]"
+                className="w-fit px-4 md:w-full py-3 flex items-center justify-center gap-2 rounded-lg border border-dashed border-theme-border bg-theme-surface/60 hover:bg-theme-surface text-sm text-theme-primary"
                 title="Add column"
               >
                 <GoPlus className="text-lg" />
