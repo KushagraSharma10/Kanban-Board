@@ -138,9 +138,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ isOpen, onClose }) => {
               Enter your account email to continue.
             </p>
 
-            <label className="mb-1 block text-sm text-theme-textMuted">
-              Email address
-            </label>
+            <label className="mb-1 block text-sm text-theme-textMuted">Email address</label>
             <input
               type="email"
               value={emailAddress}
@@ -190,21 +188,15 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ isOpen, onClose }) => {
                   <input
                     type={fieldConfig.isVisible ? "text" : "password"}
                     value={fieldConfig.value}
-                    onChange={(event) =>
-                      fieldConfig.onChange(event.target.value)
-                    }
+                    onChange={(event) => fieldConfig.onChange(event.target.value)}
                     className="w-full rounded-md bg-theme-authSurfaceAlt border border-theme-borderMuted px-3 py-2 pr-12 text-theme-textPrimary outline-none focus:border-theme-focusBorder focus:ring-2 focus:ring-theme-focusRing/30"
                     placeholder="••••••••"
                   />
                   <button
                     type="button"
                     onClick={fieldConfig.toggleVisibility}
-                    aria-label={
-                      fieldConfig.isVisible ? "Hide password" : "Show password"
-                    }
-                    title={
-                      fieldConfig.isVisible ? "Hide password" : "Show password"
-                    }
+                    aria-label={fieldConfig.isVisible ? "Hide password" : "Show password"}
+                    title={fieldConfig.isVisible ? "Hide password" : "Show password"}
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-xl px-2 py-1 text-theme-inputIcon hover:text-theme-inputIconHover"
                   >
                     {fieldConfig.isVisible ? <BiHide /> : <BiShow />}

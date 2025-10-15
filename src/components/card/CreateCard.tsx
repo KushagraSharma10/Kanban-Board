@@ -138,9 +138,7 @@ const CardModal: React.FC<CardModalProps> = ({
     <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
       <div className="bg-theme-cardSurface rounded-lg shadow-xl w-96 p-6 relative">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-theme-textPrimary">
-            Edit Card
-          </h2>
+          <h2 className="text-xl font-semibold text-theme-textPrimary">Edit Card</h2>
           <button
             onClick={onClose}
             className="text-theme-inputIcon hover:text-theme-textPrimary text-xl leading-none"
@@ -196,10 +194,7 @@ const CardModal: React.FC<CardModalProps> = ({
         />
         {dateError && <p className="text-red-400 text-sm mb-2">{dateError}</p>}
 
-        <label
-          htmlFor="card-priority"
-          className="block text-sm text-[#9ca3af] mt-3 mb-1"
-        >
+        <label className="block text-sm text-theme-textMuted2 mt-3 mb-1">
           Priority
         </label>
         <select
@@ -217,10 +212,7 @@ const CardModal: React.FC<CardModalProps> = ({
           ))}
         </select>
 
-        <label
-          htmlFor="card-assignees"
-          className="block text-sm text-[#9ca3af] mt-4 mb-1"
-        >
+        <label className="block text-sm text-theme-textMuted2 mt-4 mb-1">
           Assignees
         </label>
         <div className="w-full border border-theme-inputBorder rounded px-2 py-2 bg-theme-assigneeArea">
