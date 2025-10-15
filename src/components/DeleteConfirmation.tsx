@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import type { DeleteConfirmationModel } from "../utils/types/delete-confirmation";
 
-
 const DeleteConfirmation: React.FC<DeleteConfirmationModel> = ({
   isOpen,
   itemName,
@@ -42,32 +41,40 @@ const DeleteConfirmation: React.FC<DeleteConfirmationModel> = ({
         onClick={onCancel}
       />
 
-      <div className="relative mx-4 w-full max-w-md rounded-2xl border border-white/10 bg-[#0B0F14]/90 p-6 text-white shadow-2xl">
+      <div className="relative mx-4 w-full max-w-md rounded-2xl border border-theme-modal-border bg-theme-modal-bg/90 p-6 text-theme-modal-text shadow-2xl">
         <h2 id="delete-modal-title" className="text-xl font-semibold">
           Confirm Deletion
         </h2>
-        <p id="delete-modal-description" className="mt-3 text-white/80">
+        <p
+          id="delete-modal-description"
+          className="mt-3 text-theme-modal-textSecondary"
+        >
           Do you really want to delete{" "}
-          <span className="font-semibold text-white">"{itemName}"</span>?
+          <span className="font-semibold text-theme-modal-text">
+            "{itemName}"
+          </span>
+          ?
         </p>
+
         <div className="mt-6 flex items-center justify-end gap-3">
           <button
             ref={cancelButtonRef}
             type="button"
             onClick={onCancel}
-            className="inline-flex items-center justify-center rounded-lg border border-white/15 px-4 py-2 text-sm font-medium text-white/90 transition cursor-pointer hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
+            className="inline-flex items-center justify-center rounded-lg border border-theme-cancel-border px-4 py-2 text-sm font-medium text-theme-cancel-text transition cursor-pointer hover:bg-theme-cancel-hover focus:outline-none focus:ring-2 focus:ring-theme-accent focus:ring-offset-0"
           >
             Cancel
           </button>
+
           <button
             type="button"
             onClick={onConfirm}
             disabled={isConfirming}
-            className={`inline-flex items-center justify-center cursor-pointer rounded-lg px-4 py-2 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-0
+            className={`inline-flex items-center justify-center cursor-pointer rounded-lg px-4 py-2 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-theme-danger focus:ring-offset-0
               ${
                 isConfirming
-                  ? "cursor-not-allowed bg-red-700/60 opacity-80"
-                  : "bg-red-600 hover:bg-red-700"
+                  ? "cursor-not-allowed bg-theme-dangerDisabled opacity-80"
+                  : "bg-theme-danger hover:bg-theme-dangerHover"
               }`}
           >
             {isConfirming ? "Deleting…" : "Delete"}

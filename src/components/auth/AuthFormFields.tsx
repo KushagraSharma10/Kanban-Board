@@ -53,7 +53,7 @@ const AuthFormFields: React.FC<AuthProp> = ({
                   type="button"
                   aria-label={isVisible ? "Hide password" : "Show password"}
                   onClick={() => toggleVisibility(field.id)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-xl px-2 py-1 text-[#a3b1c2] hover:text-white"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-xl px-2 py-1 text-theme-inputIcon  hover:text-white"
                 >
                   {isVisible ? <BiHide /> : <BiShow />}
                 </button>

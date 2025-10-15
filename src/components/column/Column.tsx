@@ -175,7 +175,7 @@ const Column: React.FC<ColumnProps> = ({
   };
 
   return (
-    <div className="min-w-[70vw] max-h-max md:min-w-[40vw] lg:min-w-[20vw] bg-[#161a21] rounded-md md:p-1.5 p-1">
+    <div className="min-w-[70vw] max-h-max md:min-w-[40vw] lg:min-w-[20vw] bg-theme-column rounded-md md:p-1.5 p-1">
       <div className="flex items-center justify-between mb-2 px-4 py-3 ">
         {editing ? (
           <input
@@ -184,7 +184,7 @@ const Column: React.FC<ColumnProps> = ({
             onChange={(changeEvent) => setTitle(changeEvent.target.value)}
             onKeyDown={handleKeyDown}
             onBlur={handleBlur}
-            className="text-sm font-medium w-full bg-transparent outline-none border-b border-transparent focus:border-[#3a3f44] pb-0.5 text-[#e6edf3] placeholder-[#9e9e9e]"
+            className="text-sm font-medium w-full bg-transparent outline-none border-b border-transparent focus:border-theme-borderMuted pb-0.5 text-theme-primary placeholder:text-theme-placeholder"
             placeholder="Column name"
           />
         ) : (
@@ -203,7 +203,7 @@ const Column: React.FC<ColumnProps> = ({
             onClick={() => setMenuOpen((isOpen) => !isOpen)}
           />
           {menuOpen && (
-            <div className="absolute right-0 mt-1 w-30 rounded-md bg-[#222c38] border border-[#3a3f44] shadow-lg z-50 overflow-hidden">
+            <div className="absolute right-0 mt-1 w-[var(--size-menu)] rounded-md bg-theme-popover border border-theme-borderMuted shadow-lg z-50 overflow-hidden">
               {menuOptions.map((option) => (
                 <button
                   key={option.label}
@@ -232,7 +232,7 @@ const Column: React.FC<ColumnProps> = ({
           />
         ))}
         {normalizedQuery && visibleCards.length === 0 && (
-          <div className="text-xs text-[#9ca3af] italic px-2 py-3">
+          <div className="text-xs text-theme-muted italic px-2 py-3">
             No matching cards
           </div>
         )}
@@ -241,7 +241,7 @@ const Column: React.FC<ColumnProps> = ({
       <div className="px-1">
         {!isAdding ? (
           <div
-            className="flex items-center gap-1 hover:bg-[#222c38] hover:cursor-pointer p-3 rounded-md text-sm transition-colors"
+            className="flex items-center gap-1 hover:bg-theme-popover hover:cursor-pointer p-3 rounded-md text-sm transition-colors"
             onClick={() => setIsAdding(true)}
           >
             <span className="text-lg leading-none">+</span>
@@ -257,19 +257,19 @@ const Column: React.FC<ColumnProps> = ({
               }
               onKeyDown={handleNewCardKeyDown}
               placeholder="Card title"
-              className="px-2 py-1 rounded bg-zinc-900 text-white placeholder-zinc-600 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-zinc-500"
+              className="px-2 py-1 rounded bg-theme-surfaceMuted text-theme-primary placeholder:text-theme-placeholder border border-theme-border focus:outline-none focus:ring-2 focus:ring-theme-accent/70"
             />
             {error && <p className="text-red-400 text-sm">{error}</p>}
             <div className="flex gap-2">
               <button
                 onClick={handleAddCard}
-                className="px-3 py-1 rounded bg-[#0096ff] text-sm text-black hover:bg-[#6ca0ff] transition"
+                className="px-3 py-1 rounded bg-theme-primaryButton text-sm text-black hover:bg-theme-primaryButtonHover transition"
               >
                 Add
               </button>
               <button
                 onClick={handleCancelCard}
-                className="px-3 py-1 rounded bg-[#222c38] text-sm text-[#e6edf3] border border-[#3a3f44] hover:brightness-110 transition"
+                className="px-3 py-1 rounded bg-theme-popover text-sm text-theme-primary border border-theme-borderMuted hover:brightness-110 transition"
               >
                 Cancel
               </button>

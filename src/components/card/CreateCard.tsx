@@ -135,21 +135,22 @@ const CardModal: React.FC<CardModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-      <div className="bg-[#161a21] rounded-lg shadow-xl w-96 p-6 relative">
+      <div className="bg-theme-cardSurface rounded-lg shadow-xl w-96 p-6 relative">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-[#e6edf3]">Edit Card</h2>
+          <h2 className="text-xl font-semibold text-theme-textPrimary">Edit Card</h2>
           <button
             onClick={onClose}
-            className="text-[#a3b1c2] hover:text-[#e6edf3] text-xl leading-none"
+            className="text-theme-inputIcon hover:text-theme-textPrimary text-xl leading-none"
             aria-label="Close modal"
             title="Close"
           >
             ✕
           </button>
         </div>
+
         <label
           htmlFor="card-title"
-          className="block text-sm text-[#9ca3af] mt-1 mb-1"
+          className="block text-sm text-theme-textMuted2 mt-1 mb-1"
         >
           Title
         </label>
@@ -158,12 +159,12 @@ const CardModal: React.FC<CardModalProps> = ({
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Title"
-          className="w-full border border-[#3a3f44] rounded px-3 py-2 mb-3 bg-[#0b0f14] text-[#e6edf3] placeholder-[#9e9e9e] focus:outline-none"
+          className="w-full border border-theme-inputBorder rounded px-3 py-2 mb-3 bg-theme-inputBg text-theme-textPrimary placeholder:text-theme-placeholder focus:outline-none"
         />
 
         <label
           htmlFor="card-description"
-          className="block text-sm text-[#9ca3af] mt-1 mb-1"
+          className="block text-sm text-theme-textMuted2 mt-1 mb-1"
         >
           Description
         </label>
@@ -171,13 +172,13 @@ const CardModal: React.FC<CardModalProps> = ({
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Description"
-          className="w-full border border-[#3a3f44] rounded px-3 py-2 mb-3 resize-none bg-[#0b0f14] text-[#e6edf3] placeholder-[#9e9e9e] focus:outline-none"
+          className="w-full border border-theme-inputBorder rounded px-3 py-2 mb-3 resize-none bg-theme-inputBg text-theme-textPrimary placeholder:text-theme-placeholder focus:outline-none"
           rows={3}
         />
 
         <label
           htmlFor="card-due-date"
-          className="block text-sm text-[#9ca3af] mt-1 mb-1"
+          className="block text-sm text-theme-textMuted2 mt-1 mb-1"
         >
           Due date
         </label>
@@ -185,11 +186,11 @@ const CardModal: React.FC<CardModalProps> = ({
           type="date"
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
-          className="w-full border border-[#3a3f44] rounded px-3 py-2 mb-2 bg-[#0b0f14] text-[#e6edf3] focus:outline-none"
+          className="w-full border border-theme-inputBorder rounded px-3 py-2 mb-2 bg-theme-inputBg text-theme-textPrimary focus:outline-none"
         />
         {dateError && <p className="text-red-400 text-sm mb-2">{dateError}</p>}
 
-        <label className="block text-sm text-[#9ca3af] mt-3 mb-1">
+        <label className="block text-sm text-theme-textMuted2 mt-3 mb-1">
           Priority
         </label>
         <select
@@ -197,7 +198,7 @@ const CardModal: React.FC<CardModalProps> = ({
           onChange={(e) =>
             setSelectedLabel(e.target.value as CardData["label"])
           }
-          className="w-full border border-[#3a3f44] rounded px-3 py-2 bg-[#0b0f14] text-[#e6edf3] focus:outline-none"
+          className="w-full border border-theme-inputBorder rounded px-3 py-2 bg-theme-inputBg text-theme-textPrimary focus:outline-none"
         >
           {LABEL_OPTIONS.map((opt) => (
             <option key={opt.value ?? "none"} value={opt.value ?? "none"}>
@@ -206,21 +207,21 @@ const CardModal: React.FC<CardModalProps> = ({
           ))}
         </select>
 
-        <label className="block text-sm text-[#9ca3af] mt-4 mb-1">
+        <label className="block text-sm text-theme-textMuted2 mt-4 mb-1">
           Assignees
         </label>
-        <div className="w-full border border-[#3a3f44] rounded px-2 py-2 bg-[#0e1114]">
+        <div className="w-full border border-theme-inputBorder rounded px-2 py-2 bg-theme-assigneeArea">
           <div className="flex flex-wrap gap-2 mb-2">
             {assignees.map((person) => (
               <span
                 key={person}
-                className="inline-flex items-center gap-2 text-xs bg-[#3a3f44] text-[#e6edf3] rounded-full px-2 py-1"
+                className="inline-flex items-center gap-2 text-xs bg-theme-chipBg text-theme-textPrimary rounded-full px-2 py-1"
               >
                 {person}
                 <button
                   type="button"
                   onClick={() => removeAssignee(person)}
-                  className="text-[#a3b1c2] hover:text-[#e6edf3]"
+                  className="text-theme-inputIcon hover:text-theme-textPrimary"
                   aria-label={`Remove ${person}`}
                   title="Remove"
                 >
@@ -236,7 +237,7 @@ const CardModal: React.FC<CardModalProps> = ({
             onKeyDown={handleAssigneeKeyDown}
             placeholder="Add assignees..."
             disabled={activeUser?.role !== "admin"}
-            className="w-full bg-transparent outline-none placeholder-[#9e9e9e] text-[#e6edf3] disabled:cursor-no-drop"
+            className="w-full bg-transparent outline-none placeholder:text-theme-placeholder text-theme-textPrimary disabled:cursor-no-drop"
           />
         </div>
         {assigneeError && (
@@ -246,13 +247,13 @@ const CardModal: React.FC<CardModalProps> = ({
         <div className="flex justify-end gap-2 mt-6">
           <button
             onClick={onClose}
-            className="px-3 py-1 rounded bg-[#222c38] text-sm text-[#e6edf3] border border-[#3a3f44] hover:brightness-110"
+            className="px-3 py-1 rounded bg-theme-popover text-sm text-theme-textPrimary border border-theme-inputBorder hover:brightness-110"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
-            className="px-3 py-1 rounded bg-[#0096ff] text-sm text-black hover:bg-[#6ca0ff]"
+            className="px-3 py-1 rounded bg-theme-primaryButton text-sm text-black hover:bg-theme-primaryButtonHover"
           >
             Save
           </button>

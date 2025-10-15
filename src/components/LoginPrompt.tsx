@@ -10,7 +10,7 @@ const LoginPrompt: React.FC<LoginPromptModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/10 backdrop-blur-[5px]">
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/10 backdrop-blur-theme-modal">
       <div className="bg-gray-800 p-8 rounded-lg shadow-xl text-center text-white">
         <h2 className="text-2xl font-bold mb-4">Authentication Required</h2>
         <p className="mb-6">

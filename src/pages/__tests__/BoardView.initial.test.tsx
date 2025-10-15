@@ -16,7 +16,7 @@ const makeDataTransfer = () => {
   return {
     setData: (type: string, val: string) => { store[type] = val; },
     getData: (type: string) => store[type],
-    clearData: () => { Object.keys(store).forEach(k => delete store[k]); },
+    clearData: () => { Object.keys(store).forEach(key => delete store[key]); },
     effectAllowed: "",
     dropEffect: "",
     files: [],

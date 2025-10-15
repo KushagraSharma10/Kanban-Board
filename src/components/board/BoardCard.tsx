@@ -86,7 +86,7 @@ const BoardCard: React.FC<BoardCardProp> = ({
                     <button
                       key={option.label}
                       onClick={() => handleOptionClick(option.action)}
-                      className={`px-3 py-2 text-left text-sm hover:bg-[#141b26] ${
+                      className={`px-3 py-2 text-left text-sm hover:bg-theme-hoverSoft ${
                         option.label === "Delete" ? "text-red-400" : ""
                       }`}
                     >

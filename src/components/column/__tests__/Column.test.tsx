@@ -15,8 +15,8 @@ import {
 } from "../../../app/thunks/card.thunks";
 
 const openColumnMenu = (): void => {
-  const titleEl = screen.getByTitle(/double-click to rename/i); 
-  const headerDiv = titleEl.parentElement as HTMLElement;
+  const titleElem = screen.getByTitle(/double-click to rename/i); 
+  const headerDiv = titleElem.parentElement as HTMLElement;
   const svgToggle = headerDiv.querySelector("svg") as SVGElement;
   fireEvent.click(svgToggle);
 };
@@ -300,7 +300,7 @@ describe("Column component (simple flow tests)", () => {
       }
     );
 
-    const cards = screen.getAllByTestId("card").map((el) => el.textContent);
+    const cards = screen.getAllByTestId("card").map((elem) => elem.textContent);
     expect(cards).toEqual(["Beta"]); 
   });
 
