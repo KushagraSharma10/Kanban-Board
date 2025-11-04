@@ -100,9 +100,27 @@ const CardModal: React.FC<CardModalProps> = ({
     }
     setDateError("");
 
-    const finalAssignees = assigneeInput.trim()
-      ? Array.from(new Set([...assignees, assigneeInput.trim()]))
-      : assignees;
+    const pendingAssignee = assigneeInput.trim();
+    let finalAssignees = assignees;
+
+    if (pendingAssignee) {
+      const emailError = validateEmail(pendingAssignee);
+      if (emailError) {
+        setAssigneeError(emailError);
+        return;
+      }
+
+      const isDuplicateAssignee = assignees.some(
+        (assignee) => assignee.toLowerCase() === pendingAssignee.toLowerCase()
+      );
+
+      if (!isDuplicateAssignee) {
+        finalAssignees = [...assignees, pendingAssignee];
+      }
+
+      setAssigneeInput("");
+      setAssigneeError("");
+    }
 
     onSave({
       ...card,

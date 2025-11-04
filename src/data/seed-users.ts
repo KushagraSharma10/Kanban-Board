@@ -14,14 +14,14 @@ export const seedUsers: UserData[] = [
     id: nanoid(),
     name: "Rohan Gupta",
     email: "rohan@example.com",
-    password: bcrypt.hashSync("Rohan@Member456", 10),
+    password: bcrypt.hashSync("Rohan@Admin456", 10),
     role: 'admin',
   },
   {
     id: nanoid(),
     name: "Anjali Verma",
     email: "anjali@example.com",
-    password: bcrypt.hashSync("Anjali@Member789", 10),
+    password: bcrypt.hashSync("Anjali@Admin789", 10),
     role: 'admin',
   },
 ];
