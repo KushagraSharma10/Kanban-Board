@@ -1,14 +1,12 @@
 import type { DragPayload } from "./types/drag-and-drop";
+import type { DragEvent } from "react";
 
-export const setDragData = (
-  event: React.DragEvent,
-  payload: DragPayload
-): void => {
+export const setDragData = (event: DragEvent, payload: DragPayload): void => {
   event.dataTransfer.effectAllowed = "move";
   event.dataTransfer.setData("text/plain", JSON.stringify(payload));
 };
 
-export const getDragData = (event: React.DragEvent): DragPayload | null => {
+export const getDragData = (event: DragEvent): DragPayload | null => {
   try {
     const text = event.dataTransfer.getData("text/plain");
     if (!text) return null;
@@ -24,6 +22,7 @@ export const moveItemWithinList = <T>(
   toIndex: number
 ): T[] => {
   if (fromIndex === toIndex) return list;
+  if (fromIndex < 0 || fromIndex >= list.length) return list;
   const next = [...list];
   const [movedItem] = next.splice(fromIndex, 1);
   const safeIndex = Math.max(0, Math.min(toIndex, next.length));

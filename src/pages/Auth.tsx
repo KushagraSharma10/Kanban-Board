@@ -180,7 +180,7 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
               onChange={handleChange}
             />
             <AuthButton type="submit">
-              {isLogin ? AuthMode.Login : AuthMode.SignUP}
+              {isLogin ? AuthMode.Login : AuthMode.SignUp}
             </AuthButton>
           </AuthForm>
           <AuthDivider>
@@ -196,7 +196,7 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
               </>
             ) : (
               <>
-                Already have an account? <AuthLink href="/">Login</AuthLink>
+                Already have an account? <AuthLink href="/login">Login</AuthLink>
               </>
             )}
           </AuthFooter>

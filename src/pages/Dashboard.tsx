@@ -63,14 +63,14 @@ const Dashboard: React.FC = () => {
   const handleUpdateBoard = (boardId: string, boardData: BoardForm) => {
     if (!activeUserId) return;
 
-    const newName = validateBoardName(activeUserId, boardData);
+    const newName = validateBoardName(activeUserId, boardData, boardId);
     if (!newName) return;
 
-    updateBoard(activeUserId, boardId, boardData);
+    updateBoard(activeUserId, boardId, { ...boardData, name: newName });
     setBoardList((previousBoards) =>
       previousBoards.map((existingBoard) =>
         existingBoard.id === boardId
-          ? { ...existingBoard, ...boardData }
+          ? { ...existingBoard, ...boardData, name: newName }
           : existingBoard
       )
     );

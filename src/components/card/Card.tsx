@@ -14,12 +14,21 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
     onUpdate(updatedCard);
     setIsModalOpen(false);
   };
+  const handleKeyDown = (event:React.KeyboardEvent<HTMLDivElement> ) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleCardClick();
+    }
+  };
 
   return (
     <>
       <div
+        role="button"
+        tabIndex={0}
         onClick={handleCardClick}
-        className="bg-[#222c38] shadow-md rounded-md p-3 mb-2 cursor-pointer hover:bg-[#293442] transition"
+        onKeyDown={handleKeyDown}
+        className="bg-[#222c38] shadow-md rounded-md p-3 mb-2 cursor-pointer hover:bg-[#293442] transition focus:outline-none focus:ring-2 focus:ring-[#0096ff]"
       >
         {card.label && card.label !== "none" && (
           <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#3a3f44] text-[#e6edf3]">

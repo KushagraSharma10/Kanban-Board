@@ -12,7 +12,10 @@ import {
 } from "../../styles/dashboard/create-board";
 import { Field } from "../../styles/dashboard/create-board";
 import type { BoardForm, BoardModalProp } from "../../utils/types/dashboard";
-import { MAX_BOARD_NAME_LENGTH, selectTypes } from "../../utils/constants/board";
+import {
+  MAX_BOARD_NAME_LENGTH,
+  selectTypes,
+} from "../../utils/constants/board";
 import { DEFAULT_COLORS } from "../../utils/constants/colors";
 
 const CreateBoard: React.FC<BoardModalProp> = ({
@@ -82,7 +85,9 @@ const CreateBoard: React.FC<BoardModalProp> = ({
             <h2>Type</h2>
             <select
               value={form.type}
-              onChange={(e) => setForm((form) => ({ ...form, type: e.target.value }))}
+              onChange={(e) =>
+                setForm((form) => ({ ...form, type: e.target.value }))
+              }
             >
               <option value="">Select type</option>
               {selectTypes.map((type) => (
@@ -117,11 +122,7 @@ const CreateBoard: React.FC<BoardModalProp> = ({
             <Button type="button" className="secondary" onClick={onClose}>
               Cancel
             </Button>
-            <Button 
-            type="submit"
-            className="primary"
-            disabled = {!isFormValid}
-            >
+            <Button type="submit" className="primary" disabled={!isFormValid}>
               {mode === "edit" ? "Save changes" : "Create"}
             </Button>
           </Actions>
@@ -129,6 +130,6 @@ const CreateBoard: React.FC<BoardModalProp> = ({
       </Dialog>
     </Overlay>
   );
-}
+};
 
 export default CreateBoard;

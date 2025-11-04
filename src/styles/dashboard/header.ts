@@ -101,13 +101,6 @@ export const Profile = styled.div`
       outline: 2px solid ${theme.colors.brightBlue};
     }
 
-    &:hover {
-      filter: brightness(1.05);
-    }
-    &:focus-visible {
-      outline: 2px solid ${theme.colors.brightBlue};
-    }
-
     @media (max-width: ${breakpoints.mobileS}) {
       font-size: 0.7rem;
       padding: 0.5rem 0.4rem;

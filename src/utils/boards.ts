@@ -24,16 +24,17 @@ export function validateBoardName(
   boardData: BoardForm,
   existingBoardId?: string
 ): string | null {
-  const newName = normalizeBoardName(boardData.name);
+  const trimmedName = boardData.name.trim().split(/\s+/).join(" ");
+  const normalizedNew = normalizeBoardName(trimmedName);
 
-  if (!newName) {
+ if (!trimmedName) {
     toast.error("Please enter a board name.");
     return null;
   }
 
   const isDuplicate = getBoardsForUser(activeUserId).some(
     (board) =>
-      board.id !== existingBoardId && normalizeBoardName(board.name) === newName
+      board.id !== existingBoardId && normalizeBoardName(board.name) === normalizedNew
   );
 
   if (isDuplicate) {
@@ -41,5 +42,5 @@ export function validateBoardName(
     return null;
   }
 
-  return newName;
+  return trimmedName;
 }

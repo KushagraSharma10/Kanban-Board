@@ -131,7 +131,13 @@ const Column: React.FC<ColumnProps> = ({
     keyboardEvent: React.KeyboardEvent<HTMLInputElement>
   ) => {
     if (keyboardEvent.key === "Enter") {
-      onRename(column.id, title.trim());
+      const next = title.trim();
+      if (!next) {
+        setTitle(column.title);
+        setEditing(false);
+        return;
+      }
+      onRename(column.id, next);
       setEditing(false);
     }
     if (keyboardEvent.key === "Escape") {
@@ -141,7 +147,13 @@ const Column: React.FC<ColumnProps> = ({
   };
 
   const handleBlur = () => {
-    onRename(column.id, title.trim());
+    const next = title.trim();
+    if (!next) {
+      setTitle(column.title);
+      setEditing(false);
+      return;
+    }
+    onRename(column.id, next);
     setEditing(false);
   };
 
@@ -194,7 +206,7 @@ const Column: React.FC<ColumnProps> = ({
             onClick={() => setMenuOpen((open) => !open)}
           />
           {menuOpen && (
-            <div className="absolute right-0 mt-1 w-30 rounded-md bg-[#222c38] border border-[#3a3f44] shadow-lg z-50 overflow-hidden">
+            <div className="absolute right-0 mt-1 w-40 rounded-md bg-[#222c38] border border-[#3a3f44] shadow-lg z-50 overflow-hidden">
               {menuOptions.map((option) => (
                 <button
                   key={option.label}
