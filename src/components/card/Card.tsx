@@ -14,7 +14,7 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
     onUpdate(updatedCard);
     setIsModalOpen(false);
   };
-  const handleKeyDown = (event:React.KeyboardEvent<HTMLInputElement> ) => {
+  const handleKeyDown = (event:React.KeyboardEvent<HTMLDivElement> ) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       handleCardClick();
