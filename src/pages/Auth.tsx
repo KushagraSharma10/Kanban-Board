@@ -42,40 +42,32 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
     setForm((previousForm) => ({ ...previousForm, [name]: value }));
   };
 
-  const handleFormSubmit = (submitEvent: React.FormEvent) => {
-    submitEvent.preventDefault();
+  const handleFormSubmit = async (submitEvent: React.FormEvent) => {
+  submitEvent.preventDefault();
 
-    const trimmedName = form.name.trim();
-    const trimmedEmail = form.email.trim();
-    const rawPassword = form.password;
+  const trimmedName = form.name.trim();
+  const trimmedEmail = form.email.trim();
+  const rawPassword = form.password;
 
-    const emailValidationMessage = validateEmail(trimmedEmail);
-    if (emailValidationMessage) {
-      toast.error(emailValidationMessage);
-      return;
+  const emailError = validateEmail(trimmedEmail);
+  if (emailError) { toast.error(emailError); return; }
+
+  if (isLoginMode) {
+    const action = await dispatch(loginUser({ email: trimmedEmail, password: rawPassword }));
+    if (loginUser.fulfilled.match(action)) {
+      navigate("/");
     }
+  } else {
+    if (!trimmedName) { toast.error("Please enter your name"); return; }
+    const passError = validatePassword(rawPassword);
+    if (passError) { toast.error(passError); return; }
 
-    if (isLoginMode) {
-      dispatch(loginUser({ email: trimmedEmail, password: rawPassword }));
-    } else {
-      if (!trimmedName) {
-        toast.error("Please enter your name");
-        return;
-      }
-      const passwordValidationMessage = validatePassword(rawPassword);
-      if (passwordValidationMessage) {
-        toast.error(passwordValidationMessage);
-        return;
-      }
-      dispatch(
-        signupUser({
-          name: trimmedName,
-          email: trimmedEmail,
-          password: rawPassword,
-        })
-      );
+    const action = await dispatch(signupUser({ name: trimmedName, email: trimmedEmail, password: rawPassword }));
+    if (signupUser.fulfilled.match(action)) {
+      navigate("/");
     }
-  };
+  }
+};
 
   useEffect(() => {
     if (authenticatedUser) {

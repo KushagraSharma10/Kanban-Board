@@ -6,21 +6,22 @@ import App from "./App.tsx";
 import Login from "./pages/Login.tsx";
 import Signup from "./pages/Signup.tsx";
 import BoardView from "./pages/BoardView.tsx";
-import { seedInitialUsers } from "./utils/seed-users.ts";
 import { store } from "./app/store/store.ts";
 import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import PageNotFound from "./pages/PageNotFound.tsx";
+import { initializeAuth } from "./app/appInit.ts";
+import "./lib/authInterceptor.ts";
 
-seedInitialUsers();
+initializeAuth();
 
 const router = createBrowserRouter([
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <Signup /> },
   {
-    element: <ProtectedRoute />,
+    element: <ProtectedRoute mode="prompt" promptDelayMs={1500} />,
     children: [
       { path: "/", element: <App /> },
       { path: "/board/:id", element: <BoardView /> },

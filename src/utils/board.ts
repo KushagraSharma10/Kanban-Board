@@ -27,6 +27,6 @@ export const validateBoardForm = (
   return null;
 }
 
-export function normalizeBoardName(name: string): string {
+export const normalizeBoardName = (name: string): string => {
   return name.trim().split(" ").filter(Boolean).join(" ").toLowerCase();
 }

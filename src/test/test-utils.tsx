@@ -15,10 +15,10 @@ type RenderOptions = {
   preloadedState?: Partial<RootState>;
 };
 
-export function renderWithProviders(
+export const renderWithProviders = (
   ui: React.ReactElement,
   { route = "/board/board-1", path = "/board/:id", preloadedState }: RenderOptions = {}
-) {
+) => {
 
  const rootReducer = combineReducers({
     auth: authReducer,
@@ -41,4 +41,4 @@ export function renderWithProviders(
       </MemoryRouter>
     </Provider>
   );
-}
+};
