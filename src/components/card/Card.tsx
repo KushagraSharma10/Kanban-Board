@@ -4,9 +4,11 @@ import type { CardData, CardProps } from "../../utils/interface/card";
 import { useAppDispatch } from "../../app/store/hooks";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { MAX_DESCRIPTION_LENGTH } from "../../utils/constants/card";
-import { cloneCardInColumn } from "../../app/thunks/card.thunks";
+import { cloneCardInColumnOnServer } from "../../app/thunks/card.thunks";
 import DeleteConfirmation from "../DeleteConfirmation";
 import { FiEdit2 } from "react-icons/fi";
+import { toast } from "react-toastify";
+import { isBoardAdmin } from "../../lib/permissions";
 
 const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
   const dispatch = useAppDispatch();
@@ -28,16 +30,23 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setIsMenuOpen(false);
       }
-    }
+    };
     if (isMenuOpen) document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMenuOpen]);
 
-  const handleCloneClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsMenuOpen(false);
-    dispatch(cloneCardInColumn(card.columnId, card.id));
-  };
+  const handleCloneClick = async (e: React.MouseEvent) => {
+  e.stopPropagation();
+  setIsMenuOpen(false);
+
+  const allowed = await isBoardAdmin(card.boardId);
+  if (!allowed) {
+    toast.error("Only admins can clone or add cards on this board");
+    return;
+  }
+
+  dispatch(cloneCardInColumnOnServer(card.boardId, card.columnId, card.id));
+};
   const handleSave = (updatedCard: CardData) => {
     onUpdate(updatedCard);
     setIsCardModalOpen(false);
@@ -159,22 +168,17 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
           </p>
         )}
 
-        {card.assignees && card.assignees.length > 0 && (
-          <div className="flex gap-1 mt-2">
-            {card.assignees.slice(0, 3).map((name) => (
-              <span
-                key={name}
-                title={name}
-                className="w-6 h-6 rounded-full bg-theme-chipBg text-theme-textPrimary text-xs flex items-center justify-center"
-              >
-                {name.trim().charAt(0).toUpperCase()}
-              </span>
-            ))}
-            {card.assignees.length > 3 && (
-              <span className="text-xs text-theme-textMuted2">
-                +{card.assignees.length - 3}
-              </span>
-            )}
+        {card.assigneeEmail && (
+          <div className="flex items-center gap-2 mt-2">
+            <span
+              title={card.assigneeEmail}
+              className="w-6 h-6 rounded-full bg-theme-chipBg text-theme-textPrimary text-xs flex items-center justify-center"
+            >
+              {card.assigneeEmail.trim().charAt(0).toUpperCase()}
+            </span>
+            <span className="text-xs text-theme-textMuted2 truncate">
+              {card.assigneeEmail}
+            </span>
           </div>
         )}
       </div>

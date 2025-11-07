@@ -13,19 +13,21 @@ import ManageBoard from "../components/board/ManageBoard";
 import Header from "../components/board/Header";
 import type { BoardForm, BoardItem } from "../utils/types/dashboard";
 import { useNavigate } from "react-router";
-import { getSession } from "../utils/session";
+import { getActiveUserId } from "../utils/session";
 import { useAppDispatch, useAppSelector } from "../app/store/hooks";
+import { selectBoards } from "../app/slices/board.slice";
 import {
-  selectBoards,
-} from "../app/slices/board.slice";
-import { createBoardForUser, deleteBoardForUser, loadBoardsForUser, updateBoardForUser } from "../app/thunks/board.thunks";
+  createBoardForUser,
+  deleteBoardForUser,
+  loadBoardsForUser,
+  updateBoardForUser,
+} from "../app/thunks/board.thunks";
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const activeSession = getSession();
-  const activeUserId = activeSession?.userId || null;
+  const activeUserId = getActiveUserId();
 
   const boardsList = useAppSelector(selectBoards);
 
@@ -38,23 +40,18 @@ const Dashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
-    if(activeUserId){
-      dispatch(loadBoardsForUser(activeUserId));
-    }
-  }, [activeUserId, dispatch]);
+    dispatch(loadBoardsForUser(activeUserId));
+  }, [dispatch, activeUserId]);
 
   const handleCreateBoard = (boardData: BoardForm) => {
-    if (!activeUserId) return;
     dispatch(createBoardForUser(activeUserId, boardData));
   };
 
   const handleUpdateBoard = (boardId: string, boardData: BoardForm) => {
-    if (!activeUserId) return;
     dispatch(updateBoardForUser(activeUserId, boardId, boardData));
   };
 
   const handleDeleteBoard = (boardId: string) => {
-    if (!activeUserId) return;
     dispatch(deleteBoardForUser(activeUserId, boardId));
   };
 
@@ -129,7 +126,6 @@ const Dashboard: React.FC = () => {
         onCreate={handleCreateBoard}
         onUpdate={handleUpdateBoard}
       />
-
     </Main>
   );
 };

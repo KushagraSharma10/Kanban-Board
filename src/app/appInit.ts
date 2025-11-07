@@ -15,5 +15,5 @@ export const initializeAuth = (): void =>{
     const { user, accessToken } = store.getState().auth;
     const data: AuthStateWithToken = { user, accessToken };
     localStorage.setItem("auth", JSON.stringify(data));
-  });
+  });   
 }

@@ -4,19 +4,18 @@ import Column from "../components/column/Column";
 import { useNavigate, useParams } from "react-router";
 import type { ColumnItem } from "../utils/types/board-view";
 import { getDragData, reorderById, setDragData } from "../utils/drag-and-drop";
-import { getSession } from "../utils/session";
 import { useAppDispatch, useAppSelector } from "../app/store/hooks";
 import { selectColumnItemsForBoard } from "../app/slices/column.slice";
 import {
-  applyColumnOrder,
-  createColumn,
-  deleteColumnThunk,
-  renameColumnThunk,
-  SeedColumnsForBoard,
+  applyColumnOrderOnServer,
+  createColumnOnServer,
+  deleteColumnOnServer,
+  loadColumnsForBoardFromServer,
+  renameColumnOnServer,
 } from "../app/thunks/columns.thunks";
-import { readAllBoards } from "../app/thunks/board.thunks";
 import { validateColumnTitle } from "../utils/column";
 import { MAX_COLUMN_NAME_LENGTH } from "../utils/constants/column";
+import { apiClient } from "../lib/apiClient";
 
 const BoardView: React.FC = () => {
   const [boardName, setBoardName] = useState<string>("");
@@ -32,34 +31,37 @@ const BoardView: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const activeSession = getSession();
-  const activeUserId = activeSession?.userId || null;
-
   const columns: ColumnItem[] = useAppSelector((state) =>
     selectColumnItemsForBoard(state, boardId ?? "")
   );
 
   useEffect(() => {
-    if (!activeUserId) return;
+    if (!boardId) return;
 
-    const board = readAllBoards().find(
-      (candidateBoard) =>
-        candidateBoard.id === boardId && candidateBoard.userId === activeUserId
-    );
+    const fetchBoardName = async (): Promise<void> => {
+      try {
+        const httpResponse = await apiClient.get<{ data: { name: string } }>(
+          `/boards/${boardId}`
+        );
 
-    if (!board) {
-      navigate("/");
-      return;
-    }
-    setBoardName(board.name);
-  }, [activeUserId, boardId]);
+        const serverName = httpResponse.data?.data?.name ?? "";
+        if (!serverName) {
+          navigate("/");
+          return;
+        }
+        setBoardName(serverName);
+      } catch {
+        navigate("/");
+      }
+    };
+
+    void fetchBoardName();
+  }, [boardId, navigate]);
 
   useEffect(() => {
     if (!boardId) return;
-    if (!columns.length) {
-      dispatch(SeedColumnsForBoard(boardId));
-    }
-  }, [dispatch, boardId, columns.length]);
+    dispatch(loadColumnsForBoardFromServer(boardId));
+  }, [dispatch, boardId]);
 
   useEffect(() => {
     if (showAdd) inputRef.current?.focus();
@@ -68,7 +70,8 @@ const BoardView: React.FC = () => {
   const handleCreateColumn = () => {
     if (!boardId) return;
 
-    const validation = validateColumnTitle(boardId, newColumnName);
+    const existingTitles = columns.map((c) => c.title);
+    const validation = validateColumnTitle(newColumnName, existingTitles);
 
     if (!validation.isValid) {
       setColumnNameError(validation.error ?? "Invalid column name.");
@@ -76,19 +79,19 @@ const BoardView: React.FC = () => {
     }
 
     setColumnNameError("");
-    dispatch(createColumn(boardId, validation.title));
+    dispatch(createColumnOnServer(boardId, validation.title));
     setNewColumnName("");
     setShowAdd(false);
   };
 
   const handleRenameColumn = (columnId: string, newTitle: string) => {
     if (!boardId) return;
-    dispatch(renameColumnThunk(boardId, columnId, newTitle));
+    dispatch(renameColumnOnServer(boardId, columnId, newTitle));
   };
 
   const handleDeleteColumn = (columnId: string) => {
     if (!boardId) return;
-    dispatch(deleteColumnThunk(boardId, columnId));
+    dispatch(deleteColumnOnServer(boardId, columnId));
   };
 
   const handleColumnDragStart = (
@@ -132,7 +135,7 @@ const BoardView: React.FC = () => {
     })();
 
     if (boardId) {
-      dispatch(applyColumnOrder(boardId, nextColumns));
+      dispatch(applyColumnOrderOnServer(boardId, nextColumns));
     }
 
     draggingColumnIdRef.current = null;

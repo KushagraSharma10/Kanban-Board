@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { CardData } from "../../utils/interface/card";
 import type { CardModalProps } from "../../utils/interface/card-modal";
 import {
@@ -7,7 +7,7 @@ import {
 } from "../../utils/constants/card-modal";
 import { validateEmail } from "../../utils/validation";
 import { toast } from "react-toastify";
-import { getActiveUser } from "../../utils/auth";
+import { getActiveUserId } from "../../utils/session";
 
 const CardModal: React.FC<CardModalProps> = ({
   card,
@@ -16,62 +16,24 @@ const CardModal: React.FC<CardModalProps> = ({
   existingCards = [],
 }) => {
   const [title, setTitle] = useState<string>(card.title);
-  const [description, setDescription] = useState<string>(
-    card.description || ""
-  );
+  const [description, setDescription] = useState<string>(card.description || "");
   const [dueDate, setDueDate] = useState<string>(card.dueDate || "");
   const [dateError, setDateError] = useState<string>("");
 
-  const [selectedLabel, setSelectedLabel] = useState<CardData["label"]>(
-    card.label ?? "none"
-  );
+  const [selectedLabel, setSelectedLabel] = useState<CardData["label"]>(card.label ?? "none");
 
-  const [assignees, setAssignees] = useState<string[]>(card.assignees ?? []);
-  const [assigneeInput, setAssigneeInput] = useState<string>("");
+  const [assigneeEmail, setAssigneeEmail] = useState<string>(card.assigneeEmail ?? "");
   const [assigneeError, setAssigneeError] = useState<string>("");
 
-  const activeUser = getActiveUser();
-
-  const addAssigneeFromInput = () => {
-    const trimmed = assigneeInput.trim();
-    if (!trimmed) return;
-
-    const errorMessage = validateEmail(trimmed);
-    if (errorMessage) {
-      setAssigneeError(errorMessage);
-      return;
-    }
-
-    const isDuplicate = assignees.some(
-      (assignee) => assignee.toLowerCase() === trimmed.toLowerCase()
-    );
-    if (isDuplicate) {
-      setAssigneeInput("");
-      return;
-    }
-    setAssignees((prev) => [...prev, trimmed]);
-    setAssigneeInput("");
-  };
-
-  const removeAssignee = (name: string) => {
-    setAssignees((prev) => prev.filter((assignee) => assignee !== name));
-  };
-
-  const handleAssigneeKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (
-    e
-  ) => {
-    if (e.key === "Enter" || e.key === ",") {
-      e.preventDefault();
-      addAssigneeFromInput();
-    }
-    if (e.key === "Escape") {
-      setAssigneeInput("");
-      setAssigneeError("");
-    }
-  };
+  const [canEdit, setCanEdit] = useState<boolean>(false);
+  useEffect(() => {
+    const myId = getActiveUserId();
+    setCanEdit(Boolean(myId) && String(myId) === String(card.createdBy));
+  }, [card.createdBy]);
 
   const handleSave = () => {
     if (!title.trim()) return;
+
     if (title.length > MAX_TITLE_LENGTH) {
       toast.error(`Title cannot exceed ${MAX_TITLE_LENGTH} characters.`);
       return;
@@ -99,38 +61,25 @@ const CardModal: React.FC<CardModalProps> = ({
     }
     setDateError("");
 
-    const pendingInput = assigneeInput.trim();
-    if (pendingInput) {
-      const pendingError = validateEmail(pendingInput);
-      if (pendingError) {
-        setAssigneeError(pendingError);
+    const trimmedAssignee = assigneeEmail.trim();
+    if (trimmedAssignee) {
+      const errorMessage = validateEmail(trimmedAssignee);
+      if (errorMessage) {
+        setAssigneeError(errorMessage);
         return;
       }
     }
-
-    const dedupeEmailsPreserveCase = (emails: string[]) => {
-      const seen = new Set<string>();
-      return emails.filter((email) => {
-        const lower = email.toLowerCase();
-        if (seen.has(lower)) return false;
-        seen.add(lower);
-        return true;
-      });
-    };
-
-    const allAssignees = pendingInput
-      ? [...assignees, pendingInput]
-      : assignees;
-    const mergedAssignees = dedupeEmailsPreserveCase(allAssignees);
+    setAssigneeError("");
 
     onSave({
       ...card,
       title: title.trim(),
       description: description.trim() || undefined,
       dueDate: dueDate || undefined,
-      assignees: mergedAssignees.length ? mergedAssignees : undefined,
       label: selectedLabel ?? "none",
+      assigneeEmail: trimmedAssignee || undefined, 
     });
+
     onClose();
   };
 
@@ -149,12 +98,7 @@ const CardModal: React.FC<CardModalProps> = ({
           </button>
         </div>
 
-        <label
-          htmlFor="card-title"
-          className="block text-sm text-theme-textMuted2 mt-1 mb-1"
-        >
-          Title
-        </label>
+        <label className="block text-sm text-theme-textMuted2 mt-1 mb-1">Title</label>
         <input
           id="card-title"
           type="text"
@@ -162,14 +106,10 @@ const CardModal: React.FC<CardModalProps> = ({
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Title"
           className="w-full border border-theme-inputBorder rounded px-3 py-2 mb-3 bg-theme-inputBg text-theme-textPrimary placeholder:text-theme-placeholder focus:outline-none"
+          disabled={!canEdit}
         />
 
-        <label
-          htmlFor="card-description"
-          className="block text-sm text-theme-textMuted2 mt-1 mb-1"
-        >
-          Description
-        </label>
+        <label className="block text-sm text-theme-textMuted2 mt-1 mb-1">Description</label>
         <textarea
           id="card-description"
           value={description}
@@ -177,33 +117,27 @@ const CardModal: React.FC<CardModalProps> = ({
           placeholder="Description"
           className="w-full border border-theme-inputBorder rounded px-3 py-2 mb-3 resize-none bg-theme-inputBg text-theme-textPrimary placeholder:text-theme-placeholder focus:outline-none"
           rows={3}
+          disabled={!canEdit}
         />
 
-        <label
-          htmlFor="card-due-date"
-          className="block text-sm text-theme-textMuted2 mt-1 mb-1"
-        >
-          Due date
-        </label>
+        <label className="block text-sm text-theme-textMuted2 mt-1 mb-1">Due date</label>
         <input
           id="card-due-date"
           type="date"
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
           className="w-full border border-theme-inputBorder rounded px-3 py-2 mb-2 bg-theme-inputBg text-theme-textPrimary focus:outline-none"
+          disabled={!canEdit}
         />
         {dateError && <p className="text-red-400 text-sm mb-2">{dateError}</p>}
 
-        <label className="block text-sm text-theme-textMuted2 mt-3 mb-1">
-          Priority
-        </label>
+        <label className="block text-sm text-theme-textMuted2 mt-3 mb-1">Priority</label>
         <select
           id="card-priority"
           value={selectedLabel}
-          onChange={(e) =>
-            setSelectedLabel(e.target.value as CardData["label"])
-          }
+          onChange={(e) => setSelectedLabel(e.target.value as CardData["label"])}
           className="w-full border border-theme-inputBorder rounded px-3 py-2 bg-theme-inputBg text-theme-textPrimary focus:outline-none"
+          disabled={!canEdit}
         >
           {LABEL_OPTIONS.map((opt) => (
             <option key={opt.value ?? "none"} value={opt.value ?? "none"}>
@@ -212,43 +146,19 @@ const CardModal: React.FC<CardModalProps> = ({
           ))}
         </select>
 
-        <label className="block text-sm text-theme-textMuted2 mt-4 mb-1">
-          Assignees
-        </label>
-        <div className="w-full border border-theme-inputBorder rounded px-2 py-2 bg-theme-assigneeArea">
-          <div className="flex flex-wrap gap-2 mb-2">
-            {assignees.map((person) => (
-              <span
-                key={person}
-                className="inline-flex items-center gap-2 text-xs bg-theme-chipBg text-theme-textPrimary rounded-full px-2 py-1"
-              >
-                {person}
-                <button
-                  type="button"
-                  onClick={() => removeAssignee(person)}
-                  className="text-theme-inputIcon hover:text-theme-textPrimary"
-                  aria-label={`Remove ${person}`}
-                  title="Remove"
-                >
-                  ✕
-                </button>
-              </span>
-            ))}
-          </div>
-          <input
-            id="card-assignees"
-            type="email"
-            value={assigneeInput}
-            onChange={handleAssigneeInputChange}
-            onKeyDown={handleAssigneeKeyDown}
-            placeholder="Add assignees..."
-            disabled={activeUser?.role !== "admin"}
-            className="w-full bg-transparent outline-none placeholder:text-theme-placeholder text-theme-textPrimary disabled:cursor-no-drop"
-          />
-        </div>
-        {assigneeError && (
-          <p className="text-red-400 text-sm mt-1">{assigneeError}</p>
-        )}
+        <label className="block text-sm text-theme-textMuted2 mt-4 mb-1">Assignee</label>
+        <input
+          type="email"
+          value={assigneeEmail}
+          onChange={(e) => {
+            setAssigneeEmail(e.target.value);
+            if (assigneeError) setAssigneeError("");
+          }}
+          placeholder="someone@example.com"
+          disabled={!canEdit}
+          className="w-full border border-theme-inputBorder rounded px-3 py-2 bg-theme-inputBg text-theme-textPrimary placeholder:text-theme-placeholder focus:outline-none disabled:cursor-no-drop"
+        />
+        {assigneeError && <p className="text-red-400 text-sm mt-1">{assigneeError}</p>}
 
         <div className="flex justify-end gap-2 mt-6">
           <button
@@ -260,6 +170,7 @@ const CardModal: React.FC<CardModalProps> = ({
           <button
             onClick={handleSave}
             className="px-3 py-1 rounded bg-theme-primaryButton text-sm text-black hover:bg-theme-primaryButtonHover"
+            disabled={!canEdit}
           >
             Save
           </button>

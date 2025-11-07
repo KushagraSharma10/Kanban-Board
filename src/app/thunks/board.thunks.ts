@@ -1,85 +1,96 @@
-import { nanoid } from "nanoid";
-import type { BoardForm, BoardItem } from "../../utils/types/dashboard";
-import type { AppDispatch } from "../store/store";
-import { loadFromStorage, saveToStorage } from "../../utils/storage";
-import { BOARDS_STORAGE_KEY } from "../../utils/constants/board";
-import {
-  boardAdded,
-  boardDeleted,
-  boardsLoaded,
-  boardUpdated,
-} from "../slices/board.slice";
 import { toast } from "react-toastify";
-import { validateBoardForm } from "../../utils/board";
+import {
+  boardsLoaded,
+  boardAdded,
+  boardUpdated,
+  boardDeleted,
+} from "../slices/board.slice";
+import type { AppDispatch } from "../store/store";
+import type { BoardForm, BoardItem } from "../../utils/types/dashboard";
+import {
+  fetchBoards,
+  createBoard,
+  updateBoard,
+  deleteBoard,
+} from "../api/board.api";
+import type { BackendBoard } from "../../utils/types/board";
 
-export const readAllBoards = (): BoardItem[] => {
-  const stored = loadFromStorage(BOARDS_STORAGE_KEY, []);
-  return (Array.isArray(stored) ? stored : []) as BoardItem[];
-}
+const toBoardItem = (backend: BackendBoard): BoardItem => ({
+  id: backend._id,
+  userId: backend.createdBy,
+  name: backend.name,
+  type: backend.type,
+  color: backend.color,
+});
 
-export const writeAllBoards = (allBoards: BoardItem[]): void  => {
-  saveToStorage(BOARDS_STORAGE_KEY, allBoards);
-}
+const getErrorMessage = (errorValue: unknown): string => {
+  const maybeAxios = errorValue as {
+    response?: { data?: { message?: string } };
+  };
+  if (maybeAxios?.response?.data?.message)
+    return maybeAxios.response.data.message;
+  if (errorValue instanceof Error) return errorValue.message;
+  return "Request failed";
+};
 
 export const loadBoardsForUser =
-  (userId: string) =>
-  (dispatch: AppDispatch): void => {
-    const allBoards = readAllBoards();
-    const userBoards = allBoards.filter((b) => b.userId === userId);
-    dispatch(boardsLoaded(userBoards));
+  (_userId: string | null) =>
+  async (dispatch: AppDispatch): Promise<void> => {
+    try {
+      const backendBoards = await fetchBoards();
+      dispatch(boardsLoaded(backendBoards.map(toBoardItem)));
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+      dispatch(boardsLoaded([]));
+    }
   };
 
 export const createBoardForUser =
-  (userId: string, form: BoardForm) =>
-  (dispatch: AppDispatch): void => {
-    const allBoards = readAllBoards();
-
-    const validationError = validateBoardForm(allBoards, userId, null, form);
-    if (validationError) {
-      toast.error(validationError);
-      return;
+  (_userId: string | null, form: BoardForm) =>
+  async (dispatch: AppDispatch): Promise<void> => {
+    try {
+      const created = await createBoard({
+        name: form.name.trim(),
+        type: form.type.trim(),
+        color: form.color,
+      });
+      dispatch(boardAdded(toBoardItem(created)));
+      toast.success("Board created");
+    } catch (error) {
+      toast.error(getErrorMessage(error));
     }
-
-    const newBoard: BoardItem = {
-      id: nanoid(),
-      userId,
-      name: form.name.trim(),
-      type: form.type.trim(),
-      color: form.color,
-    };
-
-    writeAllBoards([newBoard, ...allBoards]);
-    dispatch(boardAdded(newBoard));
   };
 
 export const updateBoardForUser =
-  (userId: string, boardId: string, form: BoardForm) =>
-  (dispatch: AppDispatch): void => {
-    const allBoards = readAllBoards();
-
-    const validationError = validateBoardForm(allBoards, userId, boardId, form);
-    if (validationError) {
-      toast.error(validationError);
-      return;
+  (_userId: string | null, boardId: string, form: BoardForm) =>
+  async (dispatch: AppDispatch): Promise<void> => {
+    try {
+      const updated = await updateBoard(boardId, {
+        name: form.name.trim(),
+        type: form.type.trim(),
+        color: form.color,
+      });
+      dispatch(boardUpdated({ id: boardId, data: toBoardItem(updated) }));
+      toast.success("Board updated");
+    } catch (error) {
+      toast.error(getErrorMessage(error));
     }
-
-    const updatedBoards = allBoards.map((board) =>
-      board.id === boardId && board.userId === userId
-        ? { ...board, ...form }
-        : board
-    );
-
-    writeAllBoards(updatedBoards);
-    dispatch(boardUpdated({ id: boardId, data: form }));
   };
 
 export const deleteBoardForUser =
-  (userId: string, boardId: string) =>
-  (dispatch: AppDispatch): void => {
-    const allBoards = readAllBoards();
-    const remainingBoards = allBoards.filter(
-      (board) => !(board.id === boardId && board.userId === userId)
-    );
-    writeAllBoards(remainingBoards);
-    dispatch(boardDeleted(boardId));
+  (_userId: string | null, boardId: string) =>
+  async (dispatch: AppDispatch): Promise<void> => {
+    try {
+      const isBoardDeleted = await deleteBoard(boardId);
+
+      if (isBoardDeleted) {
+        dispatch(boardDeleted(boardId));
+        toast.success("Board deleted successfully");
+      } else {
+        toast.error("Failed to delete the board. Please try again.");
+      }
+    } catch (error) {
+      const errorMessage = getErrorMessage(error);
+      toast.error(errorMessage);
+    }
   };

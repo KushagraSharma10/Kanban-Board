@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type {
-  BoardForm,
   BoardItem,
   BoardsState,
 } from "../../utils/types/dashboard";
@@ -23,11 +22,11 @@ const boardsSlice = createSlice({
     },
     boardUpdated(
       currentState,
-      action: PayloadAction<{ id: string; data: BoardForm }>
+      action: PayloadAction<{ id: string; data: BoardItem }>
     ) {
       const { id, data } = action.payload;
-      currentState.items = currentState.items.map((board) =>
-        board.id === id ? { ...board, ...data } : board
+      currentState.items = currentState.items.map((existingBoard) =>
+        existingBoard.id === id ? { ...existingBoard, ...data } : existingBoard
       );
     },
     boardDeleted(currentState, action: PayloadAction<string>) {

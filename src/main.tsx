@@ -14,8 +14,12 @@ import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import PageNotFound from "./pages/PageNotFound.tsx";
 import { initializeAuth } from "./app/appInit.ts";
 import "./lib/authInterceptor.ts";
+import { getAccessTokenFromStorage } from "./utils/session.ts";
+import { setAccessTokenHeader } from "./lib/apiClient.ts";
 
 initializeAuth();
+const token = getAccessTokenFromStorage();
+setAccessTokenHeader(token);
 
 const router = createBrowserRouter([
   { path: "/login", element: <Login /> },
