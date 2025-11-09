@@ -169,6 +169,7 @@ const CardModal: React.FC<CardModalProps> = ({
           Title
         </label>
         <input
+          id="card-title"
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -183,6 +184,7 @@ const CardModal: React.FC<CardModalProps> = ({
           Description
         </label>
         <textarea
+          id="card-description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Description"
@@ -197,6 +199,7 @@ const CardModal: React.FC<CardModalProps> = ({
           Due date
         </label>
         <input
+          id="card-due-date"
           type="date"
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
