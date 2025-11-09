@@ -133,7 +133,7 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
               onChange={handleInputChange}
             />
             <AuthButton type="submit">
-              {isLogin ? AuthMode.Login : AuthMode.SignUp}
+              {isLoginMode ? AuthMode.Login : AuthMode.SignUp}
             </AuthButton>
           </AuthForm>
           <AuthDivider>
