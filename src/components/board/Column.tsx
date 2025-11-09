@@ -196,6 +196,7 @@ const Column: React.FC<ColumnProps> = ({
             onChange={(e) => setTitle(e.target.value)}
             onKeyDown={handleKeyDown}
             onBlur={handleBlur}
+            maxLength={MAX_TITLE_LENGTH}
             className="text-sm font-medium w-full bg-transparent outline-none border-b border-transparent focus:border-[#3a3f44] pb-0.5 text-[#e6edf3] placeholder-[#9e9e9e]"
             placeholder="Column name"
           />
@@ -247,13 +248,14 @@ const Column: React.FC<ColumnProps> = ({
 
       <div className="px-1">
         {!isAdding ? (
-          <div
+          <button
+            type="button"
             className="flex items-center gap-1 hover:bg-[#222c38] hover:cursor-pointer p-3 rounded-md text-sm transition-colors"
             onClick={() => setIsAdding(true)}
           >
             <span className="text-lg leading-none">+</span>
             Add Card
-          </div>
+          </button>
         ) : (
           <div className="flex flex-col gap-2">
             <input
