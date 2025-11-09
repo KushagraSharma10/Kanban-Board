@@ -177,6 +177,15 @@ const Column: React.FC<ColumnProps> = ({
     setNewCardTitle("");
   };
 
+  const handleMenuToggle = () => setMenuOpen((open) => !open);
+
+  const handleMenuKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleMenuToggle();
+    }
+  };
+
   return (
     <div className="min-w-[70vw] max-h-max md:min-w-[40vw] lg:min-w-[20vw] bg-[#161a21] rounded-md md:p-1.5 p-1">
       <div className="flex items-center justify-between mb-2 px-4 py-3 ">
@@ -203,7 +212,11 @@ const Column: React.FC<ColumnProps> = ({
         <div className="relative" ref={menuRef}>
           <BsThreeDotsVertical
             className="hover:cursor-pointer opacity-80"
-            onClick={() => setMenuOpen((open) => !open)}
+            onClick={handleMenuToggle}
+            onKeyDown={handleMenuKeyDown}
+            aria-label="Column options menu"
+            role="button"
+            tabIndex={0}
           />
           {menuOpen && (
             <div className="absolute right-0 mt-1 w-40 rounded-md bg-[#222c38] border border-[#3a3f44] shadow-lg z-50 overflow-hidden">
