@@ -207,10 +207,14 @@ const CardModal: React.FC<CardModalProps> = ({
         />
         {dateError && <p className="text-red-400 text-sm mb-2">{dateError}</p>}
 
-        <label className="block text-sm text-[#9ca3af] mt-3 mb-1">
+        <label
+          htmlFor="card-priority"
+          className="block text-sm text-[#9ca3af] mt-3 mb-1"
+        >
           Priority
         </label>
         <select
+          id="card-priority"
           value={selectedLabel}
           onChange={(e) =>
             setSelectedLabel(e.target.value as CardData["label"])
@@ -224,7 +228,7 @@ const CardModal: React.FC<CardModalProps> = ({
           ))}
         </select>
 
-        <label className="block text-sm text-[#9ca3af] mt-4 mb-1">
+        <label htmlFor="card-assignees" className="block text-sm text-[#9ca3af] mt-4 mb-1">
           Assignees
         </label>
         <div className="w-full border border-[#3a3f44] rounded px-2 py-2 bg-[#0e1114]">
@@ -248,6 +252,7 @@ const CardModal: React.FC<CardModalProps> = ({
             ))}
           </div>
           <input
+          id="card-assignees"
             type="email"
             value={assigneeInput}
             onChange={handleAssigneeInputChange}
