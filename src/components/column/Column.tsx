@@ -1,15 +1,18 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Card from "../card/Card";
 import type { ColumnProps } from "../../utils/types/column";
 import type { CardData } from "../../utils/interface/card";
 
 import { useAppDispatch, useAppSelector } from "../../app/store/hooks";
-import {
-  selectCardsForColumn,
-} from "../../app/slices/card.slice";
+import { selectCardsForColumn } from "../../app/slices/card.slice";
 import { MAX_TITLE_LENGTH } from "../../utils/constants/card-modal";
-import { addCardToColumn, deleteCardFromColumn, loadCardsForColumn, updateCardInColumn } from "../../app/thunks/card.thunks";
+import {
+  addCardToColumn,
+  deleteCardFromColumn,
+  loadCardsForColumn,
+  updateCardInColumn,
+} from "../../app/thunks/card.thunks";
 
 const Column: React.FC<ColumnProps> = ({
   column,
@@ -26,8 +29,8 @@ const Column: React.FC<ColumnProps> = ({
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
-  const cards = useAppSelector((state) =>
-    selectCardsForColumn(state, column.id)
+  const cards = useAppSelector(
+    useCallback((state) => selectCardsForColumn(state, column.id), [column.id])
   );
 
   const [isAdding, setIsAdding] = useState<boolean>(false);
@@ -133,23 +136,25 @@ const Column: React.FC<ColumnProps> = ({
     },
   ];
 
-  const handleNewCardKeyDown = (keyboardEvent: React.KeyboardEvent<HTMLInputElement>) => {
-  if (keyboardEvent.key === "Enter") {
-    handleAddCard();
-  }
+  const handleNewCardKeyDown = (
+    keyboardEvent: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (keyboardEvent.key === "Enter") {
+      handleAddCard();
+    }
 
-  if (keyboardEvent.key === "Escape") {
+    if (keyboardEvent.key === "Escape") {
+      setIsAdding(false);
+      setNewCardTitle("");
+      setError("");
+    }
+  };
+
+  const handleCancelCard = () => {
     setIsAdding(false);
-    setNewCardTitle(""); 
-    setError("");    
-  }
-};
-
-const handleCancelCard = () => {
-  setIsAdding(false);     
-  setError("");           
-  setNewCardTitle("");   
-};
+    setError("");
+    setNewCardTitle("");
+  };
 
   const handleMenuToggle = () => setMenuOpen((open) => !open);
 

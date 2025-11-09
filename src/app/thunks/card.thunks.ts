@@ -7,8 +7,13 @@ import { toast } from "react-toastify";
 import { setCardsForColumn } from "../slices/card.slice";
 
 const getAllCards = (): CardData[] => {
-  const rawCards = localStorage.getItem(CARD_KEY);
-  return rawCards ? (JSON.parse(rawCards) as CardData[]) : [];
+  try {
+    const rawCards = localStorage.getItem(CARD_KEY);
+    return rawCards ? (JSON.parse(rawCards) as CardData[]) : [];
+  } catch (error) {
+    console.error("Failed to load cards from storage:", error);
+    return [];
+  }
 };
 
 const saveAllCards = (cards: CardData[]): void => {
@@ -30,6 +35,22 @@ export const addCardToColumn =
   (boardId: string, columnId: string, rawTitle: string) =>
   (dispatch: AppDispatch): void => {
     const title = rawTitle.trim();
+
+    if (!title) {
+      toast.error("Title cannot be empty.");
+      return;
+    }
+
+    const allCards = getAllCards();
+    const columnCards = getCardsByColumn(allCards, columnId);
+    const hasDuplicate = columnCards.some(
+      (card) => card.title.trim().toLowerCase() === title.toLowerCase()
+    );
+    if (hasDuplicate) {
+      toast.error("A card with this title already exists in this column.");
+      return;
+    }
+
     const newCard: CardData = {
       id: nanoid(),
       title,
@@ -37,12 +58,11 @@ export const addCardToColumn =
       columnId,
     };
 
-    const allCards = getAllCards();
     const updatedAllCards = [newCard, ...allCards];
     saveAllCards(updatedAllCards);
 
-    const columnCards = getCardsByColumn(updatedAllCards, columnId);
-    dispatch(setCardsForColumn({ columnId, cards: columnCards }));
+    const updatedColumnCards = [newCard, ...columnCards];
+    dispatch(setCardsForColumn({ columnId, cards: updatedColumnCards }));
   };
 
 export const updateCardInColumn =
@@ -63,7 +83,8 @@ export const updateCardInColumn =
     const isDuplicateTitle = cardsInSameColumn.some(
       (existingCard) =>
         existingCard.id !== incomingCard.id &&
-        existingCard.title.trim().toLowerCase() === normalizedTitle.toLowerCase()
+        existingCard.title.trim().toLowerCase() ===
+          normalizedTitle.toLowerCase()
     );
     if (isDuplicateTitle) {
       toast.error("A card with this title already exists in this column.");
@@ -108,7 +129,10 @@ export const cloneCardInColumn =
     const existingTitlesInColumn = getCardsByColumn(allCards, columnId).map(
       (card) => card.title
     );
-    const clonedTitle = getNextCloneTitle(sourceCard.title, existingTitlesInColumn);
+    const clonedTitle = getNextCloneTitle(
+      sourceCard.title,
+      existingTitlesInColumn
+    );
 
     const clonedCard: CardData = {
       ...sourceCard,

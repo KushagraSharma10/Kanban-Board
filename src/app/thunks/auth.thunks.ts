@@ -50,7 +50,7 @@ export const loadSession =
 
 export const loginUser =
   ({ email, password }: { email: string; password: string }) =>
-  (dispatch: AppDispatch): void => {
+  async (dispatch: AppDispatch): Promise<void> => {
     try {
       const normalizedEmail = normalizeEmail(email);
       const users = readAllUsersFromStorage();
@@ -63,7 +63,7 @@ export const loginUser =
         toast.error("Invalid credentials or please sign up first.");
         return;
       }
-      const isValid = bcrypt.compareSync(password, existing.password);
+      const isValid = await bcrypt.compare(password, existing.password);
       if (!isValid) {
         toast.error("Invalid credentials or please sign up first.");
         return;
@@ -93,7 +93,7 @@ export const signupUser =
     email: string;
     password: string;
   }) =>
-  (dispatch: AppDispatch): void => {
+ async (dispatch: AppDispatch): Promise<void> => {
     try {
       const emailMessage = validateEmail(email);
       if (emailMessage) {
@@ -117,7 +117,7 @@ export const signupUser =
         return;
       }
 
-      const hashedPassword = bcrypt.hashSync(password, 10);
+      const hashedPassword =await bcrypt.hash(password, 10);
       const newUser: UserData = {
         id: nanoid(),
         name: name.trim() || normalizedEmail.split("@")[0],

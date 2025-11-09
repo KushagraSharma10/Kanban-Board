@@ -8,8 +8,8 @@ export const store = configureStore({
   reducer: {
     auth: authReducer,
     boards: boardsReducer,
-     columns: columnsReducer,
-     cards: cardsReducer,
+    columns: columnsReducer,
+    cards: cardsReducer,
   },
 });
 

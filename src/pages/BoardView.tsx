@@ -143,7 +143,7 @@ const BoardView: React.FC = () => {
     <div className="w-full min-h-screen text-[#e6edf3] bg-[#0b0f14]">
       <header className="p-4 md:p-6 border-b border-[#3a3f44] bg-[#161a21] flex items-center gap-3 md:gap-4 justify-between sticky top-0 z-10">
         <div className="flex items-center gap-2">
-          <img src="../public/Kanban.svg" alt="photo" className="w-9 h-9" />
+          <img src="/Kanban.svg" alt="photo" className="w-9 h-9" />
           <h1 className="text-base md:text-xl font-semibold text-[#e6edf3]">
             {boardName || "Board"}
           </h1>

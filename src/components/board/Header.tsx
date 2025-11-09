@@ -27,6 +27,7 @@ const Header: React.FC<HeaderProp> = ({
           placeholder="Search boards..."
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
+          aria-label="Search boards"
         />
         <Profile>
           <button onClick={() => setModalOpen(true)}>+ Create</button>
