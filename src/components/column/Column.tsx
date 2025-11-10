@@ -173,13 +173,6 @@ const Column: React.FC<ColumnProps> = ({
     setNewCardTitle(""); 
     setError("");    
   }
-};
-
-  const handleCancelCard = () => {
-    setIsAdding(false);
-    setError("");
-    setNewCardTitle("");
-  };
 
   const handleMenuToggle = () => setMenuOpen((open) => !open);
 
@@ -192,9 +185,9 @@ const Column: React.FC<ColumnProps> = ({
 
   return (
     <div className="min-w-[70vw] max-h-max md:min-w-[40vw] lg:min-w-[20vw] bg-theme-column rounded-md md:p-1.5 p-1">
-      <div className="flex items-center justify-between mb-2 px-4 py-3 ">
+      <div className="flex items-center justify-between mb-2 px-4 py-3">
         {editing ? (
-          <input
+          <input 
             ref={inputRef}
             value={title}
             onChange={(changeEvent) => setTitle(changeEvent.target.value)}
@@ -307,6 +300,6 @@ const Column: React.FC<ColumnProps> = ({
       />
     </div>
   );
-};
+}
 
 export default Column;

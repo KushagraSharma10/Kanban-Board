@@ -49,12 +49,6 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
     }
   };
 
-  const handleDeleteCard = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    setIsMenuOpen(false);
-    onDelete(card.id);
-  };
-
   const handleOpenEditModal = (
     mouseEvent: React.MouseEvent<HTMLButtonElement>
   ): void => {
