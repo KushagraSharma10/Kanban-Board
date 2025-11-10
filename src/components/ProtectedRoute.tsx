@@ -1,14 +1,38 @@
-import { Navigate, Outlet } from "react-router"; 
-import { getActiveUser } from "../utils/auth";
+import React, { useEffect, useState } from "react";
+import { Outlet, useNavigate } from "react-router";
+import LoginPrompt from "../components/LoginPrompt";
+import { getSession } from "../utils/session";
 
-const ProtectedRoute = () => {
-  const activeUser = getActiveUser();
+const ProtectedRoute: React.FC = () => {
+  const navigate = useNavigate();
 
-  if (!activeUser) {
-    return <Navigate to="/" replace />;
-  }
+  const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
+  const [showLogin, setShowLogin] = useState(false);
 
-  return <Outlet />
+  useEffect(() => {
+    setIsAuthed(!!getSession());
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthed) {
+      const timer = setTimeout(() => setShowLogin(true), 2000);
+      return () => clearTimeout(timer);
+    }
+    setShowLogin(false);
+  }, [isAuthed]);
+
+  const handleLoginClick = () => {
+    navigate("/login");
+  };
+  
+  return (
+    <>
+      <Outlet />
+      {!isAuthed && (
+        <LoginPrompt isOpen={showLogin} onLoginClick={handleLoginClick} />
+      )}
+    </>
+  );
 };
 
 export default ProtectedRoute;

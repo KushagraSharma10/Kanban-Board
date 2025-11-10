@@ -1,60 +1,58 @@
 import { useEffect, useRef, useState } from "react";
 import { GoPlus } from "react-icons/go";
-import Column from "../components/board/Column";
+import Column from "../components/column/Column";
 import { useNavigate, useParams } from "react-router";
 import type { ColumnItem } from "../utils/types/board-view";
-import { loadFromStorage } from "../utils/storage";
-import type { BoardItem } from "../utils/types/dashboard";
-import { saveBoardColumnOrder } from "../utils/order-storage";
 import { getDragData, reorderById, setDragData } from "../utils/drag-and-drop";
-import { nanoid } from "nanoid";
-import { BOARDS_STORAGE_KEY } from "../utils/constants/board";
-import type { StoredColumn } from "../utils/types/column";
 import { getSession } from "../utils/session";
-import LoginPrompt from "../components/LoginPrompt";
+import { useAppDispatch, useAppSelector } from "../app/store/hooks";
+import { selectColumnItemsForBoard } from "../app/slices/column.slice";
 import {
-  loadAllColumns,
-  loadColumnsForBoard,
-  saveAllColumns,
-  validateColumnTitle,
-} from "../utils/column";
+  applyColumnOrder,
+  createColumn,
+  deleteColumnThunk,
+  renameColumnThunk,
+  SeedColumnsForBoard,
+} from "../app/thunks/columns.thunks";
+import { readAllBoards } from "../app/thunks/board.thunks";
 
-const BoardView = () => {
+const BoardView: React.FC = () => {
   const [boardName, setBoardName] = useState<string>("");
-  const [columns, setColumns] = useState<ColumnItem[]>([]);
   const [showAdd, setShowAdd] = useState<boolean>(false);
   const [newColumnName, setNewColumnName] = useState<string>("");
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [showLogin, setShowLogin] = useState<boolean>(false);
+  const [cardSearch, setCardSearch] = useState<string>("");
 
   const draggingColumnIdRef = useRef<string | null>(null);
 
   const { id: boardId } = useParams();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
   const activeSession = getSession();
   const activeUserId = activeSession?.userId || null;
 
-  useEffect(() => {
-    if (!activeUserId) {
-      const timer = setTimeout(() => {
-        setShowLogin(true);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
+  const columns: ColumnItem[] = useAppSelector((state) =>
+    selectColumnItemsForBoard(state, boardId ?? "")
+  );
 
-    const board = getAllBoards().find(
-      (board) => board.id === boardId && board.userId === activeUserId
+  useEffect(() => {
+    if (!activeUserId) return;
+
+    const board = readAllBoards().find(
+      (candidateBoard) =>
+        candidateBoard.id === boardId && candidateBoard.userId === activeUserId
     );
 
     if (!board) {
-      navigate("/dashboard");
+      navigate("/");
       return;
     }
-
     setBoardName(board.name);
-    const seeded = ensureDefaultColumns(board.id);
-    setColumns(seeded.map(({ id, title }) => ({ id, title })));
-  }, [activeUserId, boardId, navigate]);
+    if (boardId) {
+      dispatch(SeedColumnsForBoard(boardId));
+    }
+  }, [activeUserId, boardId, navigate, dispatch]);
 
   useEffect(() => {
     if (showAdd) inputRef.current?.focus();
@@ -62,160 +60,75 @@ const BoardView = () => {
 
   const handleCreateColumn = () => {
     if (!boardId) return;
-    const updated: StoredColumn[] = addColumn(boardId, newColumnName);
-    setColumns(updated.map(({ id, title }) => ({ id, title })));
+    dispatch(createColumn(boardId, newColumnName));
     setNewColumnName("");
     setShowAdd(false);
   };
 
   const handleRenameColumn = (columnId: string, newTitle: string) => {
     if (!boardId) return;
-    const updated = renameColumn(boardId, columnId, newTitle);
-    setColumns(updated.map(({ id, title }) => ({ id, title })));
+    dispatch(renameColumnThunk(boardId, columnId, newTitle));
   };
 
   const handleDeleteColumn = (columnId: string) => {
     if (!boardId) return;
-    const updated = deleteColumn(boardId, columnId);
-    setColumns(updated.map(({ id, title }) => ({ id, title })));
+    dispatch(deleteColumnThunk(boardId, columnId));
   };
 
   const handleColumnDragStart = (
     columnId: string,
-    event: React.DragEvent<HTMLDivElement>
+    dragEvent: React.DragEvent<HTMLDivElement>
   ) => {
     draggingColumnIdRef.current = columnId;
-    setDragData(event, { id: columnId });
+    setDragData(dragEvent, { id: columnId });
   };
 
-  const handleColumnDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-    event.dataTransfer.dropEffect = "move";
+  const handleColumnDragOver = (dragEvent: React.DragEvent<HTMLDivElement>) => {
+    dragEvent.preventDefault();
+    dragEvent.stopPropagation();
+    dragEvent.dataTransfer.dropEffect = "move";
   };
 
-  const handleColumnDropBefore = (
+  const handleColumnDrop = (
     targetColumnId: string,
-    event: React.DragEvent<HTMLDivElement>
+    dragEvent: React.DragEvent<HTMLDivElement>
   ) => {
-    event.preventDefault();
-    event.stopPropagation();
+    dragEvent.preventDefault();
+    dragEvent.stopPropagation();
 
-    const payload = getDragData(event);
-    const sourceColumnId = draggingColumnIdRef.current || payload?.id;
+    const draggedColumn = getDragData(dragEvent);
+    const sourceColumnId = draggingColumnIdRef.current || draggedColumn?.id;
     if (!sourceColumnId || sourceColumnId === targetColumnId) return;
 
-    setColumns((previousColumns) => {
-      const sourceIndex = previousColumns.findIndex(
-        (col) => col.id === sourceColumnId
+    const nextColumns: ColumnItem[] = (() => {
+      const sourceIndex = columns.findIndex(
+        (column) => column.id === sourceColumnId
       );
-      const targetIndex = previousColumns.findIndex(
-        (col) => col.id === targetColumnId
+      const targetIndex = columns.findIndex(
+        (column) => column.id === targetColumnId
       );
-      if (sourceIndex === -1 || targetIndex === -1) return previousColumns;
+      if (sourceIndex === -1 || targetIndex === -1) return columns;
 
       const position: "before" | "after" =
         sourceIndex < targetIndex ? "after" : "before";
 
-      const nextColumns = reorderById(
-        previousColumns,
-        sourceColumnId,
-        targetColumnId,
-        position
-      );
+      return reorderById(columns, sourceColumnId, targetColumnId, position);
+    })();
 
-      if (boardId) {
-        saveBoardColumnOrder(
-          boardId,
-          nextColumns,
-          loadColumnsForBoard,
-          saveColumnsForBoard
-        );
-      }
-      return nextColumns;
-    });
+    if (boardId) {
+      dispatch(applyColumnOrder(boardId, nextColumns));
+    }
 
     draggingColumnIdRef.current = null;
   };
 
-  const getAllBoards = (): BoardItem[] => {
-    const storedBoards = loadFromStorage(BOARDS_STORAGE_KEY, []);
-    return (Array.isArray(storedBoards) ? storedBoards : []) as BoardItem[];
-  };
-
-  const saveColumnsForBoard = (
-    boardId: string,
-    nextColumns: StoredColumn[]
-  ): void => {
-    const allColumns = loadAllColumns().filter(
-      (column) => column.boardId !== boardId
-    );
-    saveAllColumns([...allColumns, ...nextColumns]);
-  };
-
-  const ensureDefaultColumns = (boardId: string): StoredColumn[] => {
-    const existingColumns = loadColumnsForBoard(boardId);
-    if (existingColumns.length > 0) return existingColumns;
-
-    const now = Date.now();
-    const defaults: StoredColumn[] = [
-      { id: nanoid(), boardId, title: "To Do", createdAt: now },
-      { id: nanoid(), boardId, title: "In Progress", createdAt: now },
-      { id: nanoid(), boardId, title: "Done", createdAt: now },
-    ];
-
-    const allColumns = loadAllColumns();
-    saveAllColumns([...allColumns, ...defaults]);
-    return defaults;
-  };
-
-  const addColumn = (boardId: string, titleRaw: string): StoredColumn[] => {
-    const { isValid, columns, title } = validateColumnTitle(boardId, titleRaw);
-    if (!isValid || !title) return columns;
-
-    const newColumn: StoredColumn = {
-      id: nanoid(),
-      boardId,
-      title,
-      createdAt: Date.now(),
-    };
-
-    const updatedColumns = [...columns, newColumn];
-    saveColumnsForBoard(boardId, updatedColumns);
-    return updatedColumns;
-  };
-
-  const renameColumn = (
-    boardId: string,
-    columnId: string,
-    newTitleRaw: string
-  ): StoredColumn[] => {
-    const { isValid, columns, title } = validateColumnTitle(
-      boardId,
-      newTitleRaw,
-      columnId
-    );
-    if (!isValid || !title) return columns;
-
-    const updated = columns.map((column) =>
-      column.id === columnId ? { ...column, title } : column
-    );
-
-    saveColumnsForBoard(boardId, updated);
-    return updated;
-  };
-
-  const deleteColumn = (boardId: string, columnId: string): StoredColumn[] => {
-    const updated = loadColumnsForBoard(boardId).filter(
-      (column) => column.id !== columnId
-    );
-    saveColumnsForBoard(boardId, updated);
-    return updated;
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") handleCreateColumn();
-    if (e.key === "Escape") {
+  const handleColumnInputKeyDown = (
+    keyboardEvent: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (keyboardEvent.key === "Enter") {
+      handleCreateColumn();
+    }
+    if (keyboardEvent.key === "Escape") {
       setShowAdd(false);
       setNewColumnName("");
     }
@@ -228,11 +141,22 @@ const BoardView = () => {
 
   return (
     <div className="w-full min-h-screen text-[#e6edf3] bg-[#0b0f14]">
-      <header className="p-6 border-b border-[#3a3f44] flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{boardName || "Board"}</h1>
+      <header className="p-4 md:p-6 border-b border-[#3a3f44] bg-[#161a21] flex items-center gap-3 md:gap-4 justify-between sticky top-0 z-10">
+        <div className="flex items-center gap-2">
+          <img src="/Kanban.svg" alt="photo" className="w-9 h-9" />
+          <h1 className="text-base md:text-xl font-semibold text-[#e6edf3]">
+            {boardName || "Board"}
+          </h1>
+        </div>
+        <input
+          value={cardSearch}
+          onChange={(e) => setCardSearch(e.target.value)}
+          placeholder="Search cards (title, label, assignee)…"
+          className="flex-1 max-w-[420px] px-3 py-2 rounded-md bg-[#0b0f14] border border-[#3a3f44] outline-none placeholder-[#9e9e9e] focus:ring-2 focus:ring-[#0096ff]/30 focus:border-[#6ca0ff]"
+        />
         <button
-          onClick={() => setShowAdd((prev) => !prev)}
-          className="flex items-center gap-2 px-3 py-2 rounded-md bg-[#222c38] hover:brightness-110 border border-[#3a3f44]"
+          onClick={() => setShowAdd((previous) => !previous)}
+          className="flex items-center gap-2 px-3 py-2 rounded-md bg-[#222c38] hover:brightness-110 border border-[#3a3f44] text-[#e6edf3]"
         >
           <GoPlus className="text-lg" />
           Add Column
@@ -240,18 +164,18 @@ const BoardView = () => {
       </header>
 
       <div className="w-full min-h-[90vh] overflow-auto">
-        <div className="flex gap-4 p-4 min-w-max">
+        <div className="flex gap-4 p-4 md:p-6 min-w-max">
           {columns.map((columnItem) => (
             <div
               key={columnItem.id}
               draggable
-              onDragStart={(event) =>
-                handleColumnDragStart(columnItem.id, event)
+              onDragStart={(dragEvent) =>
+                handleColumnDragStart(columnItem.id, dragEvent)
               }
               onDragOver={handleColumnDragOver}
-              onDrop={(event) => handleColumnDropBefore(columnItem.id, event)}
+              onDrop={(dragEvent) => handleColumnDrop(columnItem.id, dragEvent)}
               onDragEnd={() => (draggingColumnIdRef.current = null)}
-              className="min-w-[70vw] md:min-w-[40vw] lg:min-w-[20vw] rounded-md border border-transparent transition-colors "
+              className="min-w-[70vw] md:min-w-[40vw] h-fit lg:min-w-[22vw] rounded-lg border border-[#3a3f44] bg-[#161a21] transition-colors hover:border-[#a3b1c2]/40"
               title="Drag to reorder"
             >
               <Column
@@ -259,23 +183,23 @@ const BoardView = () => {
                 boardId={boardId ?? ""}
                 onRename={handleRenameColumn}
                 onDelete={handleDeleteColumn}
+                searchText={cardSearch}
               />
             </div>
           ))}
-
-          <div className="min-w-[20vw] max-w-[20vw]">
+          <div className="min-w-[22vw] max-w-[22vw]">
             {showAdd ? (
-              <div className="rounded-md bg-[#161a21] border border-[#3a3f44] md:p-4 ">
+              <div className="rounded-lg bg-[#161a21] border border-[#3a3f44] p-3 md:p-4 shadow-[0_0_0_1px_rgba(58,63,68,0.2)]">
                 <input
                   ref={inputRef}
                   value={newColumnName}
                   onChange={(e) => setNewColumnName(e.target.value)}
-                  onKeyDown={handleKeyDown}
+                  onKeyDown={handleColumnInputKeyDown}
                   maxLength={15}
-                  className="w-full rounded-md text-sm border border-[#3a3f44] bg-[#222c38] px-3 py-2 outline-none placeholder-[#9e9e9e]"
+                  className="w-full rounded-md text-sm border border-[#3a3f44] bg-[#222c38] px-3 py-2 outline-none placeholder-[#9e9e9e] focus:border-[#6ca0ff] focus:ring-2 focus:ring-[#0096ff]/30"
                   placeholder="Column name"
                 />
-                <div className="mt-2 flex items-center">
+                <div className="mt-3 flex items-center">
                   <button
                     onClick={handleCreateColumn}
                     disabled={!newColumnName.trim()}
@@ -285,7 +209,7 @@ const BoardView = () => {
                   </button>
                   <button
                     onClick={handleCancelAddColumn}
-                    className="ml-auto px-3 py-2 rounded-md hover:bg-[#222c38] border border-transparent"
+                    className="ml-auto px-3 py-2 rounded-md border border-transparent text-[#e6edf3] hover:bg-[#2a3b4f]/30"
                     aria-label="Close"
                     title="Close"
                   >
@@ -296,7 +220,7 @@ const BoardView = () => {
             ) : (
               <button
                 onClick={() => setShowAdd(true)}
-                className="w-fit px-4 md:w-full py-3 flex items-center justify-center gap-2 rounded-md border border-dashed border-[#3a3f44] bg-[#161a21]/60 hover:bg-[#161a21] text-sm"
+                className="w-fit px-4 md:w-full py-3 flex items-center justify-center gap-2 rounded-lg border border-dashed border-[#3a3f44] bg-[#161a21]/60 hover:bg-[#161a21] text-sm text-[#e6edf3]"
                 title="Add column"
               >
                 <GoPlus className="text-lg" />
@@ -306,7 +230,6 @@ const BoardView = () => {
           </div>
         </div>
       </div>
-      <LoginPrompt isOpen={showLogin} onLoginClick={() => navigate("/login")} />
     </div>
   );
 };

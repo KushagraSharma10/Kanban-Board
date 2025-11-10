@@ -1,40 +1,25 @@
-import type { StoredColumn } from "../utils/types/column";
-import { COLUMNS_KEY } from "./constants/column";
-import { loadFromStorage, saveToStorage } from "./storage";
+import { loadColumnsForBoard } from "../app/thunks/columns.thunks";
 
-export function validateColumnTitle(
+export const validateColumnTitle = (
   boardId: string,
   titleRaw: string,
-  existingColumnId?: string
-): { isValid: boolean; columns: StoredColumn[]; title?: string } {
+  excludeColumnId?: string
+): { isValid: boolean; title: string; error?: string } => {
   const title = titleRaw.trim();
-  const currentColumns = loadColumnsForBoard(boardId);
-
   if (!title) {
-    return { isValid: false, columns: currentColumns };
+    return { isValid: false, title, error: "Title cannot be empty." };
   }
 
-  const duplicate = currentColumns.some(
+  const existingColumns = loadColumnsForBoard(boardId);
+  const duplicate = existingColumns.some(
     (column) =>
-      column.id !== existingColumnId &&
-      column.title.toLowerCase() === title.toLowerCase()
+      column.title.toLowerCase() === title.toLowerCase() &&
+      column.id !== excludeColumnId
   );
 
   if (duplicate) {
-    return { isValid: false, columns: currentColumns };
+    return { isValid: false, title, error: "Column title already exists." };
   }
 
-  return { isValid: true, columns: currentColumns, title };
-}
-
-export const loadAllColumns = (): StoredColumn[] => {
-  return loadFromStorage(COLUMNS_KEY, [] as StoredColumn[]);
-};
-
-export const saveAllColumns = (columns: StoredColumn[]): void => {
-  saveToStorage(COLUMNS_KEY, columns);
-};
-
-export const loadColumnsForBoard = (boardId: string): StoredColumn[] => {
-  return loadAllColumns().filter((column) => column.boardId === boardId);
+  return { isValid: true, title };
 };

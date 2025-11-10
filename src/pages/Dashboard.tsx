@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import BoardCard from "../components/dashboard/BoardCard";
+import BoardCard from "../components/board/BoardCard";
 import {
   Board as BoardWrapper,
   BoardArea,
@@ -9,26 +9,26 @@ import {
   NoBoards,
   SearchQuery,
 } from "../styles/dashboard/dashboard";
-import CreateBoard from "../components/dashboard/CreateBoard";
-import Header from "../components/dashboard/Header";
+import ManageBoard from "../components/board/ManageBoard";
+import Header from "../components/board/Header";
 import type { BoardForm, BoardItem } from "../utils/types/dashboard";
 import { useNavigate } from "react-router";
-import { nanoid } from "nanoid";
 import { getSession } from "../utils/session";
+import { useAppDispatch, useAppSelector } from "../app/store/hooks";
 import {
-  getAllBoards,
-  getBoardsForUser,
-  saveAllBoards,
-  validateBoardName,
-} from "../utils/boards";
-import LoginPrompt from "../components/LoginPrompt";
+  selectBoards,
+} from "../app/slices/board.slice";
+import { createBoardForUser, deleteBoardForUser, loadBoardsForUser, updateBoardForUser } from "../app/thunks/board.thunks";
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
   const activeSession = getSession();
   const activeUserId = activeSession?.userId || null;
 
-  const [boardList, setBoardList] = useState<BoardItem[]>([]);
+  const boardsList = useAppSelector(selectBoards);
+
   const [isBoardModalOpen, setIsBoardModalOpen] = useState<boolean>(false);
   const [boardModalMode, setBoardModalMode] = useState<"create" | "edit">(
     "create"
@@ -36,52 +36,26 @@ const Dashboard: React.FC = () => {
   const [selectedBoardForEdit, setSelectedBoardForEdit] =
     useState<BoardItem | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [showLogin, setShowLogin] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!activeUserId) {
-      const timer = setTimeout(() => {
-        setShowLogin(true);
-      }, 2000);
-      return () => clearTimeout(timer);
-    } else {
-      const userBoards = getBoardsForUser(activeUserId);
-      setBoardList(userBoards);
+    if(activeUserId){
+      dispatch(loadBoardsForUser(activeUserId));
     }
-  }, [activeUserId]);
+  }, [activeUserId, dispatch]);
 
   const handleCreateBoard = (boardData: BoardForm) => {
     if (!activeUserId) return;
-
-    const newName = validateBoardName(activeUserId, boardData);
-    if (!newName) return;
-
-    const createdBoard = addBoard(activeUserId, boardData);
-    setBoardList((previousBoards) => [createdBoard, ...previousBoards]);
+    dispatch(createBoardForUser(activeUserId, boardData));
   };
 
   const handleUpdateBoard = (boardId: string, boardData: BoardForm) => {
     if (!activeUserId) return;
-
-    const newName = validateBoardName(activeUserId, boardData, boardId);
-    if (!newName) return;
-
-    updateBoard(activeUserId, boardId, { ...boardData, name: newName });
-    setBoardList((previousBoards) =>
-      previousBoards.map((existingBoard) =>
-        existingBoard.id === boardId
-          ? { ...existingBoard, ...boardData, name: newName }
-          : existingBoard
-      )
-    );
+    dispatch(updateBoardForUser(activeUserId, boardId, boardData));
   };
 
   const handleDeleteBoard = (boardId: string) => {
     if (!activeUserId) return;
-    deleteBoard(activeUserId, boardId);
-    setBoardList((previousBoards) =>
-      previousBoards.filter((existingBoard) => existingBoard.id !== boardId)
-    );
+    dispatch(deleteBoardForUser(activeUserId, boardId));
   };
 
   const handleHeaderModalOpen = (isOpen: boolean) => {
@@ -96,48 +70,13 @@ const Dashboard: React.FC = () => {
     setIsBoardModalOpen(true);
   };
 
-  const addBoard = (userId: string, data: BoardForm): BoardItem => {
-    const allBoards = getAllBoards();
-    const newBoard: BoardItem = {
-      id: nanoid(),
-      userId,
-      name: data.name.trim(),
-      type: data.type.trim(),
-      color: data.color,
-    };
-    saveAllBoards([newBoard, ...allBoards]);
-    return newBoard;
-  };
-
-  const updateBoard = (
-    userId: string,
-    boardId: string,
-    data: BoardForm
-  ): void => {
-    const allBoards = getAllBoards();
-    const updatedBoards = allBoards.map((board) =>
-      board.id === boardId && board.userId === userId
-        ? { ...board, ...data }
-        : board
-    );
-    saveAllBoards(updatedBoards);
-  };
-
-  const deleteBoard = (userId: string, boardId: string): void => {
-    const allBoards = getAllBoards();
-    const remainingBoards = allBoards.filter(
-      (board) => !(board.id === boardId && board.userId === userId)
-    );
-    saveAllBoards(remainingBoards);
-  };
-
-  const filteredBoards = boardList.filter(
+  const filteredBoards = boardsList.filter(
     (board) =>
       board.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       board.type.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleCreate = () => {
+  const handleCreateBoardClick = () => {
     setSelectedBoardForEdit(null);
     setBoardModalMode("create");
     setIsBoardModalOpen(true);
@@ -150,11 +89,11 @@ const Dashboard: React.FC = () => {
         search={searchQuery}
         onSearchChange={setSearchQuery}
       />
-
       <BoardWrapper>
         <BoardArea>
           <h1>My Boards</h1>
-          {!boardList.length ? (
+
+          {!boardsList.length ? (
             <NoBoards>No boards right now. Create one to get started!</NoBoards>
           ) : !filteredBoards.length ? (
             <NoBoards>
@@ -174,7 +113,7 @@ const Dashboard: React.FC = () => {
                 />
               ))}
 
-              <CreateBoardDiv onClick={handleCreate}>
+              <CreateBoardDiv onClick={handleCreateBoardClick}>
                 + Create Board
               </CreateBoardDiv>
             </Cards>
@@ -182,7 +121,7 @@ const Dashboard: React.FC = () => {
         </BoardArea>
       </BoardWrapper>
 
-      <CreateBoard
+      <ManageBoard
         open={isBoardModalOpen}
         mode={boardModalMode}
         board={selectedBoardForEdit ?? undefined}
@@ -191,7 +130,6 @@ const Dashboard: React.FC = () => {
         onUpdate={handleUpdateBoard}
       />
 
-      <LoginPrompt isOpen={showLogin} onLoginClick={() => navigate("/login")} />
     </Main>
   );
 };

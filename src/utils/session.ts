@@ -15,7 +15,7 @@ export const getSession = (): SessionData | null => {
   }
 };
 
-export const createSession = (userId: string): void => {
+export const createSession= (userId: string): void => {
   try {
     const session = {
       userId: userId,

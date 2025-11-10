@@ -17,8 +17,9 @@ import {
   selectTypes,
 } from "../../utils/constants/board";
 import { DEFAULT_COLORS } from "../../utils/constants/colors";
+import { toast } from "react-toastify";
 
-const CreateBoard: React.FC<BoardModalProp> = ({
+const ManageBoard: React.FC<BoardModalProp> = ({
   open,
   onClose,
   onCreate,
@@ -43,14 +44,13 @@ const CreateBoard: React.FC<BoardModalProp> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.trim()) return alert("Please enter a board name");
+    if (!form.name.trim()) return toast.error("Please enter a board name");
 
     if (mode === "edit" && board && onUpdate) {
       onUpdate(board.id, form);
       onClose();
       return;
     }
-
     onCreate(form);
     setForm({ name: "", type: "", color: DEFAULT_COLORS[0] });
     onClose();
@@ -85,8 +85,8 @@ const CreateBoard: React.FC<BoardModalProp> = ({
             <h2>Type</h2>
             <select
               value={form.type}
-              onChange={(e) =>
-                setForm((form) => ({ ...form, type: e.target.value }))
+              onChange={(event) =>
+                setForm((form) => ({ ...form, type: event.target.value }))
               }
             >
               <option value="">Select type</option>
@@ -132,4 +132,4 @@ const CreateBoard: React.FC<BoardModalProp> = ({
   );
 };
 
-export default CreateBoard;
+export default ManageBoard;

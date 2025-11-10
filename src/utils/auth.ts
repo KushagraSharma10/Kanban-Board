@@ -8,14 +8,13 @@ export const getActiveUser = (): UserData | null => {
   if (!session?.userId) {
     return null;
   }
-
   const allUsers = getAllUsers();
   const activeUser = allUsers.find((user) => user.id === session.userId);
 
   return activeUser || null;
-}
+};
 
 export const getAllUsers = (): UserData[] => {
   const stored = loadFromStorage(USERS_STORAGE_KEY, []);
   return Array.isArray(stored) ? (stored as UserData[]) : [];
-}
+};

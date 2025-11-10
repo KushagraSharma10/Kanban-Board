@@ -5,6 +5,7 @@ export type ColumnProps = {
   onRename: (id: string, newTitle: string) => void;
   onDelete: (id: string) => void;
   boardId: string;
+  searchText?: string;
 };
 
 export type StoredColumn = {
@@ -14,3 +15,4 @@ export type StoredColumn = {
   createdAt: number;
 };
 
+export type ColumnsState = { items: StoredColumn[] };

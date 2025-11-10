@@ -53,26 +53,30 @@ const BoardCard: React.FC<CardProp> = ({
             <ThreeDots
               size={20}
               onClick={handleThreeDotsClick}
+              aria-label="Board options"
+              aria-expanded={menuOpen}
+              role="button"
+              tabIndex={0}
             />
           </DotWrap>
+          {menuOpen && (
+            <>
+              <Backdrop onClick={() => setMenuOpen(false)} />
+              <OptionsMenu role="menu" aria-label="Board actions">
+                {menuOptions.map((option) => (
+                  <button
+                    key={option.label}
+                    onClick={() => handleOptionClick(option.action)}
+                    role="menuitem"
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </OptionsMenu>
+            </>
+          )}
         </BoardContent>
       </ContentClip>
-
-      {menuOpen && (
-        <>
-          <Backdrop onClick={() => setMenuOpen(false)} />
-          <OptionsMenu>
-            {menuOptions.map((option) => (
-              <button
-                key={option.label}
-                onClick={()=>handleOptionClick(option.action)}
-              >
-                {option.label}
-              </button>
-            ))}
-          </OptionsMenu>
-        </>
-      )}
     </Card>
   );
 };

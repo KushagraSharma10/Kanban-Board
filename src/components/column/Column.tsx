@@ -1,48 +1,49 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Card from "../card/Card";
-import { loadFromStorage, saveToStorage } from "../../utils/storage";
-import { nanoid } from "nanoid";
 import type { ColumnProps } from "../../utils/types/column";
 import type { CardData } from "../../utils/interface/card";
+
+import { useAppDispatch, useAppSelector } from "../../app/store/hooks";
+import { selectCardsForColumn } from "../../app/slices/card.slice";
 import { MAX_TITLE_LENGTH } from "../../utils/constants/card-modal";
-import { CARD_KEY } from "../../utils/constants/card";
+import {
+  addCardToColumn,
+  deleteCardFromColumn,
+  loadCardsForColumn,
+  updateCardInColumn,
+} from "../../app/thunks/card.thunks";
 
 const Column: React.FC<ColumnProps> = ({
   column,
   onRename,
   onDelete,
   boardId,
+  searchText = "",
 }: ColumnProps) => {
+  const dispatch = useAppDispatch();
+
   const [editing, setEditing] = useState<boolean>(false);
   const [title, setTitle] = useState<string>(column.title);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const [cards, setCards] = useState<CardData[]>([]);
+
+  const cards = useAppSelector(
+    useCallback((state) => selectCardsForColumn(state, column.id), [column.id])
+  );
+
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const [newCardTitle, setNewCardTitle] = useState<string>("");
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
-    const allCards = loadCards();
-    const filtered = allCards.filter(
-      (card) => card.boardId === boardId && card.columnId === column.id
-    );
-    setCards(filtered);
-  }, [boardId, column.id]);
+    dispatch(loadCardsForColumn(column.id));
+  }, [dispatch, column.id]);
 
   useEffect(() => {
     setTitle(column.title);
   }, [column.title]);
-
-  const loadCards = (): CardData[] => {
-    return loadFromStorage(CARD_KEY, [] as CardData[]);
-  };
-
-  const saveCards = (cards: CardData[]): void => {
-    saveToStorage(CARD_KEY, cards);
-  };
 
   useEffect(() => {
     if (editing) {
@@ -65,42 +66,50 @@ const Column: React.FC<ColumnProps> = ({
     }
     if (
       cards.some(
-        (card) => card.title.toLowerCase() === trimmedTitle.toLowerCase()
+        (existingCard) =>
+          existingCard.title.toLowerCase() === trimmedTitle.toLowerCase()
       )
     ) {
       setError("A card with this title already exists!");
       return;
     }
-    const newCard: CardData = {
-      id: nanoid(),
-      title: trimmedTitle,
-      boardId,
-      columnId: column.id,
-    };
-    const updatedCards = [...cards, newCard];
-    setCards(updatedCards);
-    const allCards = loadCards();
-    saveCards([...allCards, newCard]);
+    dispatch(addCardToColumn(boardId, column.id, trimmedTitle));
+
     setNewCardTitle("");
     setIsAdding(false);
     setError("");
   };
 
-  const handleCardUpdate = (updatedCard: CardData) => {
-    const allCards = loadCards();
-    const updatedAll = allCards.map((card) =>
-      card.id === updatedCard.id ? updatedCard : card
-    );
-    saveCards(updatedAll);
-    setCards((prev) =>
-      prev.map((card) => (card.id === updatedCard.id ? updatedCard : card))
-    );
+  const normalizedQuery = searchText.trim().toLowerCase();
+  const visibleCards = !normalizedQuery
+    ? cards
+    : cards.filter((card) => {
+        const title = card.title.toLowerCase().includes(normalizedQuery);
+        const label = (card.label ?? "none")
+          .toLowerCase()
+          .includes(normalizedQuery);
+        const assignee = (card.assignees ?? []).some((assignee) =>
+          assignee.toLowerCase().includes(normalizedQuery)
+        );
+        return title || label || assignee;
+      });
+
+  const handleKeyDown = (
+    keyboardEvent: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (keyboardEvent.key === "Enter") {
+      onRename(column.id, title.trim());
+      setEditing(false);
+    }
+    if (keyboardEvent.key === "Escape") {
+      setTitle(column.title);
+      setEditing(false);
+    }
   };
 
-  const handleCardDelete = (id: CardData["id"]) => {
-    const allCards = loadCards().filter((card) => card.id !== id);
-    saveCards(allCards);
-    setCards((prev) => prev.filter((card) => card.id !== id));
+  const handleBlur = () => {
+    onRename(column.id, title.trim());
+    setEditing(false);
   };
 
   const handleRenameClick = () => {
@@ -126,36 +135,6 @@ const Column: React.FC<ColumnProps> = ({
         "w-full text-left px-3 py-2 hover:bg-[#141b26] text-sm text-red-400",
     },
   ];
-
-  const handleKeyDown = (
-    keyboardEvent: React.KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (keyboardEvent.key === "Enter") {
-      const next = title.trim();
-      if (!next) {
-        setTitle(column.title);
-        setEditing(false);
-        return;
-      }
-      onRename(column.id, next);
-      setEditing(false);
-    }
-    if (keyboardEvent.key === "Escape") {
-      setTitle(column.title);
-      setEditing(false);
-    }
-  };
-
-  const handleBlur = () => {
-    const next = title.trim();
-    if (!next) {
-      setTitle(column.title);
-      setEditing(false);
-      return;
-    }
-    onRename(column.id, next);
-    setEditing(false);
-  };
 
   const handleNewCardKeyDown = (
     keyboardEvent: React.KeyboardEvent<HTMLInputElement>
@@ -193,7 +172,7 @@ const Column: React.FC<ColumnProps> = ({
           <input
             ref={inputRef}
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(changeEvent) => setTitle(changeEvent.target.value)}
             onKeyDown={handleKeyDown}
             onBlur={handleBlur}
             maxLength={MAX_TITLE_LENGTH}
@@ -236,14 +215,23 @@ const Column: React.FC<ColumnProps> = ({
       </div>
 
       <div className="cards flex flex-col gap-2 px-3 py-1.5">
-        {cards.map((card) => (
+        {visibleCards.map((card) => (
           <Card
             key={card.id}
             card={card}
-            onUpdate={handleCardUpdate}
-            onDelete={handleCardDelete}
+            onUpdate={(updatedCard: CardData) => {
+              dispatch(updateCardInColumn(updatedCard));
+            }}
+            onDelete={(cardId: CardData["id"]) => {
+              dispatch(deleteCardFromColumn(column.id, cardId));
+            }}
           />
         ))}
+        {normalizedQuery && visibleCards.length === 0 && (
+          <div className="text-xs text-[#9ca3af] italic px-2 py-3">
+            No matching cards
+          </div>
+        )}
       </div>
 
       <div className="px-1">
@@ -261,7 +249,9 @@ const Column: React.FC<ColumnProps> = ({
             <input
               type="text"
               value={newCardTitle}
-              onChange={(e) => setNewCardTitle(e.target.value)}
+              onChange={(changeEvent) =>
+                setNewCardTitle(changeEvent.target.value)
+              }
               onKeyDown={handleNewCardKeyDown}
               placeholder="Card title"
               className="px-2 py-1 rounded bg-zinc-900 text-white placeholder-zinc-600 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-zinc-500"
