@@ -76,7 +76,13 @@ const BoardCard: React.FC<BoardCardProp> = ({
               <p>{type}</p>
             </div>
             <DotWrap>
-              <ThreeDots size={20} onClick={handleThreeDotsClick} />
+              <ThreeDots
+                size={20}
+                onClick={handleThreeDotsClick}
+                aria-label="Board options"
+                aria-expanded={menuOpen}
+                className="p-1 rounded hover:bg-theme-overlay/30 focus-visible:outline-2 focus-visible:outline-theme-accent"
+              />
             </DotWrap>
             {menuOpen && (
               <>

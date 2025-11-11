@@ -15,10 +15,8 @@ import {
 } from "../../../app/thunks/card.thunks";
 
 const openColumnMenu = (): void => {
-  const titleElem = screen.getByTitle(/double-click to rename/i); 
-  const headerDiv = titleElem.parentElement as HTMLElement;
-  const svgToggle = headerDiv.querySelector("svg") as SVGElement;
-  fireEvent.click(svgToggle);
+  const menuButton = screen.getByRole('button', { name: /menu|options/i });
+  fireEvent.click(menuButton);
 };
 
 jest.mock("../../../app/thunks/card.thunks", () => ({

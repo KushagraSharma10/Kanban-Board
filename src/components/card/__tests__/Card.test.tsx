@@ -8,10 +8,11 @@ import { cloneCardInColumn } from "../../../app/thunks/card.thunks";
 import type { CardData } from "../../../utils/interface/card";
 
 jest.mock("../../../app/thunks/card.thunks", () => ({
-  cloneCardInColumn: jest.fn((columnId: string, cardId: string) => ({
-    type: "CLONE_CARD",
-    payload: { columnId, cardId },
-  })),
+  cloneCardInColumn: jest.fn((_columnId: string, _cardId: string) => 
+    jest.fn((_dispatch) => {
+    
+    })
+  ),
 }));
 
 jest.mock("../CreateCard", () => {

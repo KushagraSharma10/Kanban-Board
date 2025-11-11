@@ -3,18 +3,25 @@ import { toast } from "react-toastify";
 import { validateEmail, validatePassword } from "../../utils/validation";
 import { findUserByEmail, updateUserPassword } from "../../utils/auth";
 import { BiHide, BiShow } from "react-icons/bi";
-import type { ForgotPasswordProps, ForgotPasswordStage } from "../../utils/types/auth";
+import type {
+  ForgotPasswordProps,
+  ForgotPasswordStage,
+} from "../../utils/types/auth";
 
 const ForgotPassword: React.FC<ForgotPasswordProps> = ({ isOpen, onClose }) => {
-  const [currentStage, setCurrentStage] = useState<ForgotPasswordStage>("verifyEmail");
+  const [currentStage, setCurrentStage] =
+    useState<ForgotPasswordStage>("verifyEmail");
   const [emailAddress, setEmailAddress] = useState<string>("");
   const [emailValidationError, setEmailValidationError] = useState<string>("");
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
-  const [passwordValidationError, setPasswordValidationError] = useState<string>("");
-  const [isNewPasswordVisible, setIsNewPasswordVisible] = useState<boolean>(false);
-  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState<boolean>(false);
+  const [passwordValidationError, setPasswordValidationError] =
+    useState<string>("");
+  const [isNewPasswordVisible, setIsNewPasswordVisible] =
+    useState<boolean>(false);
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
+    useState<boolean>(false);
 
   if (!isOpen) return null;
 
@@ -73,7 +80,11 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ isOpen, onClose }) => {
       return;
     }
 
-    updateUserPassword(selectedUserId, newPassword);
+    const wasUpdated = updateUserPassword(selectedUserId, newPassword);
+    if (!wasUpdated) {
+      toast.error("We couldn’t update your password. Please try again.");
+      return;
+    }
     toast.success("Password updated successfully.");
     handleCloseModal();
   };
@@ -99,12 +110,13 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ isOpen, onClose }) => {
         setConfirmPassword(newValue);
         if (passwordValidationError) setPasswordValidationError("");
       },
-      toggleVisibility: () => setIsConfirmPasswordVisible((previous) => !previous),
+      toggleVisibility: () =>
+        setIsConfirmPasswordVisible((previous) => !previous),
     },
   ];
 
   return (
-     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4">
       <div className="w-full max-w-md rounded-lg border border-theme-borderMuted bg-theme-authSurface p-6 text-theme-textPrimary">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">
@@ -126,7 +138,9 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ isOpen, onClose }) => {
               Enter your account email to continue.
             </p>
 
-            <label className="mb-1 block text-sm text-theme-textMuted">Email address</label>
+            <label className="mb-1 block text-sm text-theme-textMuted">
+              Email address
+            </label>
             <input
               type="email"
               value={emailAddress}
@@ -142,7 +156,9 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ isOpen, onClose }) => {
               placeholder="you@example.com"
             />
             {emailValidationError && (
-              <p className="mt-2 text-xs text-red-400">{emailValidationError}</p>
+              <p className="mt-2 text-xs text-red-400">
+                {emailValidationError}
+              </p>
             )}
 
             <div className="mt-5 flex justify-end gap-2">
@@ -174,15 +190,21 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ isOpen, onClose }) => {
                   <input
                     type={fieldConfig.isVisible ? "text" : "password"}
                     value={fieldConfig.value}
-                    onChange={(event) => fieldConfig.onChange(event.target.value)}
+                    onChange={(event) =>
+                      fieldConfig.onChange(event.target.value)
+                    }
                     className="w-full rounded-md bg-theme-authSurfaceAlt border border-theme-borderMuted px-3 py-2 pr-12 text-theme-textPrimary outline-none focus:border-theme-focusBorder focus:ring-2 focus:ring-theme-focusRing/30"
                     placeholder="••••••••"
                   />
                   <button
                     type="button"
                     onClick={fieldConfig.toggleVisibility}
-                    aria-label={fieldConfig.isVisible ? "Hide password" : "Show password"}
-                    title={fieldConfig.isVisible ? "Hide password" : "Show password"}
+                    aria-label={
+                      fieldConfig.isVisible ? "Hide password" : "Show password"
+                    }
+                    title={
+                      fieldConfig.isVisible ? "Hide password" : "Show password"
+                    }
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-xl px-2 py-1 text-theme-inputIcon hover:text-theme-inputIconHover"
                   >
                     {fieldConfig.isVisible ? <BiHide /> : <BiShow />}
@@ -192,7 +214,9 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ isOpen, onClose }) => {
             ))}
 
             {passwordValidationError && (
-              <p className="mt-2 text-sm text-red-400">{passwordValidationError}</p>
+              <p className="mt-2 text-sm text-red-400">
+                {passwordValidationError}
+              </p>
             )}
 
             <div className="mt-5 flex justify-end gap-2">
