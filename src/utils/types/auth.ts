@@ -18,3 +18,9 @@ export type AuthState = {
   user: AuthUser | null;
 };
 
+export type ForgotPasswordProps = {
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+export type ForgotPasswordStage = "verifyEmail" | "setNewPassword";

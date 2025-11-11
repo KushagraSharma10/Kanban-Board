@@ -20,12 +20,14 @@ import { loginUser, signupUser } from "../app/thunks/auth.thunks";
 import { selectAuthUser } from "../app/slices/auth.slice";
 import { toast } from "react-toastify";
 import { AuthMode } from "../utils/enum/auth";
+import ForgotPassword from "../components/auth/ForgotPassword";
 
 const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
   const isLoginMode = mode === AuthMode.Login;
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
+  const [isForgotOpen, setIsForgotOpen] = useState<boolean>(false);
   const [form, setForm] = useState<FormFields>({
     name: "",
     email: "",
@@ -132,6 +134,19 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
               form={form}
               onChange={handleInputChange}
             />
+
+            {isLoginMode && (
+              <div className="text-end" >
+                <button
+                  type="button"
+                  onClick={() => setIsForgotOpen(true)}
+                  className="text-sm text-[#6ca0ff] underline cursor-pointer"
+                  
+                >
+                  Forgot password?
+                </button>
+              </div>
+            )}
             <AuthButton type="submit">
               {isLoginMode ? AuthMode.Login : AuthMode.SignUp}
             </AuthButton>
@@ -155,6 +170,10 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
           </AuthFooter>
         </AuthContent>
       </AuthWrapper>
+      <ForgotPassword
+        isOpen={isForgotOpen}
+        onClose={() => setIsForgotOpen(false)}
+      />
     </AuthMain>
   );
 };

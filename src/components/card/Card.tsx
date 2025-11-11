@@ -5,16 +5,22 @@ import { useAppDispatch } from "../../app/store/hooks";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { MAX_DESCRIPTION_LENGTH } from "../../utils/constants/card";
 import { cloneCardInColumn } from "../../app/thunks/card.thunks";
+import DeleteConfirmation from "../DeleteConfirmation";
+import { FiEdit2 } from "react-icons/fi";
 
 const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
   const dispatch = useAppDispatch();
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isCardModalOpen, setIsCardModalOpen] = useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+  const [isConfirmingDeletion, setIsConfirmingDeletion] =
+    useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
-  const handleCardClick = () => {
-    if (isMenuOpen) return;
-    setIsModalOpen(true);
+  const handleCardClick = (): void => {
+    if (isMenuOpen) {
+      setIsMenuOpen(false);
+    }
   };
 
   useEffect(() => {
@@ -34,7 +40,7 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
   };
   const handleSave = (updatedCard: CardData) => {
     onUpdate(updatedCard);
-    setIsModalOpen(false);
+    setIsCardModalOpen(false);
   };
   const handleKeyDown = (event:React.KeyboardEvent<HTMLDivElement> ) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -43,10 +49,34 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
     }
   };
 
-  const handleDeleteCard = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
+  const handleOpenEditModal = (
+    mouseEvent: React.MouseEvent<HTMLButtonElement>
+  ): void => {
+    mouseEvent.stopPropagation();
+    setIsCardModalOpen(true);
+  };
+
+  const handleDeleteCard = (
+    mouseEvent: React.MouseEvent<HTMLButtonElement>
+  ): void => {
+    mouseEvent.stopPropagation();
     setIsMenuOpen(false);
-    onDelete(card.id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCancelDeletion = (): void => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleConfirmDeletion = async (): Promise<void> => {
+    try {
+      setIsConfirmingDeletion(true);
+      onDelete(card.id);
+    } finally {
+      setIsConfirmingDeletion(false);
+      setIsDeleteModalOpen(false);
+      setIsCardModalOpen(false);
+    }
   };
 
   return (
@@ -59,28 +89,36 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
         className="relative bg-[#222c38] shadow-md rounded-md p-3 mb-2 cursor-pointer hover:bg-[#293442] transition"
       >
         <div
-          className="absolute top-3 right-2 z-10"
+          className="absolute top-3 right-2 z-10 flex items-center gap-2"
           ref={menuRef}
           onClick={(e) => e.stopPropagation()}
         >
           <button
+            aria-label="Edit card"
+            title="Edit"
+            onClick={handleOpenEditModal}
+            className="opacity-90 hover:opacity-100 hover:scale-[1.03] transition cursor-pointer"
+          >
+            <FiEdit2 />
+          </button>
+          <button
             aria-label="Card options"
             onClick={() => setIsMenuOpen((prev) => !prev)}
-            className="opacity-80 hover:opacity-100"
+            className="opacity-80 hover:opacity-100 cursor-pointer"
           >
             <BsThreeDotsVertical />
           </button>
 
           {isMenuOpen && (
-            <div className="absolute right-0 mt-2 w-36 rounded-md bg-[#222c38] border border-[#3a3f44] shadow-lg z-50 overflow-hidden">
+            <div className="absolute right-0 mt-2 w-36 rounded-md bg-theme-popover border border-theme-borderMuted shadow-lg z-50 overflow-hidden">
               <button
-                className="w-full text-left px-3 py-2 hover:bg-[#141b26] text-sm"
+                className="w-full text-left px-3 py-2 hover:bg-theme-hoverSoft text-sm"
                 onClick={handleCloneClick}
               >
                 Clone card
               </button>
               <button
-                className="w-full text-left px-3 py-2 hover:bg-[#141b26] text-sm text-red-400"
+                className="w-full text-left px-3 py-2 hover:bg-theme-hoverSoft text-sm text-red-400"
                 onClick={handleDeleteCard}
               >
                 Delete
@@ -90,34 +128,42 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
         </div>
 
         {card.label && card.label !== "none" && (
-          <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#3a3f44] text-[#e6edf3]">
+          <span className="text-xs px-2 py-0.5 rounded-full bg-theme-chipBg text-theme-textPrimary">
             {card.label.toUpperCase()}
           </span>
         )}
-        <h3 className="font-semibold text-[#e6edf3] truncate">{card.title}</h3>
+
+        <h3 className="font-semibold text-theme-textPrimary truncate">
+          {card.title}
+        </h3>
+
         {card.description && (
-          <p className="text-sm text-[#9ca3af] mt-1">
+          <p className="text-sm text-theme-textMuted2 mt-1">
             {card.description.length > MAX_DESCRIPTION_LENGTH
               ? card.description.slice(0, MAX_DESCRIPTION_LENGTH) + "..."
               : card.description}
           </p>
         )}
+
         {card.dueDate && (
-          <p className="text-sm text-[#a3b1c2] mt-1">Due: {card.dueDate}</p>
+          <p className="text-sm text-theme-textSecondary mt-1">
+            Due: {card.dueDate}
+          </p>
         )}
+
         {card.assignees && card.assignees.length > 0 && (
           <div className="flex gap-1 mt-2">
             {card.assignees.slice(0, 3).map((name) => (
               <span
                 key={name}
                 title={name}
-                className="w-6 h-6 rounded-full bg-[#3a3f44] text-[#e6edf3] text-[10px] flex items-center justify-center"
+                className="w-6 h-6 rounded-full bg-theme-chipBg text-theme-textPrimary text-xs flex items-center justify-center"
               >
                 {name.trim().charAt(0).toUpperCase()}
               </span>
             ))}
             {card.assignees.length > 3 && (
-              <span className="text-xs text-[#9ca3af]">
+              <span className="text-xs text-theme-textMuted2">
                 +{card.assignees.length - 3}
               </span>
             )}
@@ -125,14 +171,20 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
         )}
       </div>
 
-      {isModalOpen && (
+      {isCardModalOpen && (
         <CardModal
           card={card}
           onSave={handleSave}
-          onDelete={() => onDelete(card.id)}
-          onClose={() => setIsModalOpen(false)}
+          onClose={() => setIsCardModalOpen(false)}
         />
       )}
+      <DeleteConfirmation
+        isOpen={isDeleteModalOpen}
+        itemName={card.title}
+        onCancel={handleCancelDeletion}
+        onConfirm={handleConfirmDeletion}
+        isConfirming={isConfirmingDeletion}
+      />
     </>
   );
 };
