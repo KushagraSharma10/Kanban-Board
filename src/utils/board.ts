@@ -1,3 +1,4 @@
+import { normalizeBoardName } from "./boards";
 import type { BoardForm, BoardItem } from "./types/dashboard";
 
 export const validateBoardForm = (
@@ -25,8 +26,4 @@ export const validateBoardForm = (
   }
 
   return null;
-}
-
-export const normalizeBoardName = (name: string): string => {
-  return name.trim().split(" ").filter(Boolean).join(" ").toLowerCase();
 }

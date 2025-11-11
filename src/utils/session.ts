@@ -17,11 +17,6 @@ export const getSession = (): StoredAuth | null => {
   }
 };
 
-export const getActiveUserId = (): string | null => {
-  const session = getSession();
-  return session?.user?.id ?? null;
-};
-
 export const getAccessTokenFromStorage = (): string | null => {
   const session = getSession();
   return session?.accessToken ?? null;

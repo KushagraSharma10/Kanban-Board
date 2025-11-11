@@ -1,5 +1,5 @@
 import { apiClient } from "../lib/apiClient";
-import { getActiveUserId } from "../utils/session";
+import { getActiveUserId } from "../utils/auth";
 
 export async function isBoardAdmin(boardId: string): Promise<boolean> {
   try {

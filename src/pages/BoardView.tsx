@@ -40,11 +40,12 @@ const BoardView: React.FC = () => {
 
     const fetchBoardName = async (): Promise<void> => {
       try {
-        const httpResponse = await apiClient.get<{ data: { name: string } }>(
-          `/boards/${boardId}`
-        );
-
-        const serverName = httpResponse.data?.data?.name ?? "";
+        const httpResponse = await apiClient.get<{
+          data?: { name?: string };
+          name?: string;
+        }>(`/boards/${boardId}`);
+        const payload = httpResponse.data;
+        const serverName = payload?.data?.name ?? payload?.name ?? "";
         if (!serverName) {
           navigate("/");
           return;

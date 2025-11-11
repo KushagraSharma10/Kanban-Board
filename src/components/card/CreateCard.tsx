@@ -7,7 +7,7 @@ import {
 } from "../../utils/constants/card-modal";
 import { validateEmail } from "../../utils/validation";
 import { toast } from "react-toastify";
-import { getActiveUserId } from "../../utils/session";
+import { getActiveUserId } from "../../utils/auth";
 
 const CardModal: React.FC<CardModalProps> = ({
   card,
@@ -28,8 +28,8 @@ const CardModal: React.FC<CardModalProps> = ({
   const [canEdit, setCanEdit] = useState<boolean>(false);
   useEffect(() => {
     const myId = getActiveUserId();
-    setCanEdit(Boolean(myId) && String(myId) === String(card.createdBy));
-  }, [card.createdBy]);
+    setCanEdit(Boolean(myId) && myId === card.createdBy);
+  }, [card.createdBy, card.id]);
 
   const handleSave = () => {
     if (!title.trim()) return;

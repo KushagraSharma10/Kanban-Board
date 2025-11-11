@@ -13,7 +13,6 @@ import ManageBoard from "../components/board/ManageBoard";
 import Header from "../components/board/Header";
 import type { BoardForm, BoardItem } from "../utils/types/dashboard";
 import { useNavigate } from "react-router";
-import { getActiveUserId } from "../utils/session";
 import { useAppDispatch, useAppSelector } from "../app/store/hooks";
 import { selectBoards } from "../app/slices/board.slice";
 import {
@@ -22,6 +21,7 @@ import {
   loadBoardsForUser,
   updateBoardForUser,
 } from "../app/thunks/board.thunks";
+import { getActiveUserId } from "../utils/auth";
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
