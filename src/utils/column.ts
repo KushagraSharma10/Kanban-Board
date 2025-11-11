@@ -3,7 +3,7 @@ import { MAX_COLUMN_NAME_LENGTH } from "./constants/column";
 export const validateColumnTitle = (
   titleRaw: string,
   existingTitles: string[],
-  excludeId?: string,
+  _excludeId?: string,
 ): { isValid: boolean; title: string; error?: string } => {
   const title = titleRaw.trim();
 
