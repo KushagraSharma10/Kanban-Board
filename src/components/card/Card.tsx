@@ -102,14 +102,6 @@ const Card: React.FC<CardProps> = ({ card, onUpdate, onDelete }) => {
           ref={menuRef}
           onClick={(e) => e.stopPropagation()}
         >
-           <button
-            aria-label="Edit card"
-            title="Edit"
-            onClick={handleOpenEditModal}
-            className="opacity-90 hover:opacity-100 hover:scale-[1.03] transition cursor-pointer"
-          >
-            <FiEdit2 />
-          </button>
           <button
             aria-label="Edit card"
             title="Edit"
