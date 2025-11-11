@@ -108,11 +108,20 @@ const CardModal: React.FC<CardModalProps> = ({
       }
     }
 
-    const normalizedPending = pendingInput.toLowerCase();
-    const normalizedAssignees = assignees.map((a) => a.toLowerCase());
-    const mergedAssignees = pendingInput
-      ? Array.from(new Set([...normalizedAssignees, normalizedPending]))
+    const dedupeEmailsPreserveCase = (emails: string[]) => {
+      const seen = new Set<string>();
+      return emails.filter((email) => {
+        const lower = email.toLowerCase();
+        if (seen.has(lower)) return false;
+        seen.add(lower);
+        return true;
+      });
+    };
+
+    const allAssignees = pendingInput
+      ? [...assignees, pendingInput]
       : assignees;
+    const mergedAssignees = dedupeEmailsPreserveCase(allAssignees);
 
     onSave({
       ...card,
