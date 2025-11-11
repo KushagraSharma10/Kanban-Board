@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { theme } from "../theme";
 
 export const AuthInput = styled.input`
+  width: 100%;
   border: 1px solid ${theme.colors.balticSeaGray};
   outline: none;
   background-color: ${theme.colors.darkBlue1};

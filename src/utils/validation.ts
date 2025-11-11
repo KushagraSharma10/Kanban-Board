@@ -1,4 +1,4 @@
-export function validatePassword(password: string): string | null {
+export const validatePassword = (password: string): string | null => {
   const minLength = 8;
   const uppercasePattern = /[A-Z]/;
   const lowercasePattern = /[a-z]/;
@@ -24,18 +24,18 @@ export function validatePassword(password: string): string | null {
     default:
       return null;
   }
-}
+};
 
-export function validateEmail(email: string): string | null {
-  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+export const validateEmail = (email: string): string | null => {
+  const emailPattern = /^[a-z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   if (!emailPattern.test(email)) {
     return "Please enter a valid email address.";
   }
 
   return null;
-}
+};
 
-export function normalizeEmail(email: string) {
+export const normalizeEmail = (email: string) => {
   return email.trim().toLowerCase();
-}
+};

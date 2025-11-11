@@ -1,8 +1,8 @@
-import { AuthMode } from "../utils/constants/auth";
+import { AuthMode } from "../utils/enum/auth";
 import AuthPage from "./Auth";
 
 const Signup = () => {
-  return <AuthPage mode={AuthMode.SignUP} />;
+  return <AuthPage mode={AuthMode.SignUp} />;
 };
 
 export default Signup;

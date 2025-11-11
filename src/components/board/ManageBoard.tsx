@@ -11,11 +11,15 @@ import {
   Overlay,
 } from "../../styles/dashboard/create-board";
 import { Field } from "../../styles/dashboard/create-board";
-import type { BoardModalProp } from "../../utils/types/dashboard";
-import { selectTypes } from "../../utils/constants/board";
+import type { BoardForm, BoardModalProp } from "../../utils/types/dashboard";
+import {
+  MAX_BOARD_NAME_LENGTH,
+  selectTypes,
+} from "../../utils/constants/board";
 import { DEFAULT_COLORS } from "../../utils/constants/colors";
+import { toast } from "react-toastify";
 
-const CreateBoardModal: React.FC<BoardModalProp> = ({
+const ManageBoard: React.FC<BoardModalProp> = ({
   open,
   onClose,
   onCreate,
@@ -23,7 +27,7 @@ const CreateBoardModal: React.FC<BoardModalProp> = ({
   board,
   onUpdate,
 }: BoardModalProp) => {
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<BoardForm>({
     name: "",
     type: "",
     color: DEFAULT_COLORS[0],
@@ -40,20 +44,20 @@ const CreateBoardModal: React.FC<BoardModalProp> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.trim()) return alert("Please enter a board name");
+    if (!form.name.trim()) return toast.error("Please enter a board name");
 
     if (mode === "edit" && board && onUpdate) {
       onUpdate(board.id, form);
       onClose();
       return;
     }
-
     onCreate(form);
     setForm({ name: "", type: "", color: DEFAULT_COLORS[0] });
     onClose();
   };
 
   if (!open) return null;
+  const isFormValid = form.name.trim() !== "" && form.type.trim() !== "";
 
   return (
     <Overlay onClick={onClose}>
@@ -73,6 +77,7 @@ const CreateBoardModal: React.FC<BoardModalProp> = ({
               }
               placeholder="e.g. Sprint Planning"
               required
+              maxLength={MAX_BOARD_NAME_LENGTH}
             />
           </Field>
 
@@ -80,7 +85,9 @@ const CreateBoardModal: React.FC<BoardModalProp> = ({
             <h2>Type</h2>
             <select
               value={form.type}
-              onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
+              onChange={(event) =>
+                setForm((form) => ({ ...form, type: event.target.value }))
+              }
             >
               <option value="">Select type</option>
               {selectTypes.map((type) => (
@@ -115,7 +122,7 @@ const CreateBoardModal: React.FC<BoardModalProp> = ({
             <Button type="button" className="secondary" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" className="primary">
+            <Button type="submit" className="primary" disabled={!isFormValid}>
               {mode === "edit" ? "Save changes" : "Create"}
             </Button>
           </Actions>
@@ -125,4 +132,4 @@ const CreateBoardModal: React.FC<BoardModalProp> = ({
   );
 };
 
-export default CreateBoardModal;
+export default ManageBoard;

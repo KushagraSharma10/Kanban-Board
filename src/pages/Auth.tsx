@@ -1,5 +1,4 @@
-import { useState } from "react";
-import LeftPanel from "../components/auth/AuthSidebar";
+import { useEffect, useState } from "react";
 import AuthFormFields from "../components/auth/AuthFormFields";
 import type { Field, FormFields } from "../utils/types/form";
 import { AuthContent, AuthMain, AuthWrapper } from "../styles/auth/auth-main";
@@ -13,108 +12,79 @@ import { AuthForm } from "../styles/auth/auth-form";
 import { AuthLink } from "../styles/auth/auth-link";
 import { AuthButton } from "../styles/auth/auth-button";
 import { useNavigate } from "react-router";
-import { normalizeEmail, validateEmail } from "../utils/validation";
+import { validateEmail, validatePassword } from "../utils/validation";
 import type { ModeProp } from "../utils/types/auth";
-import type { UserData } from "../utils/interface/userData";
-import { loadFromStorage, saveToStorage } from "../utils/storage";
-import bcrypt from "bcryptjs";
-import { AuthMode, USERS_STORAGE_KEY } from "../utils/constants/auth";
+import AuthSidebar from "../components/auth/AuthSidebar";
+import { useAppDispatch, useAppSelector } from "../app/store/hooks";
+import { loginUser, signupUser } from "../app/thunks/auth.thunks";
+import { selectAuthUser } from "../app/slices/auth.slice";
+import { toast } from "react-toastify";
+import { AuthMode } from "../utils/enum/auth";
+import ForgotPassword from "../components/auth/ForgotPassword";
 
-const Auth = ({ mode }: ModeProp) => {
-  const isLogin = mode === AuthMode.Login;
+const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
+  const isLoginMode = mode === AuthMode.Login;
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
+  const [isForgotOpen, setIsForgotOpen] = useState<boolean>(false);
   const [form, setForm] = useState<FormFields>({
     name: "",
     email: "",
     password: "",
   });
+  const authenticatedUser = useAppSelector(selectAuthUser);
 
-  function validateUser(email: string, password: string): boolean {
-    const users = getAllUsers();
-    const normalizedEmail = normalizeEmail(email);
-
-    const existingUser = users.find((user) => user.email === normalizedEmail);
-    if (!existingUser) return false;
-
-    return bcrypt.compareSync(password, existingUser.password);
-  }
-
-  function getAllUsers(): UserData[] {
-    const data = loadFromStorage(USERS_STORAGE_KEY, []);
-    return Array.isArray(data) ? (data as UserData[]) : [];
-  }
-
-  function saveAllUsers(users: UserData[]) {
-    saveToStorage(USERS_STORAGE_KEY, users);
-  }
-
-  function registerUser(
-    name: string,
-    email: string,
-    password: string
-  ): boolean {
-    const users = getAllUsers();
-    const normalizedEmail = normalizeEmail(email);
-
-    if (users.some((user) => user.email === normalizedEmail)) {
-      return false;
-    }
-
-    const hashed = bcrypt.hashSync(password, 10);
-    users.push({ name, email: normalizedEmail, password: hashed });
-    saveAllUsers(users);
-    return true;
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+  const handleInputChange = (
+    changeEvent: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value } = changeEvent.target;
+    setForm((previousForm) => ({ ...previousForm, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleFormSubmit = (submitEvent: React.FormEvent) => {
+    submitEvent.preventDefault();
 
-    try {
-      const name = form.name.trim();
-      const email = form.email.trim();
-      const password = form.password;
+    const trimmedName = form.name.trim();
+    const trimmedEmail = form.email.trim();
+    const rawPassword = form.password;
 
-      const emailError = validateEmail(email);
-      if (emailError) {
-        throw new Error(emailError);
+    const emailValidationMessage = validateEmail(trimmedEmail);
+    if (emailValidationMessage) {
+      toast.error(emailValidationMessage);
+      return;
+    }
+
+    if (isLoginMode) {
+      dispatch(loginUser({ email: trimmedEmail, password: rawPassword }));
+    } else {
+      if (!trimmedName) {
+        toast.error("Please enter your name");
+        return;
       }
-
-      if (isLogin) {
-        if (validateUser(email, password)) {
-          navigate("/dashboard");
-        } else {
-          throw new Error("Invalid credentials or please signup first");
-        }
-      } else {
-        if (!name) {
-          throw new Error("Please enter your name");
-        }
-
-        const isRegistered = registerUser(name, email, password);
-        if (!isRegistered) {
-          throw new Error("An account with this email already exists.");
-        }
-
-        alert("Signup successful! Please login.");
-        navigate("/");
+      const passwordValidationMessage = validatePassword(rawPassword);
+      if (passwordValidationMessage) {
+        toast.error(passwordValidationMessage);
+        return;
       }
-    } catch (err) {
-      if (typeof err === "object" && err !== null && "message" in err) {
-        alert((err as { message: string }).message);
-      } else {
-        alert("Unexpected error occurred");
-      }
+      dispatch(
+        signupUser({
+          name: trimmedName,
+          email: trimmedEmail,
+          password: rawPassword,
+        })
+      );
     }
   };
+
+  useEffect(() => {
+    if (authenticatedUser) {
+      navigate("/");
+    }
+  }, [authenticatedUser, navigate]);
 
   const fields: Field[] = [
-    ...(!isLogin
+    ...(!isLoginMode
       ? [
           {
             id: "name",
@@ -146,26 +116,39 @@ const Auth = ({ mode }: ModeProp) => {
   return (
     <AuthMain>
       <AuthWrapper>
-        <LeftPanel />
+        <AuthSidebar />
         <AuthContent>
           <AuthBrand>
             <img src="/kanban.svg" alt="Kanban Logo" width={30} height={30} />
             Kanban Board
           </AuthBrand>
-          <h2>{isLogin ? "Welcome Back" : "Create your account"}</h2>
+          <h2>{isLoginMode ? "Welcome Back" : "Create your account"}</h2>
           <p>
-            {isLogin
+            {isLoginMode
               ? "Please enter your details to sign in."
               : "Start managing your work in one place."}
           </p>
-          <AuthForm onSubmit={handleSubmit}>
+          <AuthForm onSubmit={handleFormSubmit}>
             <AuthFormFields
               fields={fields}
               form={form}
-              onChange={handleChange}
+              onChange={handleInputChange}
             />
+
+            {isLoginMode && (
+              <div className="text-end" >
+                <button
+                  type="button"
+                  onClick={() => setIsForgotOpen(true)}
+                  className="text-sm text-[#6ca0ff] underline cursor-pointer"
+                  
+                >
+                  Forgot password?
+                </button>
+              </div>
+            )}
             <AuthButton type="submit">
-              {isLogin ? AuthMode.Login : AuthMode.SignUP}
+              {isLoginMode ? AuthMode.Login : AuthMode.SignUp}
             </AuthButton>
           </AuthForm>
           <AuthDivider>
@@ -174,20 +157,23 @@ const Auth = ({ mode }: ModeProp) => {
             <AuthLine />
           </AuthDivider>
           <AuthFooter>
-            {isLogin ? (
+            {isLoginMode ? (
               <>
                 Don’t have an account?{" "}
                 <AuthLink href="/signup">Sign Up</AuthLink>
               </>
             ) : (
               <>
-                Already have an account?{" "}
-                <AuthLink href="/login">Login</AuthLink>
+                Already have an account? <AuthLink href="/login">Login</AuthLink>
               </>
             )}
           </AuthFooter>
         </AuthContent>
       </AuthWrapper>
+      <ForgotPassword
+        isOpen={isForgotOpen}
+        onClose={() => setIsForgotOpen(false)}
+      />
     </AuthMain>
   );
 };

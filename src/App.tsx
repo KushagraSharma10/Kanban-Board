@@ -1,9 +1,16 @@
-import Dashboard from "./pages/Dashboard"
+import { useEffect } from "react";
+import Dashboard from "./pages/Dashboard";
+import { useAppDispatch } from "./app/store/hooks";
+import { loadSession } from "./app/thunks/auth.thunks";
 
 const App = () => {
-  return (
-      <Dashboard />
-  )
-}
+  const dispatch = useAppDispatch();
 
-export default App
+  useEffect(() => {
+    dispatch(loadSession());
+  }, [dispatch]);
+
+  return <Dashboard />;
+};
+
+export default App;

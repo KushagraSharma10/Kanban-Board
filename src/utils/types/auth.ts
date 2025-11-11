@@ -1,5 +1,6 @@
-import {type AUTH_MODE } from "../constants/auth";
-import type { Field, FormFields } from "./form"
+import type { AuthMode } from "../enum/auth";
+import type { UserData } from "../interface/user-data";
+import type { Field, FormFields } from "./form";
 
 export type AuthProp = {
   fields: Field[];
@@ -8,5 +9,18 @@ export type AuthProp = {
 };
 
 export type ModeProp = {
-  mode: AUTH_MODE;
+  mode: AuthMode;
 };
+
+export type AuthUser = Omit<UserData, "password">;
+
+export type AuthState = {
+  user: AuthUser | null;
+};
+
+export type ForgotPasswordProps = {
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+export type ForgotPasswordStage = "verifyEmail" | "setNewPassword";

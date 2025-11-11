@@ -1,4 +1,4 @@
-export function loadFromStorage(key: string, defaultValue: unknown) {
+export const loadFromStorage = (key: string, defaultValue: unknown) => {
   try {
     const rawValue = localStorage.getItem(key);
     return rawValue ? JSON.parse(rawValue) : defaultValue;
@@ -7,7 +7,7 @@ export function loadFromStorage(key: string, defaultValue: unknown) {
   }
 }
 
-export function saveToStorage(key: string, value: unknown) {
+export const saveToStorage = (key: string, value: unknown) => {
   try {
     localStorage.setItem(key, JSON.stringify(value));
   } catch (error) {

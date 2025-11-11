@@ -1,7 +1,18 @@
-import { HeaderRight, HeaderContainer, HeaderLeft, Logo, Profile, SearchInput } from "../../styles/dashboard/header";
+import {
+  HeaderRight,
+  HeaderContainer,
+  HeaderLeft,
+  Logo,
+  Profile,
+  SearchInput,
+} from "../../styles/dashboard/header";
 import type { HeaderProp } from "../../utils/types/header";
 
-const Header:React.FC<HeaderProp> = ({ setModalOpen, search, onSearchChange  }: HeaderProp) => {
+const Header: React.FC<HeaderProp> = ({
+  setModalOpen,
+  search,
+  onSearchChange,
+}: HeaderProp) => {
   return (
     <HeaderContainer>
       <HeaderLeft>
@@ -11,20 +22,19 @@ const Header:React.FC<HeaderProp> = ({ setModalOpen, search, onSearchChange  }: 
         </Logo>
       </HeaderLeft>
       <HeaderRight>
-         <SearchInput
+        <SearchInput
           type="text"
           placeholder="Search boards..."
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
+          aria-label="Search boards"
         />
         <Profile>
-          <button onClick={() => setModalOpen(true)}>
-            + Create
-          </button>
+          <button onClick={() => setModalOpen(true)}>+ Create</button>
         </Profile>
       </HeaderRight>
     </HeaderContainer>
   );
-}
+};
 
 export default Header;
