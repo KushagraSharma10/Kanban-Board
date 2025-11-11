@@ -8,8 +8,12 @@ export const initializeAuth = (): void => {
     const saved = localStorage.getItem("auth");
     if (saved) {
       const parsed: AuthStateWithToken = JSON.parse(saved);
-      store.dispatch(hydrateAuth(parsed));
-      setAccessTokenHeader(parsed.accessToken);
+      if (parsed && typeof parsed === 'object' && 'accessToken' in parsed && 'user' in parsed) {
+        store.dispatch(hydrateAuth(parsed));
+        setAccessTokenHeader(parsed.accessToken);
+      } else {
+        throw new Error('Invalid auth data structure');
+      }
     }
   } catch (error) {
     console.error("Failed to initialize auth from localStorage:", error);

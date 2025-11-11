@@ -98,7 +98,7 @@ const CardModal: React.FC<CardModalProps> = ({
           </button>
         </div>
 
-        <label className="block text-sm text-theme-textMuted2 mt-1 mb-1">Title</label>
+        <label htmlFor="card-title" className="block text-sm text-theme-textMuted2 mt-1 mb-1">Title</label>
         <input
           id="card-title"
           type="text"

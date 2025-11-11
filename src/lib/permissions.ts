@@ -13,7 +13,7 @@ export async function isBoardAdmin(boardId: string): Promise<boolean> {
     const board = res.data?.data;
     if (!board) return false;
 
-    if (String(board.createdBy) === String(myId)) return true; 
+    if (board.createdBy === myId) return true; 
 
     const me = board.members?.find(m => String(m.user) === String(myId));
     return !!me?.roles?.includes("admin");
