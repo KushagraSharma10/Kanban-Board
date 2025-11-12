@@ -14,6 +14,7 @@ import {
   deleteBoard,
 } from "../api/board.api";
 import type { BackendBoard } from "../../utils/types/board";
+import { getErrorMessage } from "../../utils/api-error";
 
 const toBoardItem = (backend: BackendBoard): BoardItem => ({
   id: backend._id,
@@ -23,15 +24,6 @@ const toBoardItem = (backend: BackendBoard): BoardItem => ({
   color: backend.color,
 });
 
-const getErrorMessage = (errorValue: unknown): string => {
-  const maybeAxios = errorValue as {
-    response?: { data?: { message?: string } };
-  };
-  if (maybeAxios?.response?.data?.message)
-    return maybeAxios.response.data.message;
-  if (errorValue instanceof Error) return errorValue.message;
-  return "Request failed";
-};
 
 export const loadBoardsForUser =
   (_userId: string | null) =>

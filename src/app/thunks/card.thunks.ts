@@ -10,29 +10,15 @@ import {
   type BackendTask,
 } from "../api/task.api";
 import { getNextCloneTitle } from "../../utils/get-clone-Title";
+import { formatDateStringToIso, formatIsoToDateString } from "../../utils/task";
+import { getErrorMessage } from "../../utils/api-error";
 
-const isoToYMD = (iso?: string | null): string | undefined => {
-  if (!iso) return undefined;
-  const d = new Date(iso);
-  if (isNaN(d.getTime())) return undefined;
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${yyyy}-${mm}-${dd}`;
-};
 
-const ymdToIso = (ymd?: string): string | null => {
-  if (!ymd) return null;
-  const t = new Date(ymd);
-  if (isNaN(t.getTime())) return null;
-  return t.toISOString();
-};
-
-const toCardData = (server: BackendTask): CardData => ({
+const formatTask = (server: BackendTask): CardData => ({
   id: server._id,
   title: server.title,
   description: server.description ?? undefined,
-  dueDate: isoToYMD(server.dueDate),
+  dueDate: formatIsoToDateString(server.dueDate),
   boardId: server.boardId,
   columnId: server.columnId,
   assigneeEmail: server.assigneeEmail ?? undefined,
@@ -40,26 +26,20 @@ const toCardData = (server: BackendTask): CardData => ({
   createdBy: server.createdBy,
 });
 
-const toCardList = (list: BackendTask[]): CardData[] =>
+const formatTasks = (list: BackendTask[]): CardData[] =>
   list
     .slice()
     .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
-    .map(toCardData);
+    .map(formatTask);
 
-const getErrorMessage = (err: unknown): string => {
-  const maybeAxios = err as { response?: { data?: { message?: string } } };
-  return (
-    maybeAxios?.response?.data?.message ??
-    (err instanceof Error ? err.message : "Request failed")
-  );
-};
+
 
 export const loadCardsForColumnFromServer =
   (boardId: string, columnId: string) =>
   async (dispatch: AppDispatch): Promise<void> => {
     try {
       const serverTasks = await fetchTasks(boardId, columnId);
-      dispatch(setCardsForColumn({ columnId, cards: toCardList(serverTasks) }));
+      dispatch(setCardsForColumn({ columnId, cards: formatTasks(serverTasks) }));
     } catch (error) {
       toast.error(getErrorMessage(error));
       dispatch(setCardsForColumn({ columnId, cards: [] }));
@@ -85,7 +65,7 @@ export const addCardToColumnOnServer =
       });
 
       const serverTasks = await fetchTasks(boardId, columnId);
-      dispatch(setCardsForColumn({ columnId, cards: toCardList(serverTasks) }));
+      dispatch(setCardsForColumn({ columnId, cards: formatTasks(serverTasks) }));
       toast.success("Card created");
     } catch (error) {
       toast.error(getErrorMessage(error));
@@ -110,7 +90,7 @@ export const updateCardInColumnOnServer =
             : undefined,
         dueDate:
           typeof incoming.dueDate !== "undefined"
-            ? ymdToIso(incoming.dueDate)
+            ? formatDateStringToIso(incoming.dueDate)
             : undefined,
       };
 
@@ -126,7 +106,7 @@ export const updateCardInColumnOnServer =
       await updateTaskApi(boardId, columnId, incoming.id, payload);
 
       const serverTasks = await fetchTasks(boardId, columnId);
-      dispatch(setCardsForColumn({ columnId, cards: toCardList(serverTasks) }));
+      dispatch(setCardsForColumn({ columnId, cards: formatTasks(serverTasks) }));
       toast.success("Card updated");
     } catch (error) {
       toast.error(getErrorMessage(error));
@@ -143,7 +123,7 @@ export const deleteCardFromColumnOnServer =
         return;
       }
       const serverTasks = await fetchTasks(boardId, columnId);
-      dispatch(setCardsForColumn({ columnId, cards: toCardList(serverTasks) }));
+      dispatch(setCardsForColumn({ columnId, cards: formatTasks(serverTasks) }));
       toast.success("Card deleted");
     } catch (error) {
       toast.error(getErrorMessage(error));
@@ -154,29 +134,29 @@ export const cloneCardInColumnOnServer =
   (boardId: string, columnId: string, sourceCardId: string) =>
   async (dispatch: AppDispatch): Promise<void> => {
     try {
-      const current = await fetchTasks(boardId, columnId);
+      const currentTasks = await fetchTasks(boardId, columnId);
 
-      const source = current.find((t) => t._id === sourceCardId);
-      if (!source) {
+      const sourceTask = currentTasks.find((task) => task._id === sourceCardId);
+      if (!sourceTask) {
         toast.error("Source card not found.");
         return;
       }
 
-      const existingTitles = current.map((t) => t.title);
-      const clonedTitle = getNextCloneTitle(source.title, existingTitles);
+      const existingTitles = currentTasks.map((task) => task.title);
+      const clonedTitle = getNextCloneTitle(sourceTask.title, existingTitles);
 
       await createTaskApi(boardId, columnId, {
         title: clonedTitle,
-        description: source.description ?? null,        
-        dueDate: source.dueDate ?? null,             
-        assigneeEmail: source.assigneeEmail ?? null, 
-        ...(typeof source.priority === "string"         
-          ? { priority: source.priority }             
+        description: sourceTask.description ?? null,        
+        dueDate: sourceTask.dueDate ?? null,             
+        assigneeEmail: sourceTask.assigneeEmail ?? null, 
+        ...(typeof sourceTask.priority === "string"         
+          ? { priority: sourceTask.priority }             
           : {}),
       });
 
       const refreshed = await fetchTasks(boardId, columnId);
-      dispatch(setCardsForColumn({ columnId, cards: toCardList(refreshed) }));
+      dispatch(setCardsForColumn({ columnId, cards: formatTasks(refreshed) }));
       toast.success("Card cloned");
     } catch (error) {
       toast.error(getErrorMessage(error));

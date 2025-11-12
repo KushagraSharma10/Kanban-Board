@@ -1,10 +1,10 @@
 import { apiClient } from "../lib/apiClient";
 import { getActiveUserId } from "../utils/auth";
 
-export async function isBoardAdmin(boardId: string): Promise<boolean> {
+export const isBoardAdmin = async(boardId: string): Promise<boolean> => {
   try {
-    const myId = getActiveUserId();
-    if (!myId) return false;
+    const currentUserId = getActiveUserId();
+    if (!currentUserId) return false;
 
     const res = await apiClient.get<{ data: { createdBy: string; members?: Array<{ user: string; roles?: string[] }> } }>(
       `/boards/${boardId}`
@@ -13,10 +13,10 @@ export async function isBoardAdmin(boardId: string): Promise<boolean> {
     const board = res.data?.data;
     if (!board) return false;
 
-    if (board.createdBy === myId) return true; 
+    if (board.createdBy === currentUserId) return true; 
 
-    const me = board.members?.find(m => String(m.user) === String(myId));
-    return !!me?.roles?.includes("admin");
+    const currentMember  = board.members?.find(m => String(m.user) === String(currentUserId));
+    return !!currentMember?.roles?.includes("admin");
   } catch {
     return false;
   }

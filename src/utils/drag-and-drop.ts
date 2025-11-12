@@ -48,8 +48,8 @@ export const reorderById = <T extends { id: string }>(
   const targetIndex = list.findIndex((item) => item.id === targetId);
   if (targetIndex === -1) return list;
 
-  const intendedIndex = position === "before" ? targetIndex : targetIndex + 1;
-  const adjustedIndex =
-    sourceIndex < targetIndex ? intendedIndex - 1 : intendedIndex;
-  return moveItemWithinList(list, sourceIndex, adjustedIndex);
+  const desiredIndex = position === "before" ? targetIndex : targetIndex + 1;
+  const finalIndex =
+    sourceIndex < targetIndex ? desiredIndex - 1 : desiredIndex;
+  return moveItemWithinList(list, sourceIndex, finalIndex);
 };

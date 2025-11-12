@@ -23,7 +23,7 @@ const authSlice = createSlice({
       state.user = null;
       state.accessToken = null;
     },
-    hydrateAuth(
+    restoreAuthState(
       state,
       action: PayloadAction<{
         user: AuthUser | null;
@@ -36,7 +36,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { setAuth, setAccessToken, clearAuth, hydrateAuth } =
+export const { setAuth, setAccessToken, clearAuth, restoreAuthState } =
   authSlice.actions;
 export default authSlice.reducer;
 

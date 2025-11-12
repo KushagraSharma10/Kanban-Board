@@ -16,3 +16,14 @@ export type StoredColumn = {
 };
 
 export type ColumnsState = { items: StoredColumn[] };
+
+
+export type BackendColumn = {
+  _id: string;
+  boardId: string;
+  name: string;
+  position: number;
+  createdBy: string;
+  createdAt?: string;
+  updatedAt?: string;
+};

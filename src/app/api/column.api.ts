@@ -1,36 +1,19 @@
 import { apiClient } from "../../lib/apiClient";
-
-export type BackendColumn = {
-  _id: string;
-  boardId: string;
-  name: string;
-  position: number;
-  createdBy: string;
-  createdAt?: string;
-  updatedAt?: string;
-};
-
-type ListEnvelope = { success?: boolean; data: BackendColumn[] } | BackendColumn[];
-type OneEnvelope  = { success?: boolean; data: BackendColumn } | BackendColumn;
-
-const unwrapList = (payload: ListEnvelope): BackendColumn[] =>
-  Array.isArray(payload) ? payload : payload.data;
-
-const unwrapOne = (payload: OneEnvelope): BackendColumn =>
-  (payload as { data?: BackendColumn }).data ?? (payload as BackendColumn);
+import { unwrapList, unwrapOne, type ApiListEnvelope, type ApiOneEnvelope } from "../../utils/types/api";
+import type { BackendColumn } from "../../utils/types/column";
 
 export const fetchColumns = async (boardId: string): Promise<BackendColumn[]> => {
-  const response = await apiClient.get<ListEnvelope>(`/${boardId}/columns`);
+  const response = await apiClient.get<ApiListEnvelope<BackendColumn>>(`/${boardId}/columns`);
   return unwrapList(response.data);
 };
 
 export const createColumn = async (boardId: string, name: string): Promise<BackendColumn> => {
-  const response = await apiClient.post<OneEnvelope>(`/${boardId}/columns`, { name });
+  const response = await apiClient.post<ApiOneEnvelope<BackendColumn>>(`/${boardId}/columns`, { name });
   return unwrapOne(response.data);
 };
 
 export const renameColumn = async (boardId: string, columnId: string, name: string): Promise<BackendColumn> => {
-  const response = await apiClient.patch<OneEnvelope>(`/${boardId}/columns/${columnId}`, { name });
+  const response = await apiClient.patch<ApiOneEnvelope<BackendColumn>>(`/${boardId}/columns/${columnId}`, { name });
   return unwrapOne(response.data);
 };
 
@@ -43,6 +26,6 @@ export const reorderColumns = async (
   boardId: string,
   updates: Array<{ columnId: string; position: number }>
 ): Promise<BackendColumn[]> => {
-  const response = await apiClient.patch<ListEnvelope>(`/${boardId}/columns/reorder`, { updates });
+  const response = await apiClient.patch<ApiListEnvelope<BackendColumn>>(`/${boardId}/columns/reorder`, { updates });
   return unwrapList(response.data);
 };

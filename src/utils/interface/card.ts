@@ -6,7 +6,7 @@ export interface CardData {
   boardId: string;
   columnId: string;
   assigneeEmail?: string;
-  label?: "none" | "low" | "medium" | "high" | "urgent";
+  label?: "none" | "low" | "moderate" | "high" | "urgent";
   createdBy: string;
 }
 

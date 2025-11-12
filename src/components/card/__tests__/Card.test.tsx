@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import Card from "../Card";
-import { cloneCardInColumn } from "../../../app/thunks/card.thunks";
+import { cloneCardInColumnOnServer } from "../../../app/thunks/card.thunks";
 import type { CardData } from "../../../utils/interface/card";
 
 jest.mock("../../../app/thunks/card.thunks", () => ({
@@ -69,12 +69,8 @@ const baseCard: CardData = {
   description: longText,
   dueDate: "2099-12-31",
   label: "high",
-  assignees: [
-    "alice@example.com",
-    "bob@example.com",
-    "charlie@example.com",
-    "dave@example.com",
-  ],
+ assigneeEmail: "a@x.com",
+ createdBy :"test-user"
 };
 
 describe("Card component (simple flow tests)", () => {
@@ -141,7 +137,7 @@ describe("Card component (simple flow tests)", () => {
     await user.click(screen.getByLabelText(/card options/i));
     await user.click(screen.getByText(/clone card/i));
 
-    expect(cloneCardInColumn).toHaveBeenCalledWith("col-1", "card-1");
+    expect(cloneCardInColumnOnServer).toHaveBeenCalledWith("col-1", "card-1");
   });
 
   it("deletes the card after confirming in delete modal", async () => {

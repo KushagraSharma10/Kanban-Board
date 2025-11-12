@@ -2,15 +2,15 @@ import { toast } from "react-toastify";
 import type { AppDispatch } from "../store/store";
 import { setColumnsForBoard } from "../slices/column.slice";
 import type { ColumnItem } from "../../utils/types/board-view";
-import type { StoredColumn } from "../../utils/types/column";
+import type { BackendColumn, StoredColumn } from "../../utils/types/column";
 import {
   fetchColumns,
   createColumn as createColumnApi,
   renameColumn as renameColumnApi,
   deleteColumn as deleteColumnApi,
   reorderColumns as reorderColumnsApi,
-  type BackendColumn,
 } from "../api/column.api";
+import { getErrorMessage } from "../../utils/api-error";
 
 const toStoredColumn = (server: BackendColumn): StoredColumn => ({
   id: server._id,
@@ -24,13 +24,6 @@ const toStoredColumns = (serverList: BackendColumn[]): StoredColumn[] =>
     .slice()
     .sort((a, b) => a.position - b.position)
     .map(toStoredColumn);
-
-const getErrorMessage = (value: unknown): string => {
-  const maybeAxios = value as { response?: { data?: { message?: string } } };
-  if (maybeAxios?.response?.data?.message) return maybeAxios.response.data.message;
-  if (value instanceof Error) return value.message;
-  return "Request failed";
-};
 
 export const loadColumnsForBoardFromServer =
   (boardId: string) =>
@@ -95,6 +88,7 @@ export const applyColumnOrderOnServer =
         columnId: column.id,
         position: index,
       }));
+
       const reordered = await reorderColumnsApi(boardId, updates);
       dispatch(setColumnsForBoard({ boardId, columns: toStoredColumns(reordered) }));
       toast.success("Columns reordered");

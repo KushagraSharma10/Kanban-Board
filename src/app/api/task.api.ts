@@ -1,4 +1,5 @@
 import { apiClient } from "../../lib/apiClient";
+import { unwrapList, unwrapOne, type ApiListEnvelope, type ApiOneEnvelope, } from "../../utils/types/api";
 
 export type BackendTask = {
   _id: string;
@@ -6,7 +7,7 @@ export type BackendTask = {
   columnId: string;
   title: string;
   description?: string | null;
-  priority?: "none" | "low" | "medium" | "high" | "urgent" | null;
+  priority?: "none" | "low" | "moderate" | "high" | "urgent" | null;
   dueDate?: string | null;
   assigneeId?: string | null;
   assigneeEmail?: string | null;
@@ -16,20 +17,12 @@ export type BackendTask = {
   updatedAt?: string;
 };
 
-type ListEnvelope = { success?: boolean; data: BackendTask[] } | BackendTask[];
-type OneEnvelope = { success?: boolean; data: BackendTask } | BackendTask;
-
-const unwrapList = (payload: ListEnvelope): BackendTask[] =>
-  Array.isArray(payload) ? payload : payload.data;
-
-const unwrapOne = (payload: OneEnvelope): BackendTask =>
-  (payload as { data?: BackendTask }).data ?? (payload as BackendTask);
 
 export const fetchTasks = async (
   boardId: string,
   columnId: string
 ): Promise<BackendTask[]> => {
-  const res = await apiClient.get<ListEnvelope>(
+  const res = await apiClient.get<ApiListEnvelope<BackendTask>>(
     `/${boardId}/columns/${columnId}/tasks`
   );
   return unwrapList(res.data);
@@ -41,12 +34,12 @@ export const createTask = async (
   body: {
     title: string;
     description?: string | null;
-     priority?: "none" | "low" | "medium" | "high" | "urgent" | null; 
+     priority?: "none" | "low" | "moderate" | "high" | "urgent" | null; 
     dueDate?: string | null;
     assigneeEmail?: string | null;
   }
 ): Promise<BackendTask> => {
-  const res = await apiClient.post<OneEnvelope>(
+  const res = await apiClient.post<ApiOneEnvelope<BackendTask>>(
     `/${boardId}/columns/${columnId}/tasks`,
     body
   );
@@ -60,12 +53,12 @@ export const updateTask = async (
   body: Partial<{
     title: string;
     description: string | null;
-     priority: "none" | "low" | "medium" | "high" | "urgent" | null; 
+     priority: "none" | "low" | "moderate" | "high" | "urgent" | null; 
     dueDate: string | null;
     assigneeEmail: string | null;
   }>
 ): Promise<BackendTask> => {
-  const res = await apiClient.patch<OneEnvelope>(
+  const res = await apiClient.patch<ApiOneEnvelope<BackendTask>>(
     `/${boardId}/columns/${columnId}/tasks/${taskId}`,
     body
   );
@@ -88,7 +81,7 @@ export const fetchTask = async (
   columnId: string,
   taskId: string
 ): Promise<BackendTask> => {
-  const res = await apiClient.get<OneEnvelope>(
+  const res = await apiClient.get<ApiOneEnvelope<BackendTask>>(
     `/${boardId}/columns/${columnId}/tasks/${taskId}`
   );
   return unwrapOne(res.data);

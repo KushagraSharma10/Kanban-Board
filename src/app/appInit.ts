@@ -1,6 +1,6 @@
 import { setAccessTokenHeader } from "../lib/apiClient";
 import type { AuthStateWithToken } from "../utils/interface/auth";
-import { hydrateAuth } from "./slices/auth.slice";
+import { restoreAuthState } from "./slices/auth.slice";
 import { store } from "./store/store";
 
 export const initializeAuth = (): void => {
@@ -9,7 +9,7 @@ export const initializeAuth = (): void => {
     if (saved) {
       const parsed: AuthStateWithToken = JSON.parse(saved);
       if (parsed && typeof parsed === 'object' && 'accessToken' in parsed && 'user' in parsed) {
-        store.dispatch(hydrateAuth(parsed));
+        store.dispatch(restoreAuthState(parsed));
         setAccessTokenHeader(parsed.accessToken);
       } else {
         throw new Error('Invalid auth data structure');
