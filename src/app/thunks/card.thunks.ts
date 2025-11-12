@@ -155,8 +155,8 @@ export const cloneCardInColumnOnServer =
           : {}),
       });
 
-      const refreshed = await fetchTasks(boardId, columnId);
-      dispatch(setCardsForColumn({ columnId, cards: formatTasks(refreshed) }));
+      const refreshedTasks = await fetchTasks(boardId, columnId);
+      dispatch(setCardsForColumn({ columnId, cards: formatTasks(refreshedTasks) }));
       toast.success("Card cloned");
     } catch (error) {
       toast.error(getErrorMessage(error));
