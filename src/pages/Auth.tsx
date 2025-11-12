@@ -21,6 +21,7 @@ import { selectAuthUser } from "../app/slices/auth.slice";
 import { toast } from "react-toastify";
 import { AuthMode } from "../utils/enum/auth";
 import ForgotPassword from "../components/auth/ForgotPassword";
+import { FcGoogle } from "react-icons/fc"; 
 
 const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
   const isLoginMode = mode === AuthMode.Login;
@@ -34,6 +35,10 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
     password: "",
   });
   const authenticatedUser = useAppSelector(selectAuthUser);
+
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:4000/auth/google"; 
+  };
 
   const handleInputChange = (
     changeEvent: React.ChangeEvent<HTMLInputElement>
@@ -148,6 +153,29 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
             <span>OR</span>
             <AuthLine />
           </AuthDivider>
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "10px",
+              width: "100%",
+              padding: "10px",
+              borderRadius: "8px",
+              border: "1px solid #ddd",
+              backgroundColor: "white",
+              color: "#333",
+              fontWeight: "500",
+              cursor: "pointer",
+              marginBottom: "1.5rem",
+              boxShadow: "0 1px 2px rgba(0,0,0,0.05)"
+            }}
+          >
+            <FcGoogle size={22} />
+            Sign in with Google
+          </button>
           <AuthFooter>
             {isLoginMode ? (
               <>

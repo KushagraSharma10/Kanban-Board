@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import BoardCard from "../components/board/BoardCard";
 import {
   Board as BoardWrapper,
@@ -13,23 +13,24 @@ import ManageBoard from "../components/board/ManageBoard";
 import Header from "../components/board/Header";
 import type { BoardForm, BoardItem } from "../utils/types/dashboard";
 import { useNavigate } from "react-router";
-import { useAppDispatch, useAppSelector } from "../app/store/hooks";
-import { selectBoards } from "../app/slices/board.slice";
-import {
-  createBoardForUser,
-  deleteBoardForUser,
-  loadBoardsForUser,
-  updateBoardForUser,
-} from "../app/thunks/board.thunks";
-import { getActiveUserId } from "../utils/auth";
+
+import { 
+  useGetBoardsQuery, 
+  useCreateBoardMutation, 
+  useUpdateBoardMutation, 
+  useDeleteBoardMutation 
+} from "../app/api/board.api";
+import { toast } from "react-toastify";
+import { getErrorMessage } from "../utils/api-error";
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
 
-  const activeUserId = getActiveUserId();
+  const { data: boardsList = [], isLoading } = useGetBoardsQuery();
 
-  const boardsList = useAppSelector(selectBoards);
+  const [createBoard] = useCreateBoardMutation();
+  const [updateBoard] = useUpdateBoardMutation();
+  const [deleteBoard] = useDeleteBoardMutation();
 
   const [isBoardModalOpen, setIsBoardModalOpen] = useState<boolean>(false);
   const [boardModalMode, setBoardModalMode] = useState<"create" | "edit">(
@@ -39,22 +40,35 @@ const Dashboard: React.FC = () => {
     useState<BoardItem | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  useEffect(() => {
-    dispatch(loadBoardsForUser(activeUserId));
-  }, [dispatch, activeUserId]);
-
-  const handleCreateBoard = (boardData: BoardForm) => {
-    dispatch(createBoardForUser(activeUserId, boardData));
+  const handleCreateBoard = async (boardData: BoardForm) => {
+    try {
+      await createBoard(boardData).unwrap(); 
+      toast.success("Board created successfully!");
+      setIsBoardModalOpen(false); 
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    }
   };
 
-  const handleUpdateBoard = (boardId: string, boardData: BoardForm) => {
-    dispatch(updateBoardForUser(activeUserId, boardId, boardData));
+  const handleUpdateBoard = async (boardId: string, boardData: BoardForm) => {
+    try {
+      await updateBoard({ id: boardId, data: boardData }).unwrap();
+      toast.success("Board updated successfully!");
+      setIsBoardModalOpen(false);
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    }
   };
 
-  const handleDeleteBoard = (boardId: string) => {
-    dispatch(deleteBoardForUser(activeUserId, boardId));
+  const handleDeleteBoard = async (boardId: string) => {
+    
+    try {
+      await deleteBoard(boardId).unwrap();
+      toast.success("Board deleted successfully!");
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    }
   };
-
   const handleHeaderModalOpen = (isOpen: boolean) => {
     setBoardModalMode("create");
     setSelectedBoardForEdit(null);
@@ -78,6 +92,21 @@ const Dashboard: React.FC = () => {
     setBoardModalMode("create");
     setIsBoardModalOpen(true);
   };
+
+
+  if (isLoading) {
+    return (
+      <Main>
+        <div className="flex flex-col items-center justify-center h-[80vh] w-full">
+          <div className="w-12 h-12 border-4 border-gray-600 border-t-[#6ca0ff] rounded-full animate-spin mb-4" />
+          
+          <p className="text-white text-lg font-medium animate-pulse">
+            Loading your boards...
+          </p>
+        </div>
+      </Main>
+    );
+  }
 
   return (
     <Main>

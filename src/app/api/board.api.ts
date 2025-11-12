@@ -1,48 +1,77 @@
-import { apiClient } from "../../lib/apiClient";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import type { RootState } from "../store/store";
+import type { BackendBoard } from "../../utils/types/board";
+import type { BoardForm, BoardItem } from "../../utils/types/dashboard";
 import type { Envelope } from "../../utils/interface/auth";
-import type { BackendBoard, CreateBoardPayload, UpdateBoardPayload } from "../../utils/types/board";
 
+const toBoardItem = (backend: BackendBoard): BoardItem => ({
+  id: backend._id,
+  userId: backend.createdBy,
+  name: backend.name,
+  type: backend.type,
+  color: backend.color,
+});
 
-export const fetchBoards = async (): Promise<BackendBoard[]> => {
-  const response = await apiClient.get<Envelope<BackendBoard[]>>("/boards");
-  const body = response.data;
-  return Array.isArray(body) ? body : body.data;
-};
+export const boardApi = createApi({
+  reducerPath: "boardApi",
+  baseQuery: fetchBaseQuery({
+    baseUrl: import.meta.env.VITE_API_URL || "http://localhost:4000",
+    credentials: "include",
+    prepareHeaders: (headers, { getState }) => {
 
-export const createBoard = async (
-  payload: CreateBoardPayload
-): Promise<BackendBoard> => {
-  const response = await apiClient.post<Envelope<BackendBoard>>(
-    "/boards",
-    payload
-  );
-  const body = response.data as { data?: BackendBoard } | BackendBoard;
-  return (body as { data?: BackendBoard }).data ?? (body as BackendBoard);
-};
+      const token = (getState() as RootState).auth.accessToken;
+      if (token) {
+        headers.set("authorization", `Bearer ${token}`);
+      }
+      return headers;
+    },
+  }),
+  tagTypes: ["Boards"], 
+  endpoints: (builder) => ({
+    getBoards: builder.query<BoardItem[], void>({
+      query: () => "/boards",
+      transformResponse: (response: Envelope<BackendBoard[]>) => {
+        const boards = Array.isArray(response) ? response : response.data;
+        return boards.map(toBoardItem);
+      },
+      providesTags: ["Boards"], 
+    }),
 
-export const fetchBoardById = async (
-  boardId: string
-): Promise<BackendBoard> => {
-  const response = await apiClient.get<Envelope<BackendBoard>>(
-    `/boards/${boardId}`
-  );
-  const body = response.data as { data?: BackendBoard } | BackendBoard;
-  return (body as { data?: BackendBoard }).data ?? (body as BackendBoard);
-};
+    createBoard: builder.mutation<BoardItem, BoardForm>({
+      query: (newBoard) => ({
+        url: "/boards",
+        method: "POST",
+        body: newBoard,
+      }),
+      transformResponse: (response: Envelope<BackendBoard>) => 
+        toBoardItem(response.data as BackendBoard),
+      invalidatesTags: ["Boards"],
+    }),
 
-export const updateBoard = async (
-  boardId: string,
-  payload: UpdateBoardPayload
-): Promise<BackendBoard> => {
-  const response = await apiClient.patch<Envelope<BackendBoard>>(
-    `/boards/${boardId}`,
-    payload
-  );
-  const body = response.data as { data?: BackendBoard } | BackendBoard;
-  return (body as { data?: BackendBoard }).data ?? (body as BackendBoard);
-};
+    updateBoard: builder.mutation<BoardItem, { id: string; data: BoardForm }>({
+      query: ({ id, data }) => ({
+        url: `/boards/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      transformResponse: (response: Envelope<BackendBoard>) => 
+        toBoardItem(response.data as BackendBoard),
+      invalidatesTags: ["Boards"],
+    }),
 
-export const deleteBoard = async (boardId: string): Promise<boolean> => {
-  const response = await apiClient.delete(`/boards/${boardId}`);
-  return response.status === 200 || response.status === 204;
-};
+    deleteBoard: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/boards/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Boards"], 
+    }),
+  }),
+});
+
+export const {
+  useGetBoardsQuery,
+  useCreateBoardMutation,
+  useUpdateBoardMutation,
+  useDeleteBoardMutation,
+} = boardApi;

@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import { loginApi, signupApi, logoutApi } from "../api/auth.api";
+import { loginApi, signupApi, logoutApi, refreshApi } from "../api/auth.api";
 import { setAuth, clearAuth } from "../slices/auth.slice";
 import { setAccessTokenHeader } from "../../lib/apiClient";
 
@@ -45,5 +45,25 @@ export const logoutUser = createAsyncThunk<void>(
     dispatch(clearAuth());
     setAccessTokenHeader(null);
     localStorage.removeItem("auth");
+  }
+);
+
+export const restoreSession = createAsyncThunk<void, void>(
+  "auth/restoreSession",
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      const { user, accessToken } = await refreshApi();
+
+      const mappedUser = { id: user.id, name: user.fullName, email: user.email, role: mapRole(user.role) };
+      dispatch(setAuth({ user: mappedUser, accessToken }));
+      setAccessTokenHeader(accessToken);
+
+    } catch (_error) {
+      dispatch(clearAuth());
+      setAccessTokenHeader(null);
+      localStorage.removeItem("auth"); 
+      
+      return rejectWithValue("No valid session");
+    }
   }
 );
