@@ -117,8 +117,8 @@ export const deleteCardFromColumnOnServer =
   (boardId: string, columnId: string, taskId: string) =>
   async (dispatch: AppDispatch): Promise<void> => {
     try {
-      const ok = await deleteTaskApi(boardId, columnId, taskId);
-      if (!ok) {
+      const isDeleted = await deleteTaskApi(boardId, columnId, taskId);
+      if (!isDeleted) {
         toast.error("Failed to delete card");
         return;
       }

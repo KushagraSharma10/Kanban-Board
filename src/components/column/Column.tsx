@@ -311,7 +311,7 @@ const Column: React.FC<ColumnProps> = ({
             }}
           />
         ))}
-        {normalizedQuery && visibleCards.length === 0 && (
+        {normalizedQuery && !visibleCards.length && (
           <div className="text-xs text-theme-muted italic px-2 py-3">
             No matching cards
           </div>
