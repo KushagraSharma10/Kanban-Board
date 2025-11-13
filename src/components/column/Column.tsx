@@ -6,14 +6,16 @@ import type { CardData } from "../../utils/interface/card";
 
 import { useAppDispatch, useAppSelector } from "../../app/store/hooks";
 import { selectCardsForColumn } from "../../app/slices/card.slice";
-import { MAX_TITLE_LENGTH } from "../../utils/constants/card-modal";
+import { MAX_COLUMN_NAME_LENGTH } from "../../utils/constants/column";
 import {
-  addCardToColumn,
-  deleteCardFromColumn,
-  loadCardsForColumn,
-  updateCardInColumn,
+  addCardToColumnOnServer,
+  deleteCardFromColumnOnServer,
+  loadCardsForColumnFromServer,
+  updateCardInColumnOnServer,
 } from "../../app/thunks/card.thunks";
 import DeleteConfirmation from "../DeleteConfirmation";
+import { isBoardAdmin } from "../../lib/permissions";
+import { toast } from "react-toastify";
 
 const Column: React.FC<ColumnProps> = ({
   column,
@@ -26,6 +28,7 @@ const Column: React.FC<ColumnProps> = ({
 
   const [editing, setEditing] = useState<boolean>(false);
   const [title, setTitle] = useState<string>(column.title);
+  const [renameError, setRenameError] = useState<string>("");
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -42,8 +45,8 @@ const Column: React.FC<ColumnProps> = ({
     useState<boolean>(false);
 
   useEffect(() => {
-    dispatch(loadCardsForColumn(column.id));
-  }, [dispatch, column.id]);
+    if (boardId) dispatch(loadCardsForColumnFromServer(boardId, column.id));
+  }, [dispatch, boardId, column.id]);
 
   useEffect(() => {
     setTitle(column.title);
@@ -58,14 +61,20 @@ const Column: React.FC<ColumnProps> = ({
     }
   }, [editing]);
 
-  const handleAddCard = () => {
+  const handleAddCard = async () => {
+    const allowed = await isBoardAdmin(boardId);
+    if (!allowed) {
+      toast.error("Only admins can add cards on this board");
+      return;
+    }
+
     const trimmedTitle = newCardTitle.trim();
     if (!trimmedTitle) {
       setError("Title cannot be empty.");
       return;
     }
-    if (trimmedTitle.length > MAX_TITLE_LENGTH) {
-      setError(`Title cannot exceed ${MAX_TITLE_LENGTH} characters.`);
+    if (trimmedTitle.length > MAX_COLUMN_NAME_LENGTH) {
+      setError(`Title cannot exceed ${MAX_COLUMN_NAME_LENGTH} characters.`);
       return;
     }
     if (
@@ -77,7 +86,7 @@ const Column: React.FC<ColumnProps> = ({
       setError("A card with this title already exists!");
       return;
     }
-    dispatch(addCardToColumn(boardId, column.id, trimmedTitle));
+    dispatch(addCardToColumnOnServer(boardId, column.id, trimmedTitle));
 
     setNewCardTitle("");
     setIsAdding(false);
@@ -88,21 +97,42 @@ const Column: React.FC<ColumnProps> = ({
   const visibleCards = !normalizedQuery
     ? cards
     : cards.filter((card) => {
-        const title = card.title.toLowerCase().includes(normalizedQuery);
-        const label = (card.label ?? "none")
+        const matchesTitle = card.title.toLowerCase().includes(normalizedQuery);
+        const matchesLabel = (card.label ?? "none")
           .toLowerCase()
           .includes(normalizedQuery);
-        const assignee = (card.assignees ?? []).some((assignee) =>
-          assignee.toLowerCase().includes(normalizedQuery)
-        );
-        return title || label || assignee;
+        const matchesAssignee = (card.assigneeEmail ?? "")
+          .toLowerCase()
+          .includes(normalizedQuery);
+
+        return matchesTitle || matchesLabel || matchesAssignee;
       });
 
   const handleKeyDown = (
     keyboardEvent: React.KeyboardEvent<HTMLInputElement>
   ) => {
     if (keyboardEvent.key === "Enter") {
-      onRename(column.id, title.trim());
+      const trimmed = title.trim();
+      if (!trimmed) {
+        setRenameError("Column name cannot be empty.");
+        return;
+      }
+      if (trimmed.length < 2) {
+        setRenameError("Column name must be at least 2 characters.");
+        return;
+      }
+      if (trimmed.length > MAX_COLUMN_NAME_LENGTH) {
+        setRenameError(
+          `Column name cannot exceed ${MAX_COLUMN_NAME_LENGTH} characters.`
+        );
+        return;
+      }
+      if (trimmed === column.title) {
+        setEditing(false);
+        return;
+      }
+      setRenameError("");
+      onRename(column.id, trimmed);
       setEditing(false);
     }
     if (keyboardEvent.key === "Escape") {
@@ -111,17 +141,48 @@ const Column: React.FC<ColumnProps> = ({
     }
   };
 
-  const handleBlur = () => {
-    onRename(column.id, title.trim());
+  const handleBlur = async () => {
+    const trimmed = title.trim(); 
+    if (!trimmed || trimmed === column.title) {
+      setTitle(column.title);
+      setRenameError("");
+      setEditing(false);
+      return;
+    }
+    if (trimmed.length < 2 || trimmed.length > MAX_COLUMN_NAME_LENGTH) {
+      setTitle(column.title);
+      setRenameError("");
+      setEditing(false);
+      return;
+    }
+    setRenameError("");
+    const allowed = await isBoardAdmin(boardId);
+    if (!allowed) {
+      toast.error("Only admins can rename columns");
+      setEditing(false);
+      return;
+    }
+    onRename(column.id, trimmed);
     setEditing(false);
   };
 
-  const handleRenameClick = () => {
+  const handleRenameClick = async () => {
+    const allowed = await isBoardAdmin(boardId);
+    if (!allowed) {
+      toast.error("Only admins can rename columns");
+      return;
+    }
     setMenuOpen(false);
+    setRenameError("");
     setEditing(true);
   };
 
-  const handleDeleteColumnClick = (): void => {
+  const handleDeleteColumnClick = async (): Promise<void> => {
+    const allowed = await isBoardAdmin(boardId);
+    if (!allowed) {
+      toast.error("Only admins can delete columns");
+      return;
+    }
     setMenuOpen(false);
     setIsDeleteModalOpen(true);
   };
@@ -185,7 +246,7 @@ const Column: React.FC<ColumnProps> = ({
 
   return (
     <div className="min-w-[70vw] max-h-max md:min-w-[40vw] lg:min-w-[20vw] bg-theme-column rounded-md md:p-1.5 p-1">
-      <div className="flex items-center justify-between mb-2 px-4 py-3">
+      <div className="flex items-center justify-between mb-2 px-4 py-3 ">
         {editing ? (
           <input 
             ref={inputRef}
@@ -205,7 +266,9 @@ const Column: React.FC<ColumnProps> = ({
             {column.title}
           </h2>
         )}
-
+        {editing && renameError && (
+          <p className="mt-1 text-xs text-red-400">{renameError}</p>
+        )}
         <div className="relative" ref={menuRef}>
           <BsThreeDotsVertical
             className="hover:cursor-pointer opacity-80"
@@ -237,14 +300,18 @@ const Column: React.FC<ColumnProps> = ({
             key={card.id}
             card={card}
             onUpdate={(updatedCard: CardData) => {
-              dispatch(updateCardInColumn(updatedCard));
+              dispatch(
+                updateCardInColumnOnServer(boardId, column.id, updatedCard)
+              );
             }}
             onDelete={(cardId: CardData["id"]) => {
-              dispatch(deleteCardFromColumn(column.id, cardId));
+              dispatch(
+                deleteCardFromColumnOnServer(boardId, column.id, cardId)
+              );
             }}
           />
         ))}
-        {normalizedQuery && visibleCards.length === 0 && (
+        {normalizedQuery && !visibleCards.length && (
           <div className="text-xs text-theme-muted italic px-2 py-3">
             No matching cards
           </div>
@@ -253,14 +320,20 @@ const Column: React.FC<ColumnProps> = ({
 
       <div className="px-1">
         {!isAdding ? (
-          <button
-            type="button"
-            className="flex items-center gap-1 hover:bg-[#222c38] hover:cursor-pointer p-3 rounded-md text-sm transition-colors"
-            onClick={() => setIsAdding(true)}
+          <div
+            className="flex items-center gap-1 hover:bg-theme-popover hover:cursor-pointer p-3 rounded-md text-sm transition-colors"
+            onClick={async () => {
+              const allowed = await isBoardAdmin(boardId);
+              if (!allowed) {
+                toast.error("Only admins can add cards on this board");
+                return;
+              }
+              setIsAdding(true);
+            }}
           >
             <span className="text-lg leading-none">+</span>
             Add Card
-          </button>
+          </div>
         ) : (
           <div className="flex flex-col gap-2">
             <input

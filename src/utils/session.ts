@@ -1,19 +1,27 @@
-import type { SessionData } from "./types/session";
 import { SESSION_STORAGE_KEY } from "./constants/session";
 
-export const getSession = (): SessionData | null => {
-  try {
-    const rawSession = sessionStorage.getItem(SESSION_STORAGE_KEY);
+export type StoredAuth = {
+  accessToken: string;
+  user: { id: string; name: string; email: string; role: "user" | "admin" };
+};
 
-    if (rawSession) {
-      return JSON.parse(rawSession);
-    }
-    return null;
-  } catch (error) {
-    console.error("Failed to retrieve session from sessionStorage:", error);
+export const getSession = (): StoredAuth | null => {
+  try {
+    const raw = localStorage.getItem("auth");
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as StoredAuth;
+    if (!parsed?.user?.id || !parsed?.accessToken) return null;
+    return parsed;
+  } catch {
     return null;
   }
 };
+
+export const getAccessTokenFromStorage = (): string | null => {
+  const session = getSession();
+  return session?.accessToken ?? null;
+};
+
 
 export const createSession= (userId: string): void => {
   try {

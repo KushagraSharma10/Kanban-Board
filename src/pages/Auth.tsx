@@ -21,6 +21,7 @@ import { selectAuthUser } from "../app/slices/auth.slice";
 import { toast } from "react-toastify";
 import { AuthMode } from "../utils/enum/auth";
 import ForgotPassword from "../components/auth/ForgotPassword";
+import { FcGoogle } from "react-icons/fc";
 
 const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
   const isLoginMode = mode === AuthMode.Login;
@@ -35,6 +36,10 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
   });
   const authenticatedUser = useAppSelector(selectAuthUser);
 
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:4000/auth/google";
+  };
+
   const handleInputChange = (
     changeEvent: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -42,38 +47,47 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
     setForm((previousForm) => ({ ...previousForm, [name]: value }));
   };
 
-  const handleFormSubmit = (submitEvent: React.FormEvent) => {
+  const handleFormSubmit = async (submitEvent: React.FormEvent) => {
     submitEvent.preventDefault();
 
     const trimmedName = form.name.trim();
     const trimmedEmail = form.email.trim();
     const rawPassword = form.password;
 
-    const emailValidationMessage = validateEmail(trimmedEmail);
-    if (emailValidationMessage) {
-      toast.error(emailValidationMessage);
+    const emailError = validateEmail(trimmedEmail);
+    if (emailError) {
+      toast.error(emailError);
       return;
     }
 
     if (isLoginMode) {
-      dispatch(loginUser({ email: trimmedEmail, password: rawPassword }));
+      const action = await dispatch(
+        loginUser({ email: trimmedEmail, password: rawPassword })
+      );
+      if (loginUser.fulfilled.match(action)) {
+        navigate("/");
+      }
     } else {
       if (!trimmedName) {
         toast.error("Please enter your name");
         return;
       }
-      const passwordValidationMessage = validatePassword(rawPassword);
-      if (passwordValidationMessage) {
-        toast.error(passwordValidationMessage);
+      const passError = validatePassword(rawPassword);
+      if (passError) {
+        toast.error(passError);
         return;
       }
-      dispatch(
+
+      const action = await dispatch(
         signupUser({
           name: trimmedName,
           email: trimmedEmail,
           password: rawPassword,
         })
       );
+      if (signupUser.fulfilled.match(action)) {
+        navigate("/");
+      }
     }
   };
 
@@ -136,12 +150,11 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
             />
 
             {isLoginMode && (
-              <div className="text-end" >
+              <div className="text-end">
                 <button
                   type="button"
                   onClick={() => setIsForgotOpen(true)}
                   className="text-sm text-[#6ca0ff] underline cursor-pointer"
-                  
                 >
                   Forgot password?
                 </button>
@@ -156,6 +169,14 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
             <span>OR</span>
             <AuthLine />
           </AuthDivider>
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-gray-300 bg-white p-2.5 text-gray-800 font-medium shadow-sm hover:bg-gray-50 mb-6"
+          >
+            <FcGoogle size={22} />
+            Sign in with Google
+          </button>
           <AuthFooter>
             {isLoginMode ? (
               <>
@@ -164,7 +185,8 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
               </>
             ) : (
               <>
-                Already have an account? <AuthLink href="/login">Login</AuthLink>
+                Already have an account?{" "}
+                <AuthLink href="/login">Login</AuthLink>
               </>
             )}
           </AuthFooter>

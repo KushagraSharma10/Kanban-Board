@@ -24,3 +24,5 @@ export type ForgotPasswordProps = {
 };
 
 export type ForgotPasswordStage = "verifyEmail" | "setNewPassword";
+
+export type BackendRole = "admin" | "user";

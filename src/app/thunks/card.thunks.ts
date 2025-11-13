@@ -1,153 +1,164 @@
-import { nanoid } from "nanoid";
-import type { AppDispatch } from "../store/store";
-import type { CardData } from "../../utils/interface/card";
-import { getNextCloneTitle } from "../../utils/get-clone-Title";
-import { CARD_KEY } from "../../utils/constants/card";
 import { toast } from "react-toastify";
+import type { AppDispatch } from "../store/store";
 import { setCardsForColumn } from "../slices/card.slice";
+import type { CardData } from "../../utils/interface/card";
+import {
+  fetchTasks,
+  createTask as createTaskApi,
+  updateTask as updateTaskApi,
+  deleteTask as deleteTaskApi,
+} from "../api/task.api";
+import { getNextCloneTitle } from "../../utils/get-clone-Title";
+import { formatDateStringToIso, formatIsoToDateString } from "../../utils/task";
+import { getErrorMessage } from "../../utils/api-error";
+import type { BackendTask } from "../../utils/types/card";
 
-const getAllCards = (): CardData[] => {
-  try {
-    const rawCards = localStorage.getItem(CARD_KEY);
-    return rawCards ? (JSON.parse(rawCards) as CardData[]) : [];
-  } catch (error) {
-    console.error("Failed to load cards from storage:", error);
-    return [];
-  }
-};
 
-const saveAllCards = (cards: CardData[]): void => {
-  localStorage.setItem(CARD_KEY, JSON.stringify(cards));
-};
+const formatTask = (server: BackendTask): CardData => ({
+  id: server._id,
+  title: server.title,
+  description: server.description ?? undefined,
+  dueDate: formatIsoToDateString(server.dueDate),
+  boardId: server.boardId,
+  columnId: server.columnId,
+  assigneeEmail: server.assigneeEmail ?? undefined,
+  label: server.priority ?? undefined,
+  createdBy: server.createdBy,
+});
 
-const getCardsByColumn = (cards: CardData[], columnId: string) =>
-  cards.filter((card) => card.columnId === columnId);
+const formatTasks = (list: BackendTask[]): CardData[] =>
+  list
+    .slice()
+    .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+    .map(formatTask);
 
-export const loadCardsForColumn =
-  (columnId: string) =>
-  (dispatch: AppDispatch): void => {
-    const allCards = getAllCards();
-    const columnCards = getCardsByColumn(allCards, columnId);
-    dispatch(setCardsForColumn({ columnId, cards: columnCards }));
+
+
+export const loadCardsForColumnFromServer =
+  (boardId: string, columnId: string) =>
+  async (dispatch: AppDispatch): Promise<void> => {
+    try {
+      const serverTasks = await fetchTasks(boardId, columnId);
+      dispatch(setCardsForColumn({ columnId, cards: formatTasks(serverTasks) }));
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+      dispatch(setCardsForColumn({ columnId, cards: [] }));
+    }
   };
 
-export const addCardToColumn =
+export const addCardToColumnOnServer =
   (boardId: string, columnId: string, rawTitle: string) =>
-  (dispatch: AppDispatch): void => {
-    const title = rawTitle.trim();
+  async (dispatch: AppDispatch): Promise<void> => {
+    try {
+      const title = rawTitle.trim();
+      if (!title) {
+        toast.error("Title cannot be empty.");
+        return;
+      }
 
-    if (!title) {
-      toast.error("Title cannot be empty.");
-      return;
+      await createTaskApi(boardId, columnId, {
+        title,
+        description: null,
+        priority: undefined,
+        dueDate: null,
+        assigneeEmail: null,
+      });
+
+      const serverTasks = await fetchTasks(boardId, columnId);
+      dispatch(setCardsForColumn({ columnId, cards: formatTasks(serverTasks) }));
+      toast.success("Card created");
+    } catch (error) {
+      toast.error(getErrorMessage(error));
     }
-
-    const allCards = getAllCards();
-    const columnCards = getCardsByColumn(allCards, columnId);
-    const hasDuplicate = columnCards.some(
-      (card) => card.title.trim().toLowerCase() === title.toLowerCase()
-    );
-    if (hasDuplicate) {
-      toast.error("A card with this title already exists in this column.");
-      return;
-    }
-
-    const newCard: CardData = {
-      id: nanoid(),
-      title,
-      boardId,
-      columnId,
-    };
-
-    const updatedAllCards = [newCard, ...allCards];
-    saveAllCards(updatedAllCards);
-
-    const updatedColumnCards = [newCard, ...columnCards];
-    dispatch(setCardsForColumn({ columnId, cards: updatedColumnCards }));
   };
 
-export const updateCardInColumn =
-  (incomingCard: CardData) =>
-  (dispatch: AppDispatch): void => {
-    const allCards = getAllCards();
+export const updateCardInColumnOnServer =
+  (boardId: string, columnId: string, incoming: CardData) =>
+  async (dispatch: AppDispatch): Promise<void> => {
+    try {
+      const normalizedTitle = incoming.title.trim();
+      if (!normalizedTitle) {
+        toast.error("Title cannot be empty.");
+        return;
+      }
 
-    const normalizedTitle = incomingCard.title.trim();
-    if (!normalizedTitle) {
-      toast.error("Title cannot be empty.");
-      return;
+      const payload: Record<string, unknown> = {
+        title: normalizedTitle,
+        description:
+          typeof incoming.description !== "undefined"
+            ? incoming.description ?? null
+            : undefined,
+        dueDate:
+          typeof incoming.dueDate !== "undefined"
+            ? formatDateStringToIso(incoming.dueDate)
+            : undefined,
+      };
+
+      if (typeof incoming.label !== "undefined") {
+        payload.priority = incoming.label;
+      }
+
+      payload.assigneeEmail =
+        typeof incoming.assigneeEmail !== "undefined"
+          ? incoming.assigneeEmail || null
+          : undefined;
+
+      await updateTaskApi(boardId, columnId, incoming.id, payload);
+
+      const serverTasks = await fetchTasks(boardId, columnId);
+      dispatch(setCardsForColumn({ columnId, cards: formatTasks(serverTasks) }));
+      toast.success("Card updated");
+    } catch (error) {
+      toast.error(getErrorMessage(error));
     }
-
-    const cardsInSameColumn = allCards.filter(
-      (card) => card.columnId === incomingCard.columnId
-    );
-
-    const isDuplicateTitle = cardsInSameColumn.some(
-      (existingCard) =>
-        existingCard.id !== incomingCard.id &&
-        existingCard.title.trim().toLowerCase() ===
-          normalizedTitle.toLowerCase()
-    );
-    if (isDuplicateTitle) {
-      toast.error("A card with this title already exists in this column.");
-      return;
-    }
-
-    const updatedCard: CardData = { ...incomingCard, title: normalizedTitle };
-    const updatedAllCards = allCards.map((card) =>
-      card.id === updatedCard.id ? updatedCard : card
-    );
-    saveAllCards(updatedAllCards);
-
-    const columnCards = getCardsByColumn(updatedAllCards, updatedCard.columnId);
-    dispatch(
-      setCardsForColumn({ columnId: updatedCard.columnId, cards: columnCards })
-    );
-    toast.success("Card updated.");
   };
 
-export const deleteCardFromColumn =
-  (columnId: string, cardId: string) =>
-  (dispatch: AppDispatch): void => {
-    const remainingCards = getAllCards().filter((card) => card.id !== cardId);
-    saveAllCards(remainingCards);
-
-    const columnCards = getCardsByColumn(remainingCards, columnId);
-    dispatch(setCardsForColumn({ columnId, cards: columnCards }));
+export const deleteCardFromColumnOnServer =
+  (boardId: string, columnId: string, taskId: string) =>
+  async (dispatch: AppDispatch): Promise<void> => {
+    try {
+      const isDeleted = await deleteTaskApi(boardId, columnId, taskId);
+      if (!isDeleted) {
+        toast.error("Failed to delete card");
+        return;
+      }
+      const serverTasks = await fetchTasks(boardId, columnId);
+      dispatch(setCardsForColumn({ columnId, cards: formatTasks(serverTasks) }));
+      toast.success("Card deleted");
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    }
   };
 
-export const cloneCardInColumn =
-  (columnId: string, sourceCardId: string) =>
-  (dispatch: AppDispatch): void => {
-    const allCards = getAllCards();
+export const cloneCardInColumnOnServer =
+  (boardId: string, columnId: string, sourceCardId: string) =>
+  async (dispatch: AppDispatch): Promise<void> => {
+    try {
+      const currentTasks = await fetchTasks(boardId, columnId);
 
-    const sourceIndex = allCards.findIndex(
-      (card) => card.id === sourceCardId && card.columnId === columnId
-    );
-    if (sourceIndex === -1) return;
+      const sourceTask = currentTasks.find((task) => task._id === sourceCardId);
+      if (!sourceTask) {
+        toast.error("Source card not found.");
+        return;
+      }
 
-    const sourceCard = allCards[sourceIndex];
+      const existingTitles = currentTasks.map((task) => task.title);
+      const clonedTitle = getNextCloneTitle(sourceTask.title, existingTitles);
 
-    const existingTitlesInColumn = getCardsByColumn(allCards, columnId).map(
-      (card) => card.title
-    );
-    const clonedTitle = getNextCloneTitle(
-      sourceCard.title,
-      existingTitlesInColumn
-    );
+      await createTaskApi(boardId, columnId, {
+        title: clonedTitle,
+        description: sourceTask.description ?? null,        
+        dueDate: sourceTask.dueDate ?? null,             
+        assigneeEmail: sourceTask.assigneeEmail ?? null, 
+        ...(typeof sourceTask.priority === "string"         
+          ? { priority: sourceTask.priority }             
+          : {}),
+      });
 
-    const clonedCard: CardData = {
-      ...sourceCard,
-      id: nanoid(),
-      title: clonedTitle,
-    };
-
-    const updatedAllCards = [
-      ...allCards.slice(0, sourceIndex + 1),
-      clonedCard,
-      ...allCards.slice(sourceIndex + 1),
-    ];
-
-    saveAllCards(updatedAllCards);
-
-    const columnCards = getCardsByColumn(updatedAllCards, columnId);
-    dispatch(setCardsForColumn({ columnId, cards: columnCards }));
+      const refreshedTasks = await fetchTasks(boardId, columnId);
+      dispatch(setCardsForColumn({ columnId, cards: formatTasks(refreshedTasks) }));
+      toast.success("Card cloned");
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    }
   };

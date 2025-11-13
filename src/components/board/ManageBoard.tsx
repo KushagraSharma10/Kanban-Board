@@ -42,20 +42,25 @@ const ManageBoard: React.FC<BoardModalProp> = ({
     }
   }, [open, mode, board]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.name.trim()) return toast.error("Please enter a board name");
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    const trimmedName = form.name.trim();
+    const trimmedType = form.type.trim();
+
+    if (!trimmedName) return toast.error("Please enter a board name");
+    if (!trimmedType) return toast.error("Please select a type");
+
+    const payload = { name: trimmedName, type: trimmedType, color: form.color };
 
     if (mode === "edit" && board && onUpdate) {
-      onUpdate(board.id, form);
+      onUpdate(board.id, payload);
       onClose();
       return;
     }
-    onCreate(form);
+    onCreate(payload);
     setForm({ name: "", type: "", color: DEFAULT_COLORS[0] });
     onClose();
   };
-
   if (!open) return null;
   const isFormValid = form.name.trim() !== "" && form.type.trim() !== "";
 

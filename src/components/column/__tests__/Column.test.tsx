@@ -10,8 +10,8 @@ import type { StoredColumn } from "../../../utils/types/column";
 import type { CardData } from "../../../utils/interface/card";
 
 import {
-  loadCardsForColumn,
-  addCardToColumn,
+ loadCardsForColumnFromServer,
+  addCardToColumnOnServer,
 } from "../../../app/thunks/card.thunks";
 
 const openColumnMenu = (): void => {
@@ -93,8 +93,8 @@ const storedColumns: StoredColumn[] = [
 ];
 
 const baseCards: CardData[] = [
-  { id: "a", boardId: "board-1", columnId: "col-1", title: "Alpha" },
-  { id: "b", boardId: "board-1", columnId: "col-1", title: "Beta" },
+  { id: "a", boardId: "board-1", columnId: "col-1", title: "Alpha", createdBy: "test-user" },
+  { id: "b", boardId: "board-1", columnId: "col-1", title: "Beta", createdBy: "test-user" },
 ];
 
 const columnItem = { id: "col-1", title: "To Do" };
@@ -114,7 +114,7 @@ describe("Column component (simple flow tests)", () => {
       />,
       { columns: { items: storedColumns } }
     );
-    expect(loadCardsForColumn).toHaveBeenCalledWith("col-1");
+    expect(loadCardsForColumnFromServer).toHaveBeenCalledWith("col-1");
   });
 
   it("renders column title", () => {
@@ -233,7 +233,7 @@ describe("Column component (simple flow tests)", () => {
     await user.type(input, "Task A");
     await user.click(screen.getByText(/^add$/i));
 
-    expect(addCardToColumn).toHaveBeenCalledWith("board-1", "col-1", "Task A");
+    expect(addCardToColumnOnServer).toHaveBeenCalledWith("board-1", "col-1", "Task A");
   });
 
   it("add card: empty title shows error and no dispatch", async () => {
@@ -255,13 +255,13 @@ describe("Column component (simple flow tests)", () => {
     await user.click(screen.getByText(/^add$/i));
 
     expect(screen.getByText(/title cannot be empty/i)).toBeInTheDocument();
-    expect(addCardToColumn).not.toHaveBeenCalled();
+    expect(addCardToColumnOnServer).not.toHaveBeenCalled();
   });
 
   it("add card: duplicate title shows error", async () => {
     const user = userEvent.setup();
     const cards: CardData[] = [
-      { id: "1", boardId: "board-1", columnId: "col-1", title: "Task A" },
+      { id: "1", boardId: "board-1", columnId: "col-1", title: "Task A", createdBy: "test-user" },
     ];
 
     renderWithLocalStore(
@@ -280,7 +280,7 @@ describe("Column component (simple flow tests)", () => {
     await user.click(screen.getByText(/^add$/i));
 
     expect(screen.getByText(/already exists/i)).toBeInTheDocument();
-    expect(addCardToColumn).not.toHaveBeenCalled();
+    expect(addCardToColumnOnServer).not.toHaveBeenCalled();
   });
 
   it("filtering: searchText filters visible cards by title", () => {

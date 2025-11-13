@@ -5,8 +5,9 @@ export interface CardData {
   dueDate?: string;
   boardId: string;
   columnId: string;
-  assignees?: string[];
+  assigneeEmail?: string;
   label?: "none" | "low" | "moderate" | "high" | "urgent";
+  createdBy: string;
 }
 
 export interface CardProps {

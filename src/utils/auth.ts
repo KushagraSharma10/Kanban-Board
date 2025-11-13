@@ -1,19 +1,19 @@
 import bcrypt from "bcryptjs";
 import { USERS_STORAGE_KEY } from "./constants/auth";
 import type { UserData } from "./interface/user-data";
-import { getSession } from "./session";
 import { loadFromStorage, saveToStorage } from "./storage";
 
-export const getActiveUser = (): UserData | null => {
-  const session = getSession();
-  if (!session?.userId) {
-    return null;
-  }
-  const allUsers = getAllUsers();
-  const activeUser = allUsers.find((user) => user.id === session.userId);
 
-  return activeUser || null;
-};
+export const getActiveUserId = (): string | null => {
+   try {
+     const raw = localStorage.getItem("auth"); 
+     if (!raw) return null;
+     const parsed = JSON.parse(raw) as { user?: { id?: string } };
+     return parsed?.user?.id ?? null;
+   } catch {
+     return null;
+   }
+ };
 
 export const getAllUsers = (): UserData[] => {
   const stored = loadFromStorage(USERS_STORAGE_KEY, []);
