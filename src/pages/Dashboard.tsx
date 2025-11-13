@@ -13,7 +13,6 @@ import ManageBoard from "../components/board/ManageBoard";
 import Header from "../components/board/Header";
 import type { BoardForm, BoardItem } from "../utils/types/dashboard";
 import { useNavigate } from "react-router";
-
 import { 
   useGetBoardsQuery, 
   useCreateBoardMutation, 

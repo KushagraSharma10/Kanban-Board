@@ -1,22 +1,6 @@
 import { apiClient } from "../../lib/apiClient";
 import { unwrapList, unwrapOne, type ApiListEnvelope, type ApiOneEnvelope, } from "../../utils/types/api";
-
-export type BackendTask = {
-  _id: string;
-  boardId: string;
-  columnId: string;
-  title: string;
-  description?: string | null;
-  priority?: "none" | "low" | "moderate" | "high" | "urgent" | null;
-  dueDate?: string | null;
-  assigneeId?: string | null;
-  assigneeEmail?: string | null;
-  position: number;
-  createdBy: string;
-  createdAt?: string;
-  updatedAt?: string;
-};
-
+import type { BackendTask } from "../../utils/types/card";
 
 export const fetchTasks = async (
   boardId: string,

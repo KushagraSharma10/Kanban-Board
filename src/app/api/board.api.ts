@@ -3,14 +3,7 @@ import type { RootState } from "../store/store";
 import type { BackendBoard } from "../../utils/types/board";
 import type { BoardForm, BoardItem } from "../../utils/types/dashboard";
 import type { Envelope } from "../../utils/interface/auth";
-
-const toBoardItem = (backend: BackendBoard): BoardItem => ({
-  id: backend._id,
-  userId: backend.createdBy,
-  name: backend.name,
-  type: backend.type,
-  color: backend.color,
-});
+import { toBoardItem } from "../../utils/boards";
 
 export const boardApi = createApi({
   reducerPath: "boardApi",

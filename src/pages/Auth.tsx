@@ -21,7 +21,7 @@ import { selectAuthUser } from "../app/slices/auth.slice";
 import { toast } from "react-toastify";
 import { AuthMode } from "../utils/enum/auth";
 import ForgotPassword from "../components/auth/ForgotPassword";
-import { FcGoogle } from "react-icons/fc"; 
+import { FcGoogle } from "react-icons/fc";
 
 const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
   const isLoginMode = mode === AuthMode.Login;
@@ -37,7 +37,7 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
   const authenticatedUser = useAppSelector(selectAuthUser);
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:4000/auth/google"; 
+    window.location.href = "http://localhost:4000/auth/google";
   };
 
   const handleInputChange = (
@@ -48,31 +48,48 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
   };
 
   const handleFormSubmit = async (submitEvent: React.FormEvent) => {
-  submitEvent.preventDefault();
+    submitEvent.preventDefault();
 
-  const trimmedName = form.name.trim();
-  const trimmedEmail = form.email.trim();
-  const rawPassword = form.password;
+    const trimmedName = form.name.trim();
+    const trimmedEmail = form.email.trim();
+    const rawPassword = form.password;
 
-  const emailError = validateEmail(trimmedEmail);
-  if (emailError) { toast.error(emailError); return; }
-
-  if (isLoginMode) {
-    const action = await dispatch(loginUser({ email: trimmedEmail, password: rawPassword }));
-    if (loginUser.fulfilled.match(action)) {
-      navigate("/");
+    const emailError = validateEmail(trimmedEmail);
+    if (emailError) {
+      toast.error(emailError);
+      return;
     }
-  } else {
-    if (!trimmedName) { toast.error("Please enter your name"); return; }
-    const passError = validatePassword(rawPassword);
-    if (passError) { toast.error(passError); return; }
 
-    const action = await dispatch(signupUser({ name: trimmedName, email: trimmedEmail, password: rawPassword }));
-    if (signupUser.fulfilled.match(action)) {
-      navigate("/");
+    if (isLoginMode) {
+      const action = await dispatch(
+        loginUser({ email: trimmedEmail, password: rawPassword })
+      );
+      if (loginUser.fulfilled.match(action)) {
+        navigate("/");
+      }
+    } else {
+      if (!trimmedName) {
+        toast.error("Please enter your name");
+        return;
+      }
+      const passError = validatePassword(rawPassword);
+      if (passError) {
+        toast.error(passError);
+        return;
+      }
+
+      const action = await dispatch(
+        signupUser({
+          name: trimmedName,
+          email: trimmedEmail,
+          password: rawPassword,
+        })
+      );
+      if (signupUser.fulfilled.match(action)) {
+        navigate("/");
+      }
     }
-  }
-};
+  };
 
   useEffect(() => {
     if (authenticatedUser) {
@@ -133,12 +150,11 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
             />
 
             {isLoginMode && (
-              <div className="text-end" >
+              <div className="text-end">
                 <button
                   type="button"
                   onClick={() => setIsForgotOpen(true)}
                   className="text-sm text-[#6ca0ff] underline cursor-pointer"
-                  
                 >
                   Forgot password?
                 </button>
@@ -156,22 +172,7 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
           <button
             type="button"
             onClick={handleGoogleLogin}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "10px",
-              width: "100%",
-              padding: "10px",
-              borderRadius: "8px",
-              border: "1px solid #ddd",
-              backgroundColor: "white",
-              color: "#333",
-              fontWeight: "500",
-              cursor: "pointer",
-              marginBottom: "1.5rem",
-              boxShadow: "0 1px 2px rgba(0,0,0,0.05)"
-            }}
+            className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-gray-300 bg-white p-2.5 text-gray-800 font-medium shadow-sm hover:bg-gray-50 mb-6"
           >
             <FcGoogle size={22} />
             Sign in with Google
@@ -184,7 +185,8 @@ const Auth: React.FC<ModeProp> = ({ mode }: ModeProp) => {
               </>
             ) : (
               <>
-                Already have an account? <AuthLink href="/login">Login</AuthLink>
+                Already have an account?{" "}
+                <AuthLink href="/login">Login</AuthLink>
               </>
             )}
           </AuthFooter>

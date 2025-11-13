@@ -5,15 +5,11 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { MemoryRouter, Route, Routes } from "react-router";
 import columnsReducer from "../app/slices/column.slice";
 import authReducer from "../app/slices/auth.slice";
-import boardsReducer from "../app/slices/board.slice";
 import cardsReducer from "../app/slices/card.slice";
-import type { RootState } from "../app/store/store";
+import { boardApi } from "../app/api/board.api";
+import type { RenderOptions } from "../utils/types/test";
 
-type RenderOptions = {
-  route?: string;
-  path?: string;
-  preloadedState?: Partial<RootState>;
-};
+
 
 export const renderWithProviders = (
   ui: React.ReactElement,
@@ -22,7 +18,7 @@ export const renderWithProviders = (
 
  const rootReducer = combineReducers({
     auth: authReducer,
-    boards: boardsReducer,
+    [boardApi.reducerPath]: boardApi.reducer,
     columns: columnsReducer,
     cards: cardsReducer,
   });

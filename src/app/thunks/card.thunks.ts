@@ -7,11 +7,11 @@ import {
   createTask as createTaskApi,
   updateTask as updateTaskApi,
   deleteTask as deleteTaskApi,
-  type BackendTask,
 } from "../api/task.api";
 import { getNextCloneTitle } from "../../utils/get-clone-Title";
 import { formatDateStringToIso, formatIsoToDateString } from "../../utils/task";
 import { getErrorMessage } from "../../utils/api-error";
+import type { BackendTask } from "../../utils/types/card";
 
 
 const formatTask = (server: BackendTask): CardData => ({

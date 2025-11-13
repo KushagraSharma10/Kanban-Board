@@ -15,7 +15,7 @@ export const isBoardAdmin = async(boardId: string): Promise<boolean> => {
 
     if (board.createdBy === currentUserId) return true; 
 
-    const currentMember  = board.members?.find(m => String(m.user) === String(currentUserId));
+    const currentMember  = board.members?.find(member => String(member.user) === String(currentUserId));
     return !!currentMember?.roles?.includes("admin");
   } catch {
     return false;
